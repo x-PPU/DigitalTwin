@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ObserveStack" Id="{699d7880-46fc-45fa-945d-1111af0fe09e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ObserveStack EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrStack: POINTER TO Stack;
+	m_ptrStackWP: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{28d42989-0478-47fa-a8e0-10e62d7763aa}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+
+	i_ptrStack: POINTER TO Stack;
+	i_ptrWP: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrStack := i_ptrStack;
+m_ptrStackWP := i_ptrWP;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{23057aa0-ce57-41cb-bff6-13a68f96659f}">
+      <Declaration><![CDATA[METHOD  ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{63c22b01-f7f9-454f-8201-2ad3fb9c21f9}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[io_processState.UpdateState_Binary(EProcessVariables.Stack_WorkpieceAvailable, m_ptrStack^.WPOnTray, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.Stack_CylinderExtended, m_ptrStack^.o_slidingCylinder.Extended, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.Stack_CylinderRetracted, m_ptrStack^.o_slidingCylinder.Retracted, i_force := TRUE);
+io_processState.UpdateState_Numeric(EProcessVariables.Stack_WPWeight, m_ptrStack^.WPWeight, i_force := TRUE);
+
+io_processState.UpdateState_Defined(EProcessVariables.Stack_WorkpieceAvailable, TRUE);
+
+// update WP info (if there are sensors available), then update the process variables list
+m_ptrStackWP^.IsPresent := m_ptrStack^.WPOnTray;
+m_ptrStackWP^.IsLight := m_ptrStack^.LightWPOnTray;
+m_ptrStackWP^.IsMetal := m_ptrStack^.MetalWPOnTray;
+
+io_processState.UpdateState_Defined(EProcessVariables.Stack_CylinderExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.Stack_CylinderRetracted, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.Stack_WPWeight, TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ObserveStack">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveStack.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="4" Count="1" />
+    </LineIds>
+    <LineIds Name="ObserveStack.ResetDefinition">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveStack.UpdateProcessObservation">
+      <LineId Id="1" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="2" Count="6" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="27" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

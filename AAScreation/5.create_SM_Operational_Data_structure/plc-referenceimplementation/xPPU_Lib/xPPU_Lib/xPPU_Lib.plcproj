@@ -1,0 +1,478 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <FileVersion>1.0.0.0</FileVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{92d12a21-79a5-42cb-8589-aa54337b8f7a}</ProjectGuid>
+    <SubObjectsSortedByName>true</SubObjectsSortedByName>
+    <DownloadApplicationInfo>true</DownloadApplicationInfo>
+    <WriteProductVersion>false</WriteProductVersion>
+    <GenerateTpy>false</GenerateTpy>
+    <Name>xPPU_Lib</Name>
+    <ProgramVersion>3.1.4026.11</ProgramVersion>
+    <Application>{622de0b2-df4e-4941-b8e5-758c6d2242f1}</Application>
+    <TypeSystem>{98f0c2df-e11d-4904-a385-fa206a6b7a28}</TypeSystem>
+    <Implicit_Task_Info>{e41e649a-4412-44df-965d-299d09070a28}</Implicit_Task_Info>
+    <Implicit_KindOfTask>{36b71078-079d-4044-97ce-be034eaeedc8}</Implicit_KindOfTask>
+    <Implicit_Jitter_Distribution>{be57fd85-e09c-462f-9057-aa079c685de1}</Implicit_Jitter_Distribution>
+    <LibraryReferences>{118c8a36-d333-4dc5-b87f-6147e34e387f}</LibraryReferences>
+    <Company>Jan Wilch</Company>
+    <Released>false</Released>
+    <AllowChecksForLibrary>false</AllowChecksForLibrary>
+    <POUsForPropertyAccessIncluded>false</POUsForPropertyAccessIncluded>
+    <GlobalVersionStructureIncluded>false</GlobalVersionStructureIncluded>
+    <Title>xPPU</Title>
+    <ProjectVersion>1.0.0</ProjectVersion>
+    <VirtualLibrary>true</VirtualLibrary>
+  </PropertyGroup>
+  <ItemGroup>
+    <PlaceholderReference Include="Tc2_Standard">
+      <DefaultResolution>Tc2_Standard, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_Standard</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc2_System">
+      <DefaultResolution>Tc2_System, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc2_System</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="Tc3_Module">
+      <DefaultResolution>Tc3_Module, * (Beckhoff Automation GmbH)</DefaultResolution>
+      <Namespace>Tc3_Module</Namespace>
+    </PlaceholderReference>
+    <PlaceholderReference Include="[Resi4MPM]">
+      <DefaultResolution>[Resi4MPM], * (Jan Wilch)</DefaultResolution>
+      <Namespace>Resi4MPM</Namespace>
+    </PlaceholderReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="02_ModuleSequences" />
+    <Folder Include="03_ControlPrimitives" />
+    <Folder Include="03_ControlPrimitives\Carrier" />
+    <Folder Include="03_ControlPrimitives\Carrier\Crane" />
+    <Folder Include="03_ControlPrimitives\Carrier\PickAlpha" />
+    <Folder Include="03_ControlPrimitives\Conveyor" />
+    <Folder Include="03_ControlPrimitives\Conveyor\LSC" />
+    <Folder Include="03_ControlPrimitives\Conveyor\PAC" />
+    <Folder Include="03_ControlPrimitives\Conveyor\RFC" />
+    <Folder Include="03_ControlPrimitives\Conveyor\SSC" />
+    <Folder Include="03_ControlPrimitives\Generic" />
+    <Folder Include="03_ControlPrimitives\Stack" />
+    <Folder Include="03_ControlPrimitives\Stamp" />
+    <Folder Include="04_HardwareObservation" />
+    <Folder Include="05_HardwareControl" />
+    <Folder Include="05_HardwareControl\ControlModule" />
+    <Folder Include="05_HardwareControl\ControlModule\Grippers" />
+    <Folder Include="05_HardwareControl\ControlModule\Gen" />
+    <Folder Include="05_HardwareControl\ControlModule\Pushers" />
+    <Folder Include="05_HardwareControl\ControlModule\Sensors" />
+    <Folder Include="05_HardwareControl\ControlModule\Valves" />
+    <Folder Include="05_HardwareControl\DUTs" />
+    <Folder Include="05_HardwareControl\EquipmentModule" />
+    <Folder Include="05_HardwareControl\EquipmentModule\Carriers" />
+    <Folder Include="05_HardwareControl\EquipmentModule\Conveyors" />
+    <Folder Include="05_HardwareControl\EquipmentModule\Ramps" />
+    <Folder Include="05_HardwareControl\EquipmentModule\Stacks" />
+    <Folder Include="05_HardwareControl\EquipmentModule\Stamps" />
+    <Folder Include="05_HardwareControl\Interfaces" />
+    <Folder Include="98_NamingEnums" />
+    <Folder Include="99_ExtrafunctionalImpl" />
+    <Folder Include="GVLs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="03_ControlPrimitives\Carrier\Crane\Crane_MoveBase.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\Crane\Crane_MoveToLSC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\Crane\Crane_MoveToStack.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\Crane\Crane_MoveToStamp.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\Crane\Crane_PickPutBase.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\Crane\Crane_PickUpWP.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\Crane\Crane_PutDownWP.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\PickAlpha\PicAlpha_MoveBase.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\PickAlpha\PicAlpha_MoveToPos1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\PickAlpha\PicAlpha_MoveToPos2.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\PickAlpha\PicAlpha_MoveToPos3.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\PickAlpha\PicAlpha_MoveToPos4.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\PickAlpha\PicAlpha_PickUpWP.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Carrier\PickAlpha\PicAlpha_PutDownWP.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\LSC\LSC_MoveWorkpiece_Base.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\LSC\LSC_SearchWorkpiece.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\LSC\LSC_TransferWorkpieceTo_PAC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\LSC\LSC_TransferWorkpieceTo_RampEnd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\LSC\LSC_TransferWorkpieceTo_RampMid.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\LSC\LSC_TransferWorkpieceTo_RampStart.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\LSC\LSC_TransferWPAtStart.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\PAC\PAC_MoveWorkpiece_Base.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\PAC\PAC_TransferFirstWorkpieceTo_SSCStart.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\PAC\PAC_TransferWorkpieceTo_PSStart.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\PAC\PAC_TransferWorkpieceTo_SSC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\RFC\RFC_MoveWorkpiece_Base.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\RFC\RFC_TransferWorkpieceTo_LSC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\RFC\RFC_TransferWorkpieceTo_PSEnd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\SSC\SSC_MoveWorkpieceTo_PSEnd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\SSC\SSC_MoveWorkpiece_Base.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\SSC\SSC_TransferWorkpieceTo_PSStart.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\SSC\SSC_TransferWorkpieceTo_RampEnd.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Conveyor\SSC\SSC_TransferWorkpieceTo_RFC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Generic\Delay.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Generic\ForceProcessVariable.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Generic\IndicateActivity.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Stack\Stack_ProvideWorkpiece.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="03_ControlPrimitives\Stamp\Stamp_StampWorkpiece.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObserveCrane.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObserveLSC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObservePAC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObservePicAlpha.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObserveRFC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObserveSSC.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObserveStack.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\ObserveStamp.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="04_HardwareObservation\xPPUProduct.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\BaseComponent.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Gen\ActivityIndicator.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Grippers\BaseGripper.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Grippers\VacuumGripper.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Motor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Pushers\BaseCylinder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Pushers\BistableCylinder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Pushers\MonostableCylinder.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Pushers\Switch.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Sensors\InductiveSensor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Sensors\OpticalSensor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Sensors\PresenceSensor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Sensors\PressureSensor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Sensors\WeightSensor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\ControlModule\Valves\PropotionalValve.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\ActuatorConfiguration.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\BaseConfiguration.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\ConveyorConfiguration.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\ConveyorOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\EWPMaterial.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\EWPWeight.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\MotorOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\RampConfiguration.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\SensorConfiguration.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\DUTs\SensorOutput.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Carriers\BaseCarrier.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Carriers\Crane.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Carriers\PicAlpha.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Conveyors\Conveyor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Conveyors\LargeSortingConveyor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Conveyors\PicAlphaConveyor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Conveyors\RefeedingConveyor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Conveyors\SmallSortingConveyor.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Ramps\Ramp.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Stacks\Stack.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\EquipmentModule\Stamps\Stamp.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\Interfaces\ITF_AnalogSensor.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\Interfaces\ITF_BinarySensor.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="05_HardwareControl\Interfaces\ITF_Cylinder.TcIO">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\EAlarms.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\EOperatingModes.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\EPrimitives.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\EProcessVariables.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\EProducts.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\EProductTypes.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\ESequences.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="98_NamingEnums\EStampStates.TcDUT">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="99_ExtrafunctionalImpl\PanelManager.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="99_ExtrafunctionalImpl\ErrorManager.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="99_ExtrafunctionalImpl\FC_InitAlarmTexts.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="99_ExtrafunctionalImpl\MachineModes.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="GVLs\HMI_Texts.TcGVL">
+      <SubType>Code</SubType>
+      <LinkAlways>true</LinkAlways>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="xPPU_Lib.tmc">
+      <SubType>Content</SubType>
+    </None>
+  </ItemGroup>
+  <ProjectExtensions>
+    <PlcProjectOptions>
+      <XmlArchive>
+  <Data>
+    <o xml:space="preserve" t="OptionKey">
+      <v n="Name">"&lt;ProjectRoot&gt;"</v>
+      <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+        <v>{192FAD59-8248-4824-A8DE-9177C94C195A}</v>
+        <o>
+          <v n="Name">"{192FAD59-8248-4824-A8DE-9177C94C195A}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{246001F4-279D-43AC-B241-948EB31120E1}</v>
+        <o>
+          <v n="Name">"{246001F4-279D-43AC-B241-948EB31120E1}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>GlobalVisuImageFilePath</v>
+            <v>%APPLICATIONPATH%</v>
+          </d>
+        </o>
+        <v>{29BD8D0C-3586-4548-BB48-497B9A01693F}</v>
+        <o>
+          <v n="Name">"{29BD8D0C-3586-4548-BB48-497B9A01693F}"</v>
+          <d n="SubKeys" t="Hashtable" ckt="String" cvt="OptionKey">
+            <v>Rules</v>
+            <o>
+              <v n="Name">"Rules"</v>
+              <d n="SubKeys" t="Hashtable" />
+              <d n="Values" t="Hashtable" />
+            </o>
+          </d>
+          <d n="Values" t="Hashtable" />
+        </o>
+        <v>{40450F57-0AA3-4216-96F3-5444ECB29763}</v>
+        <o>
+          <v n="Name">"{40450F57-0AA3-4216-96F3-5444ECB29763}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String">
+            <v>ActiveVisuExtensionsLength</v>
+            <v>0</v>
+            <v>ActiveVisuProfile</v>
+            <v>"IR0whWr8bwfyBwAAHf+pawAAAABVAgAADnffSgAAAAABAAAAAAAAAAEaUwB5AHMAdABlAG0ALgBTAHQAcgBpAG4AZwACTHsAZgA5ADUAYgBiADQAMgA2AC0ANQA1ADIANAAtADQAYgA0ADUALQA5ADQAMAAwAC0AZgBiADAAZgAyAGUANwA3AGUANQAxAGIAfQADCE4AYQBtAGUABDJUAHcAaQBuAEMAQQBUACAAMwAuADEAIABCAHUAaQBsAGQAIAA0ADAAMgAyAC4AMQAwAAUWUAByAG8AZgBpAGwAZQBEAGEAdABhAAZMewAxADYAZQA1ADUAYgA2ADAALQA3ADAANAAzAC0ANABhADYAMwAtAGIANgA1AGIALQA2ADEANAA3ADEAMwA4ADcAOABkADQAMgB9AAcSTABpAGIAcgBhAHIAaQBlAHMACEx7ADMAYgBmAGQANQA0ADUAOQAtAGIAMAA3AGYALQA0AGQANgBlAC0AYQBlADEAYQAtAGEAOAAzADMANQA2AGEANQA1ADEANAAyAH0ACUx7ADkAYwA5ADUAOAA5ADYAOAAtADIAYwA4ADUALQA0ADEAYgBiAC0AOAA4ADcAMQAtADgAOQA1AGYAZgAxAGYAZQBkAGUAMQBhAH0ACg5WAGUAcgBzAGkAbwBuAAsGaQBuAHQADApVAHMAYQBnAGUADQpUAGkAdABsAGUADhpWAGkAcwB1AEUAbABlAG0ATQBlAHQAZQByAA8OQwBvAG0AcABhAG4AeQAQDFMAeQBzAHQAZQBtABESVgBpAHMAdQBFAGwAZQBtAHMAEjBWAGkAcwB1AEUAbABlAG0AcwBTAHAAZQBjAGkAYQBsAEMAbwBuAHQAcgBvAGwAcwATKFYAaQBzAHUARQBsAGUAbQBzAFcAaQBuAEMAbwBuAHQAcgBvAGwAcwAUJFYAaQBzAHUARQBsAGUAbQBUAGUAeAB0AEUAZABpAHQAbwByABUiVgBpAHMAdQBOAGEAdABpAHYAZQBDAG8AbgB0AHIAbwBsABYUdgBpAHMAdQBpAG4AcAB1AHQAcwAXDHMAeQBzAHQAZQBtABgYVgBpAHMAdQBFAGwAZQBtAEIAYQBzAGUAGSZEAGUAdgBQAGwAYQBjAGUAaABvAGwAZABlAHIAcwBVAHMAZQBkABoIYgBvAG8AbAAbIlAAbAB1AGcAaQBuAEMAbwBuAHMAdAByAGEAaQBuAHQAcwAcTHsANAAzAGQANQAyAGIAYwBlAC0AOQA0ADIAYwAtADQANABkADcALQA5AGUAOQA0AC0AMQBiAGYAZABmADMAMQAwAGUANgAzAGMAfQAdHEEAdABMAGUAYQBzAHQAVgBlAHIAcwBpAG8AbgAeFFAAbAB1AGcAaQBuAEcAdQBpAGQAHxZTAHkAcwB0AGUAbQAuAEcAdQBpAGQAIEhhAGYAYwBkADUANAA0ADYALQA0ADkAMQA0AC0ANABmAGUANwAtAGIAYgA3ADgALQA5AGIAZgBmAGUAYgA3ADAAZgBkADEANwAhFFUAcABkAGEAdABlAEkAbgBmAG8AIkx7AGIAMAAzADMANgA2AGEAOAAtAGIANQBjADAALQA0AGIAOQBhAC0AYQAwADAAZQAtAGUAYgA4ADYAMAAxADEAMQAwADQAYwAzAH0AIw5VAHAAZABhAHQAZQBzACRMewAxADgANgA4AGYAZgBjADkALQBlADQAZgBjAC0ANAA1ADMAMgAtAGEAYwAwADYALQAxAGUAMwA5AGIAYgA1ADUANwBiADYAOQB9ACVMewBhADUAYgBkADQAOABjADMALQAwAGQAMQA3AC0ANAAxAGIANQAtAGIAMQA2ADQALQA1AGYAYwA2AGEAZAAyAGIAOQA2AGIANwB9ACYWTwBiAGoAZQBjAHQAcwBUAHkAcABlACdUVQBwAGQAYQB0AGUATABhAG4AZwB1AGEAZwBlAE0AbwBkAGUAbABGAG8AcgBDAG8AbgB2AGUAcgB0AGkAYgBsAGUATABpAGIAcgBhAHIAaQBlAHMAKBBMAGkAYgBUAGkAdABsAGUAKRRMAGkAYgBDAG8AbQBwAGEAbgB5ACoeVQBwAGQAYQB0AGUAUAByAG8AdgBpAGQAZQByAHMAKzhTAHkAcwB0AGUAbQAuAEMAbwBsAGwAZQBjAHQAaQBvAG4AcwAuAEgAYQBzAGgAdABhAGIAbABlACwSdgBpAHMAdQBlAGwAZQBtAHMALUg2AGMAYgAxAGMAZABlADEALQBkADUAZABjAC0ANABhADMAYgAtADkAMAA1ADQALQAyADEAZgBhADcANQA2AGEAMwBmAGEANAAuKEkAbgB0AGUAcgBmAGEAYwBlAFYAZQByAHMAaQBvAG4ASQBuAGYAbwAvTHsAYwA2ADEAMQBlADQAMAAwAC0ANwBmAGIAOQAtADQAYwAzADUALQBiADkAYQBjAC0ANABlADMAMQA0AGIANQA5ADkANgA0ADMAfQAwGE0AYQBqAG8AcgBWAGUAcgBzAGkAbwBuADEYTQBpAG4AbwByAFYAZQByAHMAaQBvAG4AMgxMAGUAZwBhAGMAeQAzMEwAYQBuAGcAdQBhAGcAZQBNAG8AZABlAGwAVgBlAHIAcwBpAG8AbgBJAG4AZgBvADQwTABvAGEAZABMAGkAYgByAGEAcgBpAGUAcwBJAG4AdABvAFAAcgBvAGoAZQBjAHQANRpDAG8AbQBwAGEAdABpAGIAaQBsAGkAdAB5ANAAAhoD0AMBLQTQBQYaB9AHCBoBRQcJCNAACRoERQoLBAMAAAAFAAAACgAAAAAAAADQDAutAgAAANANAS0O0A8BLRDQAAkaBEUKCwQDAAAABQAAAAoAAAAoAAAA0AwLrQEAAADQDQEtEdAPAS0Q0AAJGgRFCgsEAwAAAAUAAAAKAAAAAAAAANAMC60CAAAA0A0BLRLQDwEtENAACRoERQoLBAMAAAAFAAAACgAAACgAAADQDAutAgAAANANAS0T0A8BLRDQAAkaBEUKCwQDAAAABQAAAAoAAAAKAAAA0AwLrQIAAADQDQEtFNAPAS0Q0AAJGgRFCgsEAwAAAAUAAAAKAAAAKAAAANAMC60CAAAA0A0BLRXQDwEtENAACRoERQoLBAMAAAAFAAAACgAAAAAAAADQDAutAgAAANANAS0W0A8BLRfQAAkaBEUKCwQDAAAABQAAAAoAAAAoAAAA0AwLrQQAAADQDQEtGNAPAS0Q0BkarQFFGxwB0AAcGgJFHQsEAwAAAAUAAAAKAAAAAAAAANAeHy0g0CEiGgJFIyQC0AAlGgVFCgsEAwAAAAMAAAAAAAAACgAAANAmC60AAAAA0AMBLSfQKAEtEdApAS0Q0AAlGgVFCgsEAwAAAAMAAAAAAAAACgAAANAmC60BAAAA0AMBLSfQKAEtEdApAS0QmiorAUUAAQLQAAEtLNAAAS0X0AAfLS3QLi8aA9AwC60BAAAA0DELrRMAAADQMhqtANAzLxoD0DALrQIAAADQMQutAwAAANAyGq0A0DQarQDQNRqtAA=="</v>
+          </d>
+        </o>
+        <v>{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}</v>
+        <o>
+          <v n="Name">"{8A0FB252-96EB-4DCC-A5B4-B4804D05E2D6}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>WriteLineIDs</v>
+            <v>True</v>
+          </d>
+        </o>
+        <v>{8F99A816-E488-41E4-9FA3-846536012284}</v>
+        <o>
+          <v n="Name">"{8F99A816-E488-41E4-9FA3-846536012284}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="String">
+            <v>DisabledWarningIds</v>
+            <v>410,5410</v>
+          </d>
+        </o>
+        <v>{F66C7017-BDD8-4114-926C-81D6D687E35F}</v>
+        <o>
+          <v n="Name">"{F66C7017-BDD8-4114-926C-81D6D687E35F}"</v>
+          <d n="SubKeys" t="Hashtable" />
+          <d n="Values" t="Hashtable" ckt="String" cvt="Boolean">
+            <v>CalcActiveTransOnly</v>
+            <v>True</v>
+            <v>FlagUseCurrentStep</v>
+            <v>True</v>
+            <v>FlagUseInit</v>
+            <v>True</v>
+            <v>FlagUseReset</v>
+            <v>True</v>
+          </d>
+        </o>
+      </d>
+      <d n="Values" t="Hashtable" />
+    </o>
+  </Data>
+  <TypeList>
+    <Type n="Boolean">System.Boolean</Type>
+    <Type n="Hashtable">System.Collections.Hashtable</Type>
+    <Type n="Int32">System.Int32</Type>
+    <Type n="OptionKey">{54dd0eac-a6d8-46f2-8c27-2f43c7e49861}</Type>
+    <Type n="String">System.String</Type>
+  </TypeList>
+</XmlArchive>
+    </PlcProjectOptions>
+  </ProjectExtensions>
+</Project>

@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EComparisonType" Id="{827a29e0-e923-4760-9bce-1541cc5ef4a2}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EComparisonType :
+(
+	none := 0,
+	equals := 1,
+	not_equal := 2,
+	greater := 3,
+	less := 4,
+	greater_eq := 5,
+	less_eq := 6
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

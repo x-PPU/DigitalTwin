@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ForceProcessVariable" Id="{1d87e2f2-0f5c-4a6a-a621-213d016671aa}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ForceProcessVariable EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_precondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{a7294088-7160-4fa4-b697-bd25a1073b90}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{95b33aa3-fa8e-448e-b660-69f578ce81b7}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	i_params	: Resi4MPM.ParameterSet;
+END_VAR
+VAR
+	namedVal: SNamedValue;
+	varId: UINT;
+	dType: EDataType;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ExecuteInternal := FALSE;
+
+namedVal := i_params.Retrieve('variable_id');
+varId := LREAL_TO_UINT(namedVal.Value.Numeric);
+
+namedVal := i_params.Retrieve('type');
+dType := LREAL_TO_USINT(namedVal.Value.Numeric);
+CASE dType OF
+	EDataType.binary:
+		namedVal := i_params.Retrieve('bool_val');
+		THIS^.m_st^.PtrProcessState^.UpdateState_Binary(varId, namedVal.Value.Binary, TRUE);
+		ExecuteInternal := TRUE;
+	
+	EDataType.numeric:
+		namedVal := i_params.Retrieve('num_val');
+		THIS^.m_st^.PtrProcessState^.UpdateState_Numeric(varId, namedVal.Value.Numeric, TRUE);
+		ExecuteInternal := TRUE;
+	
+	EDataType.string_t:
+		namedVal := i_params.Retrieve('string_val');
+		THIS^.m_st^.PtrProcessState^.UpdateState_String(varId, namedVal.Value.String_t, TRUE);
+		ExecuteInternal := TRUE;
+	
+	ELSE
+		RETURN;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{41515b71-b82e-4302-83fc-0c8d74106d7c}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)
+	
+	i_id: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_id := i_id;
+m_timeout := T#5S;
+m_paramDefinition := 'variable_id:UINT;type:EDataType;bool_val:BOOL;num_val:LREAL;string_val:STRING;';
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ForceProcessVariable">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ForceProcessVariable.Abort">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ForceProcessVariable.ExecuteInternal">
+      <LineId Id="1" Count="26" />
+    </LineIds>
+    <LineIds Name="ForceProcessVariable.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

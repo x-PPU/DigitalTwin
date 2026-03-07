@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ValueExpression" Id="{31009ba0-6349-49de-aabb-beeec6e55e1c}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'OPC.UA.DA.StructuredType' := '1'}
+FUNCTION_BLOCK ValueExpression IMPLEMENTS IExpression, IValExp
+VAR_OUTPUT
+	o_value: SValue;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{bb4d8251-0976-421e-b305-e597217ed55f}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_dataType: EDataType;
+	i_binaryValue: BOOL;
+	i_numericValue: LREAL;
+	i_stringValue: STRING;
+	i_defined: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[o_value.DataType := i_dataType;
+o_value.Defined := i_defined;
+
+CASE i_dataType OF
+	EDataType.binary:
+		o_value.Value.Binary := i_binaryValue;
+
+	EDataType.numeric:
+		o_value.Value.Numeric := i_numericValue;
+		
+	EDataType.string_t:
+		o_value.Value.String_t := i_stringValue;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsTrue" Id="{3a82eae7-7791-402b-9ec4-f1b641b64a32}">
+      <Declaration><![CDATA[METHOD IsTrue : BOOL
+VAR_INPUT
+	i_ptrProcessState: POINTER TO ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IsTrue := o_value.DataType = EDataType.binary AND o_value.Value.Binary;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ToString" Id="{4298c4cd-7080-4587-9246-8518207a8c49}">
+      <Declaration><![CDATA[METHOD ToString : STRING(256)
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE o_value.DataType OF
+	EDataType.binary:
+		ToString := TO_STRING(o_value.Value.Binary);
+		
+	EDataType.numeric:
+		ToString := TO_STRING(o_value.Value.Numeric);
+		
+	EDataType.string_t:
+		ToString := o_value.Value.String_t;
+	
+	ELSE
+		ToString := '';
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ValueExpression">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ValueExpression.FB_init">
+      <LineId Id="1" Count="13" />
+    </LineIds>
+    <LineIds Name="ValueExpression.IsTrue">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="ValueExpression.ToString">
+      <LineId Id="1" Count="12" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

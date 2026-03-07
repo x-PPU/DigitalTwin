@@ -1,0 +1,426 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="StateTracker" Id="{f2d6ed32-8e2f-4899-a749-415d1de35dbf}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK StateTracker IMPLEMENTS IService
+VAR
+	// ***** OUTPUT TO RA (read-only) ******
+	{attribute 'OPC.UA.DA' := '1'}
+	{attribute 'OPC.UA.DA.Access' := '1'}
+	// locally monitored variables AND non-local variables synced via ADS
+	raInOut_processState: ARRAY [ResiConst.ARR_MIN..ResiConst.STATE_ARR_MAX] OF SNamedValue;
+	
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_stateSyncTargets: 	ARRAY [ResiConst.ARR_MIN..ResiConst.STATE_ARR_MAX] OF SAdsSymbol;
+	// *************************
+	
+	m_ptrProcessManager: POINTER TO ProcessManager;
+	m_completeState: ProcessState;
+	
+	// POUs capable of observing part of the process state
+	m_hwObsIdx: UINT := 0;
+	m_hwObservations: ARRAY [ResiConst.ARR_MIN..ResiConst.OBSERVERS_ARR_MAX] OF POINTER TO HardwareObservationBase;
+	
+	(*  PRODUCT MANAGEMENT
+		Manages the flow of (discrete) products through the process by shifting product information between array places. *)
+	m_productBases: ARRAY [ResiConst.ARR_MIN..ResiConst.PRODUCTS_ARR_MAX] OF ProductBase;
+	m_productPtrs: ARRAY [ResiConst.ARR_MIN..ResiConst.PRODUCTS_ARR_MAX] OF POINTER TO ProductBase;
+	
+	// INTERLOCKS
+	m_interlocks: ARRAY [ResiConst.ARR_MIN..ResiConst.COMPENSATIONS_ARR_MAX] OF IExpression;
+	m_interlockIdx: UINT;
+	m_expectedVals: ARRAY [ResiConst.ARR_MIN..ResiConst.COMPENSATIONS_ARR_MAX] OF BOOL;
+	
+	// ADS SYNCH
+	m_stateReaders: ARRAY [ResiConst.ARR_MIN..ResiConst.STATE_ARR_MAX] OF ADSREAD;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="AddInterlock" Id="{b4ac6375-770b-4c58-9439-34f5ae6567b1}">
+      <Declaration><![CDATA[METHOD AddInterlock : BOOL
+VAR_INPUT
+	i_interlock: IExpression;
+	i_expectedVal: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_interlocks[m_interlockIdx] := i_interlock;
+m_expectedVals[m_interlockIdx] := i_expectedVal;
+m_interlockIdx := m_interlockIdx + 1;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AddObservation" Id="{95f98730-90eb-4f89-81cf-5ce882758b21}">
+      <Declaration><![CDATA[METHOD AddObservation : BOOL
+VAR_INPUT
+	i_ptrObservation: POINTER TO HardwareObservationBase;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_hwObservations[m_hwObsIdx] := i_ptrObservation;
+m_hwObsIdx := m_hwObsIdx + 1;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="CyclicUpdateStatus" Id="{6d719492-5d49-4ec2-b724-bc336c736b63}">
+      <Declaration><![CDATA[METHOD CyclicUpdateStatus : BOOL
+VAR_INPUT
+	i_ignoreDefinition: BOOL;
+END_VAR
+VAR_IN_OUT
+	// Variables that are observable only at app-level. 
+	// NOTE: The index is interpreted as the process variable ID.
+	io_appLevelVars: ARRAY[*] OF SValue;
+END_VAR
+VAR
+	ui: UINT;
+	di: DINT;
+	m_tmpVal: SValue;
+	m_otherVal: SValue;
+	m_sym: SAdsSymbol;
+	m_len: UDINT;
+	m_adr: PVOID;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// apply the process-level observation (e.g., current operation mode or recipe step)
+FOR di := LOWER_BOUND(io_appLevelVars, 1) TO UPPER_BOUND(io_appLevelVars, 1) DO
+	m_completeState.SetValue(DINT_TO_UINT(di), io_appLevelVars[di]);
+END_FOR
+
+// update hardware-level observation
+FOR ui := ResiConst.ARR_MIN TO ResiConst.OBSERVERS_ARR_MAX DO
+	IF m_hwObservations[ui] <> 0 THEN
+		m_hwObservations[ui]^.UpdateProcessObservation(THIS^.m_completeState);
+	END_IF
+END_FOR
+
+FOR ui := ResiConst.ARR_MIN TO (ResiConst.DEFAULT_ARR_MAX)DO
+	m_productPtrs[ui]^.UpdateProcessObservation(THIS^.m_completeState);
+END_FOR
+
+IF i_ignoreDefinition THEN
+	FOR ui := ResiConst.ARR_MIN TO ResiConst.STATE_ARR_MAX DO
+		m_completeState.UpdateState_Defined(ui, TRUE);
+	END_FOR
+END_IF
+
+// check interlocks
+FOR ui := ResiConst.ARR_MIN TO ResiConst.COMPENSATIONS_ARR_MAX DO
+	IF m_interlocks[ui] <> 0 THEN
+		IF m_interlocks[ui].IsTrue(ADR(m_completeState)) <> m_expectedVals[ui] AND NOT m_ptrProcessManager^.AbortActive THEN
+			// interlock violated -> abort all
+			m_ptrProcessManager^.RequestAbort();
+			RETURN;
+		END_IF
+	END_IF
+END_FOR
+
+// synch with other PLCs
+FOR ui := ResiConst.ARR_MIN TO ResiConst.STATE_ARR_MAX DO
+	m_sym := raIn_stateSyncTargets[ui];
+	IF m_sym.IsSet THEN
+		// use the raInOut_processState as a buffer; copy to the actual process state (at least one cycle delayed)
+		m_tmpVal.DataType := m_sym.DataType;
+		m_tmpVal.Defined := TRUE;	// TODO (?) - copy the actual Defined flags
+		CASE m_sym.DataType OF
+			EDataType.binary:
+				m_len := SIZEOF(raInOut_processState[ui].Value.Binary);
+				m_adr := ADR(raInOut_processState[ui].Value.Binary);
+				m_tmpVal.Value.Binary := raInOut_processState[ui].Value.Binary;
+			EDataType.numeric:
+				m_len := SIZEOF(raInOut_processState[ui].Value.Numeric);
+				m_adr := ADR(raInOut_processState[ui].Value.Numeric);
+				m_tmpVal.Value.Numeric := raInOut_processState[ui].Value.Numeric;
+			EDataType.string_t:
+				m_len := SIZEOF(raInOut_processState[ui].Value.String_t);
+				m_adr := ADR(raInOut_processState[ui].Value.String_t);
+				m_tmpVal.Value.String_t := raInOut_processState[ui].Value.String_t;
+		END_CASE
+		
+		m_stateReaders[ui](READ := FALSE);
+		m_stateReaders[ui](
+			NETID := raIn_stateSyncTargets[ui].NetId,
+			PORT := raIn_stateSyncTargets[ui].Port,
+			IDXGRP := m_sym.IdxGrp,
+			IDXOFFS := m_sym.IdxOffs,
+			LEN := m_len,
+			DESTADDR := m_adr,
+			READ := TRUE);
+			
+		m_completeState.SetValue(ui, m_tmpVal);
+	END_IF
+END_FOR
+
+// RA output
+FOR ui := ResiConst.ARR_MIN TO ResiConst.STATE_ARR_MAX DO
+	m_tmpVal := m_completeState.Retrieve(ui, FALSE);
+	raInOut_processState[ui].DataType := m_tmpVal.DataType;
+	raInOut_processState[ui].Value.Binary := m_tmpVal.Value.Binary;
+	raInOut_processState[ui].Value.Numeric := m_tmpVal.Value.Numeric;
+	raInOut_processState[ui].Value.String_t := m_tmpVal.Value.String_t;
+	raInOut_processState[ui].Defined := m_tmpVal.Defined;
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{234bd8d1-6edf-41a4-a1c2-adfe8fe3a1e1}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)   
+END_VAR
+VAR
+	i: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := ResiConst.ARR_MIN TO ResiConst.DEFAULT_ARR_MAX DO
+	m_productPtrs[i] := ADR(m_productBases[i]);
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetBinary" Id="{8f009ef7-9904-4a12-96b3-47804ca0eddc}">
+      <Declaration><![CDATA[METHOD GetBinary : BOOL
+VAR_INPUT
+	i_processVariableId: UINT;
+END_VAR
+VAR
+	m_value: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_value := m_completeState.Retrieve(i_processVariableId, TRUE);
+GetBinary := m_value.Value.Binary;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetDefined" Id="{c4b393ff-3a92-4468-b0a4-8a3eae948501}">
+      <Declaration><![CDATA[METHOD GetDefined : BOOL
+VAR_INPUT
+	i_processVariableId: UINT;
+END_VAR
+VAR
+	m_value: SValue;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_value := m_completeState.Retrieve(i_processVariableId, FALSE);
+GetDefined := m_value.Defined;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetNumeric" Id="{875ebca6-5e79-47e7-8e8f-ebd875b3eb3a}">
+      <Declaration><![CDATA[METHOD GetNumeric : LREAL
+VAR_INPUT
+	i_processVariableId: UINT;
+END_VAR
+VAR
+	m_value: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_value := m_completeState.Retrieve(i_processVariableId, TRUE);
+GetNumeric := m_value.Value.Numeric;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetString" Id="{4d93083b-2546-4f9b-bdb4-5f36cb11622a}">
+      <Declaration><![CDATA[METHOD GetString : STRING
+VAR_INPUT
+	i_processVariableId: UINT;
+END_VAR
+VAR
+	m_value: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_value := m_completeState.Retrieve(i_processVariableId, TRUE);
+GetString := m_value.Value.String_t;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ProvideServices" Id="{f2d9a730-68d1-4ba0-a751-ef353137d6a2}">
+      <Declaration><![CDATA[METHOD ProvideServices : BOOL
+VAR_INPUT
+	i_ptrProcessManager: POINTER TO ProcessManager;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.m_ptrProcessManager := i_ptrProcessManager;
+m_completeState.ProvideServices(i_ptrProcessManager);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="PtrProcessState" Id="{4ea9ceeb-2f4c-4372-a4ca-23931619ecd8}">
+      <Declaration><![CDATA[PROPERTY PtrProcessState : POINTER TO ProcessState]]></Declaration>
+      <Get Name="Get" Id="{260e2a8d-154a-46b8-be41-a560a8bb08eb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PtrProcessState := ADR(m_completeState);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="RegisterLocalProduct" Id="{f98f611b-bc73-498a-9d97-9d7905884b8c}">
+      <Declaration><![CDATA[METHOD RegisterLocalProduct : BOOL
+VAR_INPUT
+	i_productID: UINT;
+	i_productPtr: POINTER TO ProductBase;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_productPtrs[i_productID] := i_productPtr;
+
+// copy the 
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetConfiguration" Id="{9877a5cf-6726-402a-a4af-6f40883f36ec}">
+      <Declaration><![CDATA[METHOD ResetConfiguration : BOOL
+VAR
+	i: UINT;
+	emptySym: SAdsSymbol;
+	emptyExpr: IExpression;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := ResiConst.ARR_MIN TO ResiConst.STATE_ARR_MAX DO
+	raIn_stateSyncTargets[i] := emptySym;
+END_FOR
+
+FOR i := ResiConst.ARR_MIN TO ResiConst.PRODUCTS_ARR_MAX DO
+	m_productBases[i].ResetConfiguration();
+END_FOR
+
+m_interlockIdx := 0;
+FOR i := ResiConst.ARR_MIN TO ResiConst.COMPENSATIONS_ARR_MAX DO
+	m_interlocks[i] := emptyExpr;
+	m_expectedVals[i] := FALSE;
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinitions" Id="{8c018eb4-3f42-450a-95b7-ca7e52993967}">
+      <Declaration><![CDATA[METHOD ResetDefinitions : BOOL
+VAR_INPUT
+END_VAR
+VAR 
+	i: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := ResiConst.ARR_MIN TO ResiConst.OBSERVERS_ARR_MAX DO
+	IF m_hwObservations[i] <> 0 THEN
+		m_hwObservations[i]^.ResetDefinition();
+	END_IF
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetProcessVariableName" Id="{bcb2b405-ee85-4691-85cc-e234417fd306}">
+      <Declaration><![CDATA[METHOD SetProcessVariableName : BOOL
+VAR_INPUT
+	var_idx: UINT;
+	name: STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[raInOut_processState[var_idx].Name := name;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ShiftProduct" Id="{5cae3fec-6551-4a0a-8bbb-2e03227bb2f1}">
+      <Declaration><![CDATA[METHOD ShiftProduct : BOOL
+VAR_INPUT
+	i_srcID: UINT;
+	i_dstID: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ShiftProduct := FALSE;
+
+IF m_productPtrs[i_dstID]^.Copy(m_productPtrs[i_srcID]) THEN
+	m_productPtrs[i_srcID]^.Reset();
+	ShiftProduct := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="StateTracker">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="StateTracker.AddInterlock">
+      <LineId Id="1" Count="3" />
+    </LineIds>
+    <LineIds Name="StateTracker.AddObservation">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="StateTracker.CyclicUpdateStatus">
+      <LineId Id="1" Count="10" />
+      <LineId Id="252" Count="0" />
+      <LineId Id="251" Count="0" />
+      <LineId Id="253" Count="1" />
+      <LineId Id="246" Count="0" />
+      <LineId Id="245" Count="0" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="249" Count="1" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="12" Count="10" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="36" Count="0" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="216" Count="28" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="69" Count="2" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="120" Count="3" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="32" Count="1" />
+    </LineIds>
+    <LineIds Name="StateTracker.FB_init">
+      <LineId Id="1" Count="3" />
+    </LineIds>
+    <LineIds Name="StateTracker.GetBinary">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="StateTracker.GetDefined">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="StateTracker.GetNumeric">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="StateTracker.GetString">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="StateTracker.ProvideServices">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="StateTracker.PtrProcessState.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="StateTracker.RegisterLocalProduct">
+      <LineId Id="1" Count="4" />
+    </LineIds>
+    <LineIds Name="StateTracker.ResetConfiguration">
+      <LineId Id="1" Count="13" />
+    </LineIds>
+    <LineIds Name="StateTracker.ResetDefinitions">
+      <LineId Id="1" Count="4" />
+    </LineIds>
+    <LineIds Name="StateTracker.SetProcessVariableName">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="StateTracker.ShiftProduct">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

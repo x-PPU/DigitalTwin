@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PropotionalValve" Id="{e3b46589-8ac9-4c63-b0ed-f1d055628d04}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PropotionalValve
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Hardware
+	AO_SetPressure AT %Q* : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Pressure" Id="{95fbf232-5040-4f3b-845c-3fbb4f1a834b}">
+      <Declaration><![CDATA[PROPERTY Pressure : INT]]></Declaration>
+      <Set Name="Set" Id="{0bee4dec-8f9c-4294-a46e-80abd2176343}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AO_SetPressure := Pressure;
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <LineIds Name="PropotionalValve">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PropotionalValve.Pressure.Set">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

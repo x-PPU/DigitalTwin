@@ -1,0 +1,41 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="MonostableCylinder" Id="{a18c699b-bd3d-4aeb-ae53-a8277b332972}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK MonostableCylinder EXTENDS BaseCylinder
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="METH_Extend" Id="{05f5864d-e852-4243-969e-e1503423c54c}">
+      <Declaration><![CDATA[METHOD METH_Extend : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_Extend := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Retract" Id="{2d449a69-bcb5-47d6-8e7e-d955df080b59}">
+      <Declaration><![CDATA[METHOD METH_Retract : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_Extend := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="MonostableCylinder">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="MonostableCylinder.METH_Extend">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="MonostableCylinder.METH_Retract">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

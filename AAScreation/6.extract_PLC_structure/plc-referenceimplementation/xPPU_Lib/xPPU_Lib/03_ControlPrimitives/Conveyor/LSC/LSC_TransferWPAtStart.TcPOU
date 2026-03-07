@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LSC_TransferWPAtStart" Id="{80855d23-ef70-458a-8f46-0096a1b20fcf}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LSC_TransferWPAtStart EXTENDS LSC_MoveWorkpiece_Base
+VAR_INPUT
+	i_ptrLSC : POINTER TO LargeSortingConveyor;
+	i_ptrRFC : POINTER TO RefeedingConveyor;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_precondition: ComparisonExpression(EProcessVariables.LSC_WorkpieceAtEntry, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_timer: TON;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{9fbbb8e4-dfe3-4bc3-9762-3b01a8fd0977}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC^.METH_ConveyorForward();
+
+m_timer(IN := TRUE, PT := T#2000MS);
+IF m_timer.Q THEN
+	m_timer(IN := FALSE);
+	m_ptrLSC^.METH_ConveyorStop();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{c95449e8-f972-4e22-83f4-97a8ad24a243}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{f7dc407f-5486-4f7b-9951-d2c99899bdad}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC := i_ptrLSC;
+i_ptrRFC := i_ptrRFC;
+
+m_id := EPrimitives.LSC_TransferWPAtStart;
+m_timeout := T#20S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+FB_init := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LSC_TransferWPAtStart">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWPAtStart.AtTarget">
+      <LineId Id="24" Count="5" />
+      <LineId Id="23" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWPAtStart.EjectOperation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWPAtStart.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="2" Count="5" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

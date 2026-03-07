@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EProductTypes" Id="{df48ec1b-937a-4320-b603-b4a9227f010a}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+TYPE EProductTypes :
+(
+	none := 0,
+	unknown := 1,
+	white := 2,
+	black := 3,
+	metal := 4
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

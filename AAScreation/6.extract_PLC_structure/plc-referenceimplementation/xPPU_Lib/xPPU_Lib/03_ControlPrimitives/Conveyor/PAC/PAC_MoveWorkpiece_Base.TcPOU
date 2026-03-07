@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PAC_MoveWorkpiece_Base" Id="{26ac13ef-c323-49de-9332-7ca97021488d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT PAC_MoveWorkpiece_Base EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrPAC: POINTER TO PicAlphaConveyor;
+	
+	m_step: INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{119044e8-bfc8-49db-809b-7bce9588f554}">
+      <Declaration><![CDATA[METHOD  Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPAC^.METH_ConveyorStop();
+m_ptrPAC^.METH_Switch_Retract();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AtTarget" Id="{51cff7e1-945b-4234-b8e6-543f3557072a}">
+      <Declaration><![CDATA[METHOD PROTECTED ABSTRACT AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{4ca73423-ac28-4000-b990-00a3ba849f19}">
+      <Declaration><![CDATA[METHOD PROTECTED ABSTRACT EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{a093174c-f67b-4ee2-b121-3e79e8e52532}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+	0: // to target	
+	IF NOT AtTarget() THEN
+		m_ptrPAC^.METH_ConveyorForward();
+		m_step := 1;
+	END_IF
+		
+	1:
+	IF AtTarget() THEN
+		m_ptrPAC^.METH_ConveyorStop();
+		//m_ptrPAC^.METH_Switch_Retract();
+		m_step := 2;
+	END_IF
+	
+	2:
+	IF EjectOperation() THEN
+		m_step := 0;
+		ExecuteInternal := TRUE;
+	END_IF
+		
+END_CASE
+	]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PAC_MoveWorkpiece_Base">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PAC_MoveWorkpiece_Base.Abort">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="PAC_MoveWorkpiece_Base.AtTarget">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PAC_MoveWorkpiece_Base.EjectOperation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PAC_MoveWorkpiece_Base.ExecuteInternal">
+      <LineId Id="1" Count="21" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

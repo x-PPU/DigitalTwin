@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PicAlpha_MoveToPos3" Id="{cd6f37df-d526-4955-9a3d-5066b8ce408e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PicAlpha_MoveToPos3 EXTENDS PicAlpha_MoveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// EProcessVariables.PicAlpha_CylinderRetracted = TRUE
+	m_precondition: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	// (EProcessVariables.PicAlpha_AtPos3 = TRUE) AND (EProcessVariables.PicAlpha_CylinderRetracted = TRUE)
+	m_compExpr171: ComparisonExpression(EProcessVariables.PicAlpha_AtPos3, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr173: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_postcondition: BoolExpression(m_compExpr171, EBoolOperation.and_op, m_compExpr173);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{35690373-c3c9-4b6d-bd00-f8e2e1502e87}">
+      <Declaration><![CDATA[METHOD AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := m_ptrPicAlpha^.PresenceSensorPosition3Value AND NOT (m_ptrPicAlpha^.PresenceSensorPosition1Value OR m_ptrPicAlpha^.PresenceSensorPosition2Value OR m_ptrPicAlpha^.PresenceSensorPosition4Value);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{d48b1550-a014-4f56-8de8-5b70a6adff7c}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPicAlpha : POINTER TO PicAlpha;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha := i_ptrPicAlpha;
+
+m_id := EPrimitives.PicAlpha_MoveToPos3;
+m_timeout := T#20S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+m_initDirection := TRUE;	//TRUE: towards Pos4
+m_targetTimeout := T#10S;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PicAlpha_MoveToPos3">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_MoveToPos3.AtTarget">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_MoveToPos3.FB_init">
+      <LineId Id="1" Count="9" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

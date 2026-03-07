@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SensorConfiguration" Id="{84110889-d2dc-4143-a45b-c9c45971aad3}">
+    <Declaration><![CDATA[TYPE SensorConfiguration EXTENDS BaseConfiguration:
+STRUCT
+	sReturnType : STRING;
+	sType : STRING;
+	sSensPosition : STRING;
+	iSensIndex : DINT;
+END_STRUCT
+END_TYPE]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SStep" Id="{5f298bf0-4a36-4ad1-aeeb-c81fec996e07}">
+    <Declaration><![CDATA[{attribute 'OPC.UA.DA.StructuredType' := '1'}
+TYPE SStep :
+STRUCT
+	// Set by the RA
+	BehaviorType: EBehaviorType;
+	BehaviorId: UINT;
+	Parameters: ParameterSet;
+	
+	// defines ADS connections to step states on partner PLCs
+	ExtSymbols: ARRAY [ResiConst.ARR_MIN..ResiConst.MAX_SYNC_PARTNERS] OF SAdsSymbol;
+	// index of the responsible PLC (-1 is the current PLC is responsible)
+	ExecutorIdx: INT;
+	
+	// Set by the PLC, read-only
+	{attribute 'OPC.UA.DA.Access' := '1'}
+	State: EOperationResult;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

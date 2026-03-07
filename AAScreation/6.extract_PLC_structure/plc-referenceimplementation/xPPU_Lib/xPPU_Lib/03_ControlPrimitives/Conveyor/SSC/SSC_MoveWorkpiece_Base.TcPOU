@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="SSC_MoveWorkpiece_Base" Id="{43873948-1880-4c31-8462-5eebdc71c986}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT SSC_MoveWorkpiece_Base EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrSSC: POINTER TO SmallSortingConveyor;
+	
+	m_step: INT := 0;
+	m_TurnSwitch : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{aa851efd-6cb5-49e3-9c58-8d0fa4675e19}">
+      <Declaration><![CDATA[METHOD  Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrSSC^.METH_ConveyorStop();
+m_ptrSSC^.METH_Switch_Retract();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AtTarget" Id="{5862ac5f-4b75-49cf-a32e-243cff6373d9}">
+      <Declaration><![CDATA[METHOD PROTECTED ABSTRACT AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{20cfc368-1173-4383-90a3-c61996724d2f}">
+      <Declaration><![CDATA[METHOD PROTECTED ABSTRACT EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{f2c98800-0a51-4809-8866-e82fdec71010}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+	0: // to target	
+	IF NOT AtTarget() THEN
+		m_ptrSSC^.METH_ConveyorForward();
+		m_step := 1;
+	END_IF
+	
+	1:
+	IF AtTarget() THEN
+		m_ptrSSC^.METH_ConveyorStop();
+		m_step := 2;
+	END_IF
+	
+	2:
+	IF EjectOperation() THEN
+		m_step := 0;
+		ExecuteInternal := TRUE;
+	END_IF
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="SSC_MoveWorkpiece_Base">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_MoveWorkpiece_Base.Abort">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="SSC_MoveWorkpiece_Base.AtTarget">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_MoveWorkpiece_Base.EjectOperation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_MoveWorkpiece_Base.ExecuteInternal">
+      <LineId Id="1" Count="19" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

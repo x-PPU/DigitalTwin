@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Switch" Id="{fe077be6-7a16-46cf-beb7-1f9c65f24440}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Switch IMPLEMENTS ITF_Cylinder
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Hardware
+	DI_Extended AT %I* : BOOL;
+	DI_Retracted AT %I* : BOOL;
+	DO_Extend AT %Q* : BOOL;
+	//NOT USED BUT USABLE
+	DI_BoundaryPressure AT %I* : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Extended" Id="{9e9a40d4-8f98-4c08-b532-d640e1862db4}">
+      <Declaration><![CDATA[PROPERTY Extended : BOOL]]></Declaration>
+      <Get Name="Get" Id="{a81afca2-02ea-4637-95c5-17f7143d06d5}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Extended := DI_Extended;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="METH_Extend" Id="{421791f7-0fd8-4ba6-addf-20ea1d336999}">
+      <Declaration><![CDATA[METHOD METH_Extend : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_Extend := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Retract" Id="{bcf101fb-98a4-48e4-9d1d-e64a9673239f}">
+      <Declaration><![CDATA[METHOD METH_Retract : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_Extend := FALSE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Retracted" Id="{8c0af0d8-f497-416f-a448-c50b38946adc}">
+      <Declaration><![CDATA[PROPERTY Retracted : BOOL]]></Declaration>
+      <Get Name="Get" Id="{9dba7458-6101-48b3-9624-ab9d8211a910}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Retracted := DI_Retracted;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="Switch">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Switch.Extended.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="Switch.METH_Extend">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="Switch.METH_Retract">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="Switch.Retracted.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

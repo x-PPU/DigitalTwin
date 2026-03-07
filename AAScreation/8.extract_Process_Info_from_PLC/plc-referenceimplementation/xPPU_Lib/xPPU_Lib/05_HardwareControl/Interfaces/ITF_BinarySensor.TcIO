@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <Itf Name="ITF_BinarySensor" Id="{d7a604c8-0935-47a1-a540-ddbb35a9cad5}">
+    <Declaration><![CDATA[INTERFACE ITF_BinarySensor
+]]></Declaration>
+    <Property Name="Value" Id="{7f0ee423-7db7-467d-a10f-d968b6ef79b6}">
+      <Declaration><![CDATA[PROPERTY Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2172bd5f-5f30-4d38-b0ea-71b1681b96c4}">
+        <Declaration><![CDATA[]]></Declaration>
+      </Get>
+    </Property>
+  </Itf>
+</TcPlcObject>

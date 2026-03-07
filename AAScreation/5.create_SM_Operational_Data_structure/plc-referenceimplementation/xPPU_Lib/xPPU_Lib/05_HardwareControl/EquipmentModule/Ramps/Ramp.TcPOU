@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Ramp" Id="{21bef6a5-6483-4a1b-8c60-9287ddbeb696}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Ramp
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	m_presenceSensorRampFull : PresenceSensor;
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="Ramp">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

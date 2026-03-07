@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Stamp" Id="{1f493665-2321-4012-b50d-e272b9c0b026}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Stamp EXTENDS BaseComponent
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_stampingCylinder: MonostableCylinder;
+	m_slidingCylinder: BistableCylinder;
+	m_pressureValve: PropotionalValve;
+	
+	m_presenceSensor: PresenceSensor;
+	m_pressureSensor: PressureSensor;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="StampPressure" Id="{9b39b37f-8ddd-4fa6-9a41-5d43fec26aa9}">
+      <Declaration><![CDATA[PROPERTY StampPressure : INT]]></Declaration>
+      <Get Name="Get" Id="{aad7feae-229d-433d-8039-98c7ef4b7198}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[StampPressure:=m_pressureSensor.Value;]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{32608fd9-633f-4f17-922d-d80f1d26becf}">
+        <Declaration><![CDATA[
+VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[m_pressureValve.Pressure := StampPressure;]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="WPAtStart" Id="{af469093-14af-413b-8ce5-d86c657b748f}">
+      <Declaration><![CDATA[PROPERTY WPAtStart : BOOL]]></Declaration>
+      <Get Name="Get" Id="{7599df50-edc3-483d-980c-ec41d4dc7332}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[WPAtStart := m_presenceSensor.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="Stamp">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stamp.StampPressure.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stamp.StampPressure.Set">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stamp.WPAtStart.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

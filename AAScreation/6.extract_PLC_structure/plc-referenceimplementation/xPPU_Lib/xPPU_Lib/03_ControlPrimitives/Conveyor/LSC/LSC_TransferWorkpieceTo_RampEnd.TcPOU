@@ -1,0 +1,72 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LSC_TransferWorkpieceTo_RampEnd" Id="{4f4e844c-47c8-4dd6-a0f9-1c4943d1b00a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LSC_TransferWorkpieceTo_RampEnd EXTENDS LSC_MoveWorkpiece_Base
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// EProcessVariables.LSC_WPAtRampEnd = FALSE
+	m_precondition: ComparisonExpression(EProcessVariables.LSC_WPAtRampEnd, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	
+	// TRUE
+	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{ebb205da-be0d-4dc6-8ee3-8c277a159f1c}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := m_ptrLSC^.WPAtRampEnd;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{36e534b6-8772-4759-a646-d0e332427c82}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{71ac4b24-f5c2-4866-9076-53e092b729ea}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC := i_ptrLSC;
+
+m_id := EPrimitives.LSC_TransferWorkpieceTo_RampEnd;
+m_timeout := T#200S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampEnd">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampEnd.AtTarget">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampEnd.EjectOperation">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampEnd.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

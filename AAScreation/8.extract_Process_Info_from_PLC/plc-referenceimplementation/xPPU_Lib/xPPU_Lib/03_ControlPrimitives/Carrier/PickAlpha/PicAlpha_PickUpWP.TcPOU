@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PicAlpha_PickUpWP" Id="{9d814ef4-d77d-479a-bbfe-c53283d28b11}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PicAlpha_PickUpWP EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrPicAlpha: POINTER TO PicAlpha;
+	
+	m_step: INT := 0;
+	m_timer: TON;
+	
+	// (EProcessVariables.PicAlpha_CylinderRetracted = TRUE) AND (EProcessVariables.PicAlpha_HoldingWorkpiece = FALSE)
+	m_compExpr189: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr191: ComparisonExpression(EProcessVariables.PicAlpha_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_precondition: BoolExpression(m_compExpr189, EBoolOperation.and_op, m_compExpr191);
+	
+	// (EProcessVariables.PicAlpha_CylinderRetracted = TRUE) AND (EProcessVariables.PicAlpha_HoldingWorkpiece = TRUE)
+	m_compExpr194: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr196: ComparisonExpression(EProcessVariables.PicAlpha_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_postcondition: BoolExpression(m_compExpr194, EBoolOperation.and_op, m_compExpr196);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{2b7e45ff-41d5-401a-9040-521a57dd2d6f}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+IF m_ptrPicAlpha^.o_VacuumGripper.WPTaken THEN
+	m_ptrPicAlpha^.o_VacuumGripper.METH_Intake();
+ELSE
+	m_ptrPicAlpha^.o_VacuumGripper.METH_Release();
+END_IF
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{8b35ac03-4bf4-460a-9aae-e04d2f71537b}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED  ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+
+	0:	// extend
+		m_ptrPicAlpha^.o_MonostableCylinder.METH_Extend();
+		IF m_ptrPicAlpha^.o_MonostableCylinder.Extended THEN
+			m_step := 1;
+		END_IF
+	
+	1:	// grip
+		m_ptrPicAlpha^.o_VacuumGripper.METH_Intake();
+		m_timer(IN := TRUE, PT := T#200MS);
+		IF m_timer.Q THEN
+			m_timer(IN := FALSE);
+			m_step := 2;
+		END_IF
+	
+	2:	// retract
+		m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+		IF m_ptrPicAlpha^.o_MonostableCylinder.Retracted THEN
+			m_step := 0;
+			ExecuteInternal := TRUE;
+		END_IF	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{1bf22a93-179d-472a-b261-c584a9660f30}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPicAlpha : POINTER TO PicAlpha;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha := i_ptrPicAlpha;
+
+m_id := EPrimitives.PicAlpha_PickUpWp;
+m_timeout := T#20S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PicAlpha_PickUpWP">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_PickUpWP.Abort">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="PicAlpha_PickUpWP.ExecuteInternal">
+      <LineId Id="1" Count="22" />
+    </LineIds>
+    <LineIds Name="PicAlpha_PickUpWP.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,40 @@
+The following motor-related state variables were not read by the code.
+
+Motor_Stopped
+Motor_TurningClockwise
+Motor_TurningCounterclockwise
+
+They need to be added manually.
+
+Motor.Stopped(由于无法读取所以不插入)
+Motor.TurningClockwise
+Motor.TurningCounterclockwise
+
+
+full name
+Crane:
+MAIN.m_container.m_crane.Motor.TurningClockwise
+MAIN.m_container.m_crane.Motor.TurningCounterclockwise
+
+LSC:
+MAIN.m_container.m_LSC.Motor.TurningClockwise
+MAIN.m_container.m_LSC.Motor.TurningCounterclockwise
+
+
+PAC:
+MAIN.m_container.m_PAC.Motor.TurningClockwise
+MAIN.m_container.m_PAC.Motor.TurningCounterclockwise
+
+PicAlpha:
+MAIN.m_container.m_PicAlpha.Motor.TurningClockwise
+MAIN.m_container.m_PicAlpha.Motor.TurningCounterclockwise
+
+RFC:
+MAIN.m_container.m_RFC.Motor.TurningClockwise
+MAIN.m_container.m_RFC.Motor.TurningCounterclockwise
+
+SSC:
+MAIN.m_container.m_SSC.Motor.TurningClockwise
+MAIN.m_container.m_SSC.Motor.TurningCounterclockwise
+
+

@@ -1,0 +1,236 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ProductBase" Id="{0215d773-ad29-488c-b3e2-f619c5307d05}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ProductBase EXTENDS HardwareObservationBase
+VAR CONSTANT
+	RES_IDX: UINT := 0;
+END_VAR
+VAR
+	// ***** MODIFIED BY RA *****
+	raIn_isRemote: BOOL;
+	raIn_prodTypeAdr: SAdsSymbol;	// points to the remote's product type (at m_vals[RES_IDX].Values.Numeric)
+	raIn_copiedTypeAdr: SAdsSymbol;	// points to the remote's m_copiedProdType
+	raIn_resetAdr: SAdsSymbol;		// points to the remote's reset flag
+	// **************************
+	
+	// ***** INIT BY RA OR SUBCLASS *****
+	raIn_processStateIdx: UINT;
+	// **********************************
+
+	// an array of values characterizing the product. At RES_IDX=0, there is an aggregated "product type"
+	m_vals: ARRAY [ResiConst.ARR_MIN..ResiConst.DEFAULT_ARR_MAX] OF SValue;
+	// a number (may be an ENUM) defining the type of product. NOTE: 0 means null/nil/None.
+	m_copiedProdType: LREAL;
+	
+	m_valReader: ADSREAD;
+	m_copyTrigWriter: ADSWRITE;
+	m_resetWriter: ADSWRITE;
+	
+	// flags
+	m_resetPending: BOOL;
+	m_defResetPending: BOOL;
+	m_trueVal: BOOL := TRUE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="Copy" Id="{f6d699f0-d197-47e5-8b2c-dc7ccca00b23}">
+      <Declaration><![CDATA[METHOD Copy : BOOL
+VAR_INPUT
+	i_ptrOther: POINTER TO ProductBase;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Copy := FALSE;
+
+IF NOT raIn_isRemote THEN
+	m_copiedProdType := i_ptrOther^.m_vals[RES_IDX].Value.Numeric;
+ELSE
+	// trigger the remote to do a copy operation
+	m_copyTrigWriter(
+		NETID := raIn_copiedTypeAdr.NetId,
+		PORT := raIn_copiedTypeAdr.Port,
+		IDXGRP := raIn_copiedTypeAdr.IdxGrp,
+		IDXOFFS := raIn_copiedTypeAdr.IdxOffs,
+		LEN := SIZEOF(i_ptrOther^.m_vals[RES_IDX].Value.Numeric),
+		SRCADDR := ADR(i_ptrOther^.m_vals[RES_IDX].Value.Numeric),
+		WRITE := TRUE);
+END_IF
+
+IF NOT m_copyTrigWriter.BUSY THEN
+	m_copyTrigWriter(WRITE := FALSE);
+	Copy := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Reset" Id="{8e74e174-b0a7-4f71-8dbb-0aae7e39d580}">
+      <Declaration><![CDATA[METHOD Reset : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_resetPending := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetConfiguration" Id="{94f2bc4d-8302-4541-ad8c-fc961d758187}">
+      <Declaration><![CDATA[METHOD ResetConfiguration : BOOL
+VAR
+	emptySym: SAdsSymbol;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[raIn_processStateIdx := 0;
+
+raIn_copiedTypeAdr := emptySym;
+raIn_prodTypeAdr := emptySym;
+raIn_resetAdr := emptySym;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{71a74ce8-9db8-447e-9533-403e2cbc5224}">
+      <Declaration><![CDATA[METHOD ResetDefinition : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_defResetPending := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ReverseSetInputs" Id="{1b852751-0370-4a10-b861-bfbff8021f35}">
+      <Declaration><![CDATA[(* Based on the aggregated product type value, set the separete input values for a consistent shift register. *)
+METHOD ReverseSetInputs : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// not required for the ProductBase]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{39e5fe45-bc3d-41f1-a7c7-9f9faad16085}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+VAR
+	emptyVals: ARRAY [ResiConst.ARR_MIN..ResiConst.DEFAULT_ARR_MAX] OF SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF raIn_processStateIdx = 0 OR m_copyTrigWriter.BUSY THEN
+	RETURN;
+END_IF
+
+IF m_copiedProdType <> 0 THEN
+	m_vals[RES_IDX].Defined := TRUE;
+	m_vals[RES_IDX].DataType := EDataType.numeric;
+	m_vals[RES_IDX].Value.Numeric := m_copiedProdType;
+	
+	ReverseSetInputs();
+	m_copiedProdType := 0;
+END_IF
+
+// only the aggregated product type (if defined) is copied to the process state, not individual input values
+io_processState.SetValue(raIn_processStateIdx, m_vals[RES_IDX]);
+
+// deal with reset requests
+m_resetWriter();	// read takes multiple cycles
+IF m_resetPending THEN
+	IF raIn_isRemote THEN
+		// set the remote's reset flag (the local instance will be synced below)
+		m_resetWriter(WRITE := FALSE);
+		m_resetWriter(
+			NETID := raIn_resetAdr.NetId,
+			PORT := raIn_resetAdr.Port,
+			IDXGRP := raIn_resetAdr.IdxGrp,
+			IDXOFFS := raIn_resetAdr.IdxOffs,
+			LEN := SIZEOF(m_trueVal),
+			SRCADDR := ADR(m_trueVal),
+			WRITE := TRUE);
+	ELSE
+		m_vals[RES_IDX].Value.Numeric := 0;
+	END_IF
+	
+	m_resetPending := FALSE;
+	RETURN;
+END_IF
+
+// update this product base with the remote's value
+IF raIn_isRemote THEN
+	// TODO - other data types and potentially multiple result values
+	m_vals[RES_IDX].Defined := TRUE;
+	m_vals[RES_IDX].DataType := EDataType.numeric;
+
+	m_valReader(READ := FALSE);
+	m_valReader(
+		NETID := raIn_prodTypeAdr.NetId,
+		PORT := raIn_prodTypeAdr.Port,
+		IDXGRP := raIn_prodTypeAdr.IdxGrp,
+		IDXOFFS := raIn_prodTypeAdr.IdxOffs,
+		LEN := SIZEOF(m_vals[RES_IDX].Value.Numeric),
+		DESTADDR := ADR(m_vals[RES_IDX].Value.Numeric),
+		READ := TRUE);
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ProductBase">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProductBase.Copy">
+      <LineId Id="68" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="42" Count="1" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="48" Count="7" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="62" Count="1" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="69" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProductBase.Reset">
+      <LineId Id="2" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProductBase.ResetConfiguration">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+    <LineIds Name="ProductBase.ResetDefinition">
+      <LineId Id="2" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProductBase.ReverseSetInputs">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProductBase.UpdateProcessObservation">
+      <LineId Id="144" Count="1" />
+      <LineId Id="142" Count="1" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="146" Count="1" />
+      <LineId Id="139" Count="0" />
+      <LineId Id="141" Count="0" />
+      <LineId Id="150" Count="0" />
+      <LineId Id="152" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="117" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="83" Count="1" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="85" Count="9" />
+      <LineId Id="96" Count="2" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="99" Count="1" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="101" Count="1" />
+      <LineId Id="124" Count="0" />
+      <LineId Id="126" Count="1" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="103" Count="9" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

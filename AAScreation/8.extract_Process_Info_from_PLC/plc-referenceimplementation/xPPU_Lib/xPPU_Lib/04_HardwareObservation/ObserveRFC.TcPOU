@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ObserveRFC" Id="{b84e58ee-1595-4bde-8682-8f02de2955d1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ObserveRFC
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrRFC: POINTER TO RefeedingConveyor;
+	m_ptrRFCWP1: POINTER TO xPPUProduct;
+	m_ptrRFCWP2: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{bcc9372f-b1e5-4ed6-b565-314ff2f50d97}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrRFC: POINTER TO RefeedingConveyor;
+	i_ptrWP1: POINTER TO xPPUProduct;
+	i_ptrWP2: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrRFC := i_ptrRFC;
+m_ptrRFCWP1 := i_ptrWP1;
+m_ptrRFCWP2 := i_ptrWP2;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{1dea0e9f-7a7d-4c52-8f14-236af4a15989}">
+      <Declaration><![CDATA[METHOD ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{93a85d47-e85b-45e4-893e-d6aa395d9f87}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[io_processState.UpdateState_Binary(EProcessVariables.RFC_WPAtStart, m_ptrRFC^.WPAtStart, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.RFC_WPAtEnd, m_ptrRFC^.WPAtEnd, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.RFC_SwitchExtended, m_ptrRFC^.m_Switch.Extended, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.RFC_SwitchRetracted, m_ptrRFC^.m_Switch.Retracted, TRUE);
+
+io_processState.UpdateState_Defined(EProcessVariables.RFC_WPAtStart, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.RFC_WPAtEnd, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.RFC_SwitchExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.RFC_SwitchRetracted, TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ObserveRFC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveRFC.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="7" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveRFC.ResetDefinition">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveRFC.UpdateProcessObservation">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

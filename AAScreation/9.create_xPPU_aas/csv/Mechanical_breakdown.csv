@@ -1,0 +1,184 @@
+typeName,idShort,value,valueType,category,descriptionEN,descriptionDE,semanticId
+SubmodelElementCollection,Stack,,,,,,
+Entity,Festo DSNU-20-100-PPV-A Cylinder Number 1,,,,,,0173-1#01-BAA856#006
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/19239,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SDAT-MHS-M125-1L-SA-E-0.3-M8 Inductive Position Transmitter Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1531268,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SMEO-4U-K-LED-230 Inductive Position Transmitter Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/150011,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Balluff BOS-18M-PS-1PD-E4-C-03 Optical Sensor Number 1,,,,,,0173-1#01-AFR399#003
+ReferenceElement,Reference,https://balluff.com/ids/aas/BOS0020,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,HBM PW6DC3MR 3Kg Weight Sensor Number 1,,,,,,0173-1#01-AJZ033#018
+ReferenceElement,Reference,https://hbm.com/ids/aas/PW6DC3MR,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Balluff BCS R08RR01-PSM80C-EP02 Capacitive Sensor Number 1,,,,,,0173-1#01-AGZ377#017
+ReferenceElement,Reference,https://balluff.com/ids/aas/BCS0055,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Balluff BES M12MI-PSC40B-BV03 Inductive Sensor Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://balluff.com/ids/aas/BES0001,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SDE1-D10-G2-H18-C-PU-M8 Pressure Sensor Number 1,,,,,,0173-1#01-AKE511#010
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/529955,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SFAB-200U 563795 Flow Sensor Number 1,,,,,,0173-1#01-AGU986#001
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/563795,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo OVEM-05-H-B-QO-CE-N-P1 Vacuum Generator Number 1,,,,,,0173-1#01-AGV426#001
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/539074,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-Vi Valve Terminal Number 1,,,,,,0173-1#01-AAT325#015
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/18200,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-M1H-5LS-M7 Solenoid Valve Number 1,,,,,,0173-1#01-AGZ132#018
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161414,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-M1H-5LS-M7 Solenoid Valve Number 2,,,,,,0173-1#01-AGZ132#018
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161414,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-M1H-5JS-M7 Solenoid Valve Number 1,,,,,,0173-1#01-AGZ132#018
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161415,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-Vi Valve Terminal Number 2,,,,,,0173-1#01-AAT325#015
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/18200,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-Rzp Blanking Plate Number 1,,,,,,0173-1#01-ACO609#013
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161368,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-M1H-2OLS-2GLS-M7 Solenoid Valve Number 1,,,,,,0173-1#01-AGZ132#018
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/187843,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo MA-40-16-1_8 Pressure Gauge Number 1,,,,,,0173-1#01-AAC032#017
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/345395,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo D:S-PVW-Lfr Mini Filter Regulator Number 1,,,,,,
+End-Entity,,,,,,,
+Entity,HBM RM4220 Measuring Amplifier Number 1,,,,,,0173-1#01-AKH676#015
+ReferenceElement,Reference,https://hbm.com/ids/aas/RM4220,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Phonix Contact DIKD 1.5 Terminal block & Load Cell Connection Number 1,,,,,,0173-1#01-AAR770#015
+ReferenceElement,Reference,https://Phonix_Contact_DIKD_1.com/ids/aas/DIKD1.5,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Crane,,,,,,
+Entity,Festo DZF-25-50-A-P-A Flat Cylinder Number 1,,,,,,0173-1#01-AGU428#001
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161253,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo S-3-BE-Sw Micro Switch Number 1,,,,,,0173-1#01-AGK360#001
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/30649,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Bernstein D-32457 Inductive Sensor Number 1,,,,,,
+ReferenceElement,Reference,,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Contelec GL60 Angel Sensor Number 1,,,,,,0173-1#01-AFV538#003
+ReferenceElement,Reference,https://contelec.com/ids/aas/GL60,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SDAT-MHS-M80-1L-SA-E-0.3-M8 Inductive Position Transmitter Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1531266,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SME-8-K-LED-24 Proximity Sensor Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/150855,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Ott XDS 035 005-03 Motor Number 1,,,,,,0173-1#01-AGE052#003
+ReferenceElement,Reference,https://smart.ott.com/ids/aas/00503-03,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo EGC-50- -TB-Kf Toothed Belt Axis Number 1,,,,,,0173-1#01-AKH707#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/556812,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo VAS-30-1_8-PUR-B Vacuum Cup Number 1,,,,,,0173-1#01-AGV426#001
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1396090,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Siemens 6GT2821-2AC32 Rfid Read And Write Head Number 1,,,,,,0173-1#01-AGZ438#014
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/6GT2821-2AC32,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Stamp,,,,,,
+Entity,Festo DSNU-20-100-PPV-A Cylinder Number 2,,,,,,0173-1#01-BAA856#006
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/19239,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SDAT-MHS-M160-1L-SA-E-0.3-M8 Inductive Position Transmitter Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1531269,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SMEO-4U-K-LED-230 Inductive Position Transmitter Number 2,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/150011,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo MA-40-10-1_8-En Pressure Gauge Number 1,,,,,,0173-1#01-AAC032#017
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/162835,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SDE1-D10-G2-H18-C-PU-M8 Pressure Sensor Number 2,,,,,,0173-1#01-AKE511#010
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/529955,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo DSNU-16-60-P-A Cylinder Number 1,,,,,,0173-1#01-BAA856#006
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1908263,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SDAT-MHS-M80-1L-SA-E-0.3-M8 Inductive Position Transmitter Number 2,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1531266,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SMEO-4U-K-LED-230 Inductive Position Transmitter Number 3,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/150011,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-M1H-5JS-M7 Solenoid Valve Number 2,,,,,,0173-1#01-AGZ132#018
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161415,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection, Large Sorting Conveyor,,,,,,
+Entity,Balluff BOS-18M-PS-1PD-E4-C-03 Optical Sensor Number 2,,,,,,0173-1#01-AFR399#003
+ReferenceElement,Reference,https://balluff.com/ids/aas/BOS0020,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SDAT-MHS-M80-1L-SA-E-0.3-M8 Inductive Position Transmitter Number 3,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1531266,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SMEO-4U-K-LED-230 Inductive Position Transmitter Number 4,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/150011,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Balluff BUS M18K0-XAER-040-S92K Ultrasonic Sensor Number 1,,,,,,0173-1#01-AKE654#008
+ReferenceElement,Reference,https://balluff.com/ids/aas/BUS0003,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo DSNU-16-60-PPV-A Cylinder Number 1,,,,,,0173-1#01-BAA856#006
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/1908271,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Bernstein OT18RT-DPTP-0100-Cl Diffuse Reflection Sensor Number 1,,,,,,0173-1#01-AGZ394#017
+ReferenceElement,Reference,https://bernstein.com/ids/aas/OT18RT-DPTP-0100-CL,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-Vi Valve Terminal Number 3,,,,,,0173-1#01-AAT325#015
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/18200,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo ADVU-16-10-P-A Compact Cylinder Number 1,,,,,,0173-1#01-AKE702#013
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/156508,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Bernstein 010-KLPS8V Inductive Proximity Switch Number 1,,,,,,0173-1#01-AGZ376#017
+ReferenceElement,Reference,https://bernstein.com/ids/aas/6602905662,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Balluff BES 516-360-BO-C-03 Inductive Sensor Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://balluff.com/ids/aas/BES01HN,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Bernstein OT18RT-DPTP-0100-Cl Diffuse Reflection Sensor Number 2,,,,,,0173-1#01-AGZ394#017
+ReferenceElement,Reference,https://bernstein.com/ids/aas/OT18RT-DPTP-0100-CL,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-M1H-5JS-M7  Solenoid Valve Number 1,,,,,,0173-1#01-AGZ132#018
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161415,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo CPV10-M1H-5LS-M7 Solenoid Valve Number 3,,,,,,0173-1#01-AGZ132#018
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/161414,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Siemens 6GT2821-2AC32 Rfid Read And Write Head Number 2,,,,,,0173-1#01-AGZ438#014
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/6GT2821-2AC32,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Festo SME-8-S-LED-24 Proximity Sensor Number 1,,,,,,0173-1#01-AKH677#016
+ReferenceElement,Reference,https://smart.festo.com/ids/aas/150857,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+Entity,Ott XDS 035 005-03 Motor Number 2,,,,,,0173-1#01-AGE052#003
+ReferenceElement,Reference,https://smart.ott.com/ids/aas/00503-03,,,,,0173-1#01-AGW586#001
+End-Entity,,,,,,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,PicAlpha Conveyor,,,,,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Small Sorting Conveyor,,,,,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Refill Conveyor ,,,,,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,PicAlpha,,,,,,
+End-SubmodelElementCollection,,,,,,,

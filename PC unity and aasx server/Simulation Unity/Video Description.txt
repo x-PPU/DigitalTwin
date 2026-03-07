@@ -1,0 +1,5 @@
+In the video, both workpieces in the Unity scene are white for ease of testing.
+
+In reality, in video test1, the first workpiece is white, and the second workpiece is black.
+
+In reality, in video test2, the first workpiece is silver, and the second workpiece is white.

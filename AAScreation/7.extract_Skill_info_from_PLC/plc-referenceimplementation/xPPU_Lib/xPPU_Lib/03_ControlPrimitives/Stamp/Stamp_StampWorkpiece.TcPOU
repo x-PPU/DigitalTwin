@@ -1,0 +1,158 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Stamp_StampWorkpiece" Id="{fb8c651e-daf5-4e29-8857-d85682c9fd7d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Stamp_StampWorkpiece EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// (EProcessVariables.Stamp_WorkpieceState = 1) AND (EProcessVariables.Stamp_WPAtStamp = TRUE)
+// 	m_compExpr273: ComparisonExpression(EProcessVariables.Stamp_WorkpieceState, EComparisonType.equals, EDataType.numeric, FALSE, 1, '', TRUE);
+	m_precondition: ComparisonExpression(EProcessVariables.Stamp_WPAtStamp, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+// 	m_precondition: BoolExpression(m_compExpr273, EBoolOperation.and_op, m_compExpr275);
+	
+	// EProcessVariables.Stamp_WorkpieceState = 2
+	m_postcondition: ComparisonExpression(EProcessVariables.Stamp_WorkpieceState, EComparisonType.equals, EDataType.numeric, FALSE, 2, '', TRUE);
+
+	m_ptrStamp: POINTER TO Stamp;
+	
+	m_step: INT := 0;
+	t_Stamp : TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{74367535-70e8-4f0f-afd3-4820630215c1}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrStamp^.m_stampingCylinder.METH_Retract();
+m_ptrStamp^.m_slidingCylinder.METH_Extend();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{e7bde9bf-7206-46ce-b4ed-c55ecef99f75}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	(*
+	 * pressure_white: INT
+	 * pressure_black: INT
+	 * pressure_metal: INT
+	 *)
+	i_params: ParameterSet;
+END_VAR
+VAR
+	m_pressureVal: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[ExecuteInternal := FALSE;
+
+CASE m_step OF
+	0: // take in wp
+	m_ptrStamp^.m_slidingCylinder.METH_Retract();
+	IF m_ptrStamp^.m_slidingCylinder.Retracted THEN
+		m_step := 1;
+	END_IF
+	
+	1: // stamp wp
+	m_ptrStamp^.StampPressure := GetPressure(i_params);
+	m_ptrStamp^.m_stampingCylinder.METH_Extend();
+	t_Stamp(IN:=TRUE, PT:=T#1500MS);
+	IF t_Stamp.Q THEN
+		IF m_ptrStamp^.StampPressure >= m_pressureVal.Value.Numeric THEN
+			m_step := 2;
+			t_Stamp(IN:=FALSE);
+		END_IF
+	END_IF
+	
+	2: // retract stamp
+	m_ptrStamp^.m_stampingCylinder.METH_Retract();
+	IF m_ptrStamp^.m_stampingCylinder.Retracted THEN
+		m_step := 3;
+	END_IF
+	
+	3: // provide wp
+	m_ptrStamp^.m_slidingCylinder.METH_Extend();
+	IF m_ptrStamp^.m_slidingCylinder.Extended THEN
+		m_step := 0;
+		ExecuteInternal := TRUE;
+	END_IF
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{44a6ab3a-cf70-4c53-a727-a9da7cf7bbb4}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrStamp: POINTER TO Stamp;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrStamp := i_ptrStamp;
+
+m_id := EPrimitives.Stamp_StampWorkpiece;
+m_timeout := T#200S;
+m_paramDefinition := 'pressure_white:INT;pressure_black:INT;pressure_metal:INT;';
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetPressure" Id="{ae6d4c7b-aa6a-45cd-87a9-fdb63b78889c}">
+      <Declaration><![CDATA[METHOD PRIVATE GetPressure : INT
+VAR_INPUT
+	(*
+	 * pressure_white: INT
+	 * pressure_black: INT
+	 * pressure_metal: INT
+	 *)
+	i_params: ParameterSet;
+END_VAR
+VAR
+	m_pressureVal: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE LREAL_TO_UINT(m_st^.GetNumeric(EProcessVariables.Stamp_ProductType)) OF
+	EProductTypes.white:
+		m_pressureVal := i_params.Retrieve('pressure_white');
+		GetPressure := LREAL_TO_INT(m_pressureVal.Value.Numeric);
+	EProductTypes.black:
+		m_pressureVal := i_params.Retrieve('pressure_black');
+		GetPressure := LREAL_TO_INT(m_pressureVal.Value.Numeric);
+	EProductTypes.metal:
+		m_pressureVal := i_params.Retrieve('pressure_metal');
+		GetPressure := LREAL_TO_INT(m_pressureVal.Value.Numeric);
+	ELSE
+		GetPressure := 0;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Stamp_StampWorkpiece">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stamp_StampWorkpiece.Abort">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="Stamp_StampWorkpiece.ExecuteInternal">
+      <LineId Id="1" Count="33" />
+    </LineIds>
+    <LineIds Name="Stamp_StampWorkpiece.FB_init">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+    <LineIds Name="Stamp_StampWorkpiece.GetPressure">
+      <LineId Id="1" Count="13" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

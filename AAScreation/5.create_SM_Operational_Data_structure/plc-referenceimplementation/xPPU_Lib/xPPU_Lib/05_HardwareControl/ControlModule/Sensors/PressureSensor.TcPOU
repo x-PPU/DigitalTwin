@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PressureSensor" Id="{59f41b0c-fe3f-4a18-8102-d8a9230f1f3e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PressureSensor IMPLEMENTS ITF_AnalogSensor
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Hardware
+	AI_CurrentPressure AT %I* : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Value" Id="{76923876-d0ff-433e-ba41-3b8128a5ff54}">
+      <Declaration><![CDATA[PROPERTY Value : INT]]></Declaration>
+      <Get Name="Get" Id="{7bd872fc-f399-4e8d-a6dd-2286fcc33c96}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Value := AI_CurrentPressure;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="PressureSensor">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PressureSensor.Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

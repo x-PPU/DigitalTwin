@@ -1,0 +1,95 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ServiceContainer" Id="{d47a98b4-53a9-4c2d-91de-97e499d45816}" SpecialFunc="None">
+    <Declaration><![CDATA[(*
+ * Contains every service relevant to Resi4MPM control.
+ * Used so that the services can use each other (similar to dependency injection).
+ *)
+FUNCTION_BLOCK ServiceContainer
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrErrorMgr: POINTER TO ErrorManagerBase;
+	
+	m_pm: ProcessManager;
+	m_ptrProcessManager: POINTER TO ProcessManager := ADR(m_pm);
+ 
+	m_st: StateTracker;
+	m_ptrStateTracker: POINTER TO StateTracker := ADR(m_st);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{76b2eb79-139b-460f-9d2b-c3c8fec35c9a}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrErrorMgr: POINTER TO ErrorManagerBase;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// get the APPLICATION-SPECIFIC services
+THIS^.m_ptrErrorMgr := i_ptrErrorMgr;
+
+// initialize all services
+THIS^.m_ptrProcessManager^.ProvideServices(THIS^.m_ptrStateTracker, i_ptrErrorMgr);
+THIS^.m_ptrStateTracker^.ProvideServices(THIS^.m_ptrProcessManager);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="PtrErrorManager" Id="{bcbb9720-c928-4528-b39f-6343631f28e9}">
+      <Declaration><![CDATA[PROPERTY PtrErrorManager : POINTER TO ErrorManagerBase]]></Declaration>
+      <Get Name="Get" Id="{5d953ccd-6d3e-447f-8101-0260ac0bc9f0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PtrErrorManager := this^.m_ptrErrorMgr;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PtrProcessManager" Id="{abf72391-ab31-45bb-8183-a763441ec63a}">
+      <Declaration><![CDATA[PROPERTY PtrProcessManager : POINTER TO ProcessManager]]></Declaration>
+      <Get Name="Get" Id="{0cc721ff-faa8-4a61-9b3e-b94adb1dcc72}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PtrProcessManager := THIS^.m_ptrProcessManager;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PtrStateTracker" Id="{d493ebf2-eab6-4511-b2e2-e5ddce193eb4}">
+      <Declaration><![CDATA[PROPERTY PtrStateTracker : POINTER TO StateTracker]]></Declaration>
+      <Get Name="Get" Id="{e380312d-47f7-457c-abb6-e2a1bbfd4fac}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PtrStateTracker := THIS^.m_ptrStateTracker;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="ServiceContainer">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ServiceContainer.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="ServiceContainer.PtrErrorManager.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ServiceContainer.PtrProcessManager.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="ServiceContainer.PtrStateTracker.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

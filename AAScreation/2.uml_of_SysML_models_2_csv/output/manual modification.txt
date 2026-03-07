@@ -1,0 +1,12 @@
+
+Error processing CSV 'd:\Github repositories\AAScreation\xPPU_DT\AAScreation\2.uml_of_SysML_models_2_csv\output\Behavior1_Sc15.csv', line 121, idShort='craneACT_AutomaticExecuteANDlargeSortingConveyorACT_AutomaticExecuteANDstackACT_AutomaticExecuteANDstampACT_AutomaticExecuteANDpicAlphaConveyorACT_AutomaticExecuteANDsmallSortingConveyorACT_AutomaticExecuteANDrefillConveyorACT_AutomaticExecute': NameType has a maximum length of 128! (length: 243)
+
+put:
+
+craneACT_AutomaticExecuteANDlargeSortingConveyorACT_AutomaticExecuteANDstackACT_AutomaticExecuteANDstampACT_AutomaticExecuteANDpicAlphaConveyorACT_AutomaticExecuteANDsmallSortingConveyorACT_AutomaticExecuteANDrefillConveyorACT_AutomaticExecute
+
+to descriptionEN, see Fig
+
+
+arning: ConceptDescription_Sc15 missing 'name' at line 655
+add idShort 

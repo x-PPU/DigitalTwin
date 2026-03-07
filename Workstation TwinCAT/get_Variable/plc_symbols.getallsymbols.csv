@@ -1,0 +1,187 @@
+Name,Type,Index Group,Index Offset,Comment
+MAIN.i,UINT,16448,1584926,other
+MAIN.IGNORE_DEFINITION,BOOL,16448,467694,
+MAIN.IGNORE_STOP,BOOL,16448,467695,
+MAIN.INSTANCE_NAME,STRING(80),16448,474308,
+MAIN.m_allRampsFull,Resi4MPM.BoolExpression,16448,1584904,
+MAIN.m_appInitialized,BOOL,16448,1584931,
+MAIN.m_appObservation,ARRAY [1..1] OF Resi4MPM.SValue,16448,1606328,
+MAIN.m_boolExpr8,Resi4MPM.BoolExpression,16448,1584864,
+MAIN.m_boolExpr9,Resi4MPM.BoolExpression,16448,1584884,
+MAIN.m_buttonManager,ButtonManager,16448,474392,define services
+MAIN.m_buttonManager.DI_AutomaticSwitch_DoorTerminal,BOOL,61472,474406,
+MAIN.m_buttonManager.DI_AutomaticSwitch_LightGridTerminal,BOOL,61472,474407,
+MAIN.m_buttonManager.DI_AutomaticSwitch_LSCTerminal,BOOL,61472,474405,
+MAIN.m_buttonManager.DI_AutomaticSwitch_StackTerminal,BOOL,61472,474403,
+MAIN.m_buttonManager.DI_AutomaticSwitch_StampTerminal,BOOL,61472,474404,
+MAIN.m_buttonManager.DI_EStopButton_LightBarrier,BOOL,61472,474411,DI_EStopButton_Door AT%I*: BOOL;     //currently not connected to PLC
+MAIN.m_buttonManager.DI_EStopButton_Terminal1,BOOL,61472,474408,
+MAIN.m_buttonManager.DI_EStopButton_Terminal2,BOOL,61472,474409,
+MAIN.m_buttonManager.DI_EStopButton_Terminal3,BOOL,61472,474410,
+MAIN.m_buttonManager.DI_ResetButton_Door,BOOL,61472,474412,
+MAIN.m_buttonManager.DI_ResetButton_LightBarrier,BOOL,61472,474413,
+MAIN.m_buttonManager.DI_StartButton_Door,BOOL,61472,474399,
+MAIN.m_buttonManager.DI_StartButton_LightBarrier,BOOL,61472,474400,
+MAIN.m_buttonManager.DI_StartButton_Terminal1,BOOL,61472,474396,
+MAIN.m_buttonManager.DI_StartButton_Terminal2,BOOL,61472,474397,
+MAIN.m_buttonManager.DI_StartButton_Terminal3,BOOL,61472,474398,
+MAIN.m_buttonManager.DI_StopButton_Door,BOOL,61472,474401,
+MAIN.m_buttonManager.DI_StopButton_LightBarrier,BOOL,61472,474402,
+MAIN.m_compExpr1,Resi4MPM.ComparisonExpression,16448,1584320,"INTERLOCKS - must always be False
+ (EProcessVariables.LSC_RampEndWPCount >= 3) AND ((EProcessVariables.LSC_RampStartWPCount >= 3) OR ((EProcessVariables.LSC_RampMiddleWPCount >= 3) OR (EProcessVariables.SSC_RampWPCount >= 3)))"
+MAIN.m_compExpr3,Resi4MPM.ComparisonExpression,16448,1584456,
+MAIN.m_compExpr5,Resi4MPM.ComparisonExpression,16448,1584592,
+MAIN.m_compExpr7,Resi4MPM.ComparisonExpression,16448,1584728,
+MAIN.m_container,xPPU_Container,16448,1451360,instantiate machine behavior model
+MAIN.m_container.m_crane.m_PresenceSensorAtConveyor.DI_WPDetected,BOOL,61472,1451440,
+MAIN.m_container.m_crane.m_PresenceSensorAtStack.DI_WPDetected,BOOL,61472,1451428,
+MAIN.m_container.m_crane.m_PresenceSensorAtStamp.DI_WPDetected,BOOL,61472,1451452,
+MAIN.m_container.m_crane.Motor.AI_Position,UINT,61472,1451376,
+MAIN.m_container.m_crane.Motor.AI_Speed,UDINT,61472,1451380,
+MAIN.m_container.m_crane.Motor.DO_TurnClockwise,BOOL,61488,1451384,Hardware
+MAIN.m_container.m_crane.Motor.DO_TurnCounterclockwise,BOOL,61488,1451385,
+MAIN.m_container.m_crane.o_MonostableCylinder.AI_FlowPressure,INT,61472,1451412,
+MAIN.m_container.m_crane.o_MonostableCylinder.AI_PositionTransmitter,INT,61472,1451414,
+MAIN.m_container.m_crane.o_MonostableCylinder.AI_PressureSensor,INT,61472,1451410,
+MAIN.m_container.m_crane.o_MonostableCylinder.DI_BoundaryFlowPressure,BOOL,61472,1451408,
+MAIN.m_container.m_crane.o_MonostableCylinder.DI_BoundaryPressure,BOOL,61472,1451407,NOT USED BUT USABLE
+MAIN.m_container.m_crane.o_MonostableCylinder.DI_Extended,BOOL,61472,1451404,Hardware
+MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted,BOOL,61472,1451405,
+MAIN.m_container.m_crane.o_MonostableCylinder.DO_Extend,BOOL,61488,1451406,
+MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn,BOOL,61472,1451392,Hardware
+MAIN.m_container.m_crane.o_VacuumGripper.DO_VacuumOn,BOOL,61488,1451393,
+MAIN.m_container.m_crane.o_VacuumGripper.VacuumHit,BOOL,61488,1451394,Only used by PickAlpha
+MAIN.m_container.m_LSC.m_inductiveSensorMid.DI_WPMetallic,BOOL,61472,1451752,Hardware
+MAIN.m_container.m_LSC.m_inductiveSensorStart.DI_WPMetallic,BOOL,61472,1451740,Hardware
+MAIN.m_container.m_LSC.m_opticalSensorEnd.DI_WPLight,BOOL,61472,1451728,Hardware
+MAIN.m_container.m_LSC.m_opticalSensorMid.DI_WPLight,BOOL,61472,1451716,Hardware
+MAIN.m_container.m_LSC.m_opticalSensorStart.DI_WPLight,BOOL,61472,1451704,Hardware
+MAIN.m_container.m_LSC.m_presenceSensorStart.DI_WPDetected,BOOL,61472,1451692,
+MAIN.m_container.m_LSC.m_rampEnd.m_presenceSensorRampFull.DI_WPDetected,BOOL,61472,1451800,
+MAIN.m_container.m_LSC.m_rampMiddle.m_presenceSensorRampFull.DI_WPDetected,BOOL,61472,1451784,
+MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure,INT,61472,1451668,
+MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter,INT,61472,1451670,
+MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor,INT,61472,1451666,
+MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure,BOOL,61472,1451664,
+MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure,BOOL,61472,1451663,NOT USED BUT USABLE
+MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended,BOOL,61472,1451660,Hardware
+MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted,BOOL,61472,1451661,
+MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend,BOOL,61488,1451662,
+MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure,INT,61472,1451648,
+MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter,INT,61472,1451650,
+MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor,INT,61472,1451646,
+MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure,BOOL,61472,1451644,
+MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure,BOOL,61472,1451643,NOT USED BUT USABLE
+MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended,BOOL,61472,1451640,Hardware
+MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted,BOOL,61472,1451641,
+MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend,BOOL,61488,1451642,
+MAIN.m_container.m_LSC.m_rampStart.m_presenceSensorRampFull.DI_WPDetected,BOOL,61472,1451768,
+MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure,BOOL,61472,1451683,NOT USED BUT USABLE
+MAIN.m_container.m_LSC.m_Switch.DI_Extended,BOOL,61472,1451680,Hardware
+MAIN.m_container.m_LSC.m_Switch.DI_Retracted,BOOL,61472,1451681,
+MAIN.m_container.m_LSC.m_Switch.DO_Extend,BOOL,61488,1451682,
+MAIN.m_container.m_LSC.Motor.AI_Position,UINT,61472,1451620,
+MAIN.m_container.m_LSC.Motor.AI_Speed,UDINT,61472,1451624,
+MAIN.m_container.m_LSC.Motor.DO_TurnClockwise,BOOL,61488,1451628,Hardware
+MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise,BOOL,61488,1451629,
+MAIN.m_container.m_PAC.m_PresencesensorEnd.DI_WPDetected,BOOL,61472,1451848,
+MAIN.m_container.m_PAC.m_PresencesensorStart.DI_WPDetected,BOOL,61472,1451836,
+MAIN.m_container.m_PAC.m_Switch.DI_BoundaryPressure,BOOL,61472,1451863,NOT USED BUT USABLE
+MAIN.m_container.m_PAC.m_Switch.DI_Extended,BOOL,61472,1451860,Hardware
+MAIN.m_container.m_PAC.m_Switch.DI_Retracted,BOOL,61472,1451861,
+MAIN.m_container.m_PAC.m_Switch.DO_Extend,BOOL,61488,1451862,
+MAIN.m_container.m_PAC.Motor.AI_Position,UINT,61472,1451816,
+MAIN.m_container.m_PAC.Motor.AI_Speed,UDINT,61472,1451820,
+MAIN.m_container.m_PAC.Motor.DO_TurnClockwise,BOOL,61488,1451824,Hardware
+MAIN.m_container.m_PAC.Motor.DO_TurnCounterclockwise,BOOL,61488,1451825,
+MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition1.DI_WPDetected,BOOL,61472,1451932,
+MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition2.DI_WPDetected,BOOL,61472,1451944,
+MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition3.DI_WPDetected,BOOL,61472,1451956,
+MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition4.DI_WPDetected,BOOL,61472,1451968,
+MAIN.m_container.m_PicAlpha.Motor.AI_Position,UINT,61472,1451880,
+MAIN.m_container.m_PicAlpha.Motor.AI_Speed,UDINT,61472,1451884,
+MAIN.m_container.m_PicAlpha.Motor.DO_TurnClockwise,BOOL,61488,1451888,Hardware
+MAIN.m_container.m_PicAlpha.Motor.DO_TurnCounterclockwise,BOOL,61488,1451889,
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_FlowPressure,INT,61472,1451916,
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_PositionTransmitter,INT,61472,1451918,
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_PressureSensor,INT,61472,1451914,
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_BoundaryFlowPressure,BOOL,61472,1451912,
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_BoundaryPressure,BOOL,61472,1451911,NOT USED BUT USABLE
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Extended,BOOL,61472,1451908,Hardware
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted,BOOL,61472,1451909,
+MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DO_Extend,BOOL,61488,1451910,
+MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn,BOOL,61472,1451896,Hardware
+MAIN.m_container.m_PicAlpha.o_VacuumGripper.DO_VacuumOn,BOOL,61488,1451897,
+MAIN.m_container.m_PicAlpha.o_VacuumGripper.VacuumHit,BOOL,61488,1451898,Only used by PickAlpha
+MAIN.m_container.m_RFC.m_PresencesensorEnd.DI_WPDetected,BOOL,61472,1452116,
+MAIN.m_container.m_RFC.m_PresencesensorStart.DI_WPDetected,BOOL,61472,1452104,
+MAIN.m_container.m_RFC.m_Switch.DI_BoundaryPressure,BOOL,61472,1452131,NOT USED BUT USABLE
+MAIN.m_container.m_RFC.m_Switch.DI_Extended,BOOL,61472,1452128,Hardware
+MAIN.m_container.m_RFC.m_Switch.DI_Retracted,BOOL,61472,1452129,
+MAIN.m_container.m_RFC.m_Switch.DO_Extend,BOOL,61488,1452130,
+MAIN.m_container.m_RFC.Motor.AI_Position,UINT,61472,1452084,
+MAIN.m_container.m_RFC.Motor.AI_Speed,UDINT,61472,1452088,
+MAIN.m_container.m_RFC.Motor.DO_TurnClockwise,BOOL,61488,1452092,Hardware
+MAIN.m_container.m_RFC.Motor.DO_TurnCounterclockwise,BOOL,61488,1452093,
+MAIN.m_container.m_SSC.m_Inductivesensor.DI_WPMetallic,BOOL,61472,1452040,Hardware
+MAIN.m_container.m_SSC.m_Opticalsensor.DI_WPLight,BOOL,61472,1452028,Hardware
+MAIN.m_container.m_SSC.m_PresencesensorEnd.DI_WPDetected,BOOL,61472,1452016,
+MAIN.m_container.m_SSC.m_PresencesensorStart.DI_WPDetected,BOOL,61472,1452004,
+MAIN.m_container.m_SSC.m_Ramp.m_presenceSensorRampFull.DI_WPDetected,BOOL,61472,1452056,
+MAIN.m_container.m_SSC.m_Switch.DI_BoundaryPressure,BOOL,61472,1452071,NOT USED BUT USABLE
+MAIN.m_container.m_SSC.m_Switch.DI_Extended,BOOL,61472,1452068,Hardware
+MAIN.m_container.m_SSC.m_Switch.DI_Retracted,BOOL,61472,1452069,
+MAIN.m_container.m_SSC.m_Switch.DO_Extend,BOOL,61488,1452070,
+MAIN.m_container.m_SSC.Motor.AI_Position,UINT,61472,1451984,
+MAIN.m_container.m_SSC.Motor.AI_Speed,UDINT,61472,1451988,
+MAIN.m_container.m_SSC.Motor.DO_TurnClockwise,BOOL,61488,1451992,Hardware
+MAIN.m_container.m_SSC.Motor.DO_TurnCounterclockwise,BOOL,61488,1451993,
+MAIN.m_container.m_stack.m_Inductivesensor.DI_WPMetallic,BOOL,61472,1451512,Hardware
+MAIN.m_container.m_stack.m_Opticalsensor.DI_WPLight,BOOL,61472,1451500,Hardware
+MAIN.m_container.m_stack.m_Presencesensor.DI_WPDetected,BOOL,61472,1451488,
+MAIN.m_container.m_stack.m_Weightsensor.AI_WPWeight,INT,61472,1451524,
+MAIN.m_container.m_stack.o_slidingCylinder.AI_FlowPressure,INT,61472,1451476,
+MAIN.m_container.m_stack.o_slidingCylinder.AI_PositionTransmitter,INT,61472,1451478,
+MAIN.m_container.m_stack.o_slidingCylinder.AI_PressureSensor,INT,61472,1451474,
+MAIN.m_container.m_stack.o_slidingCylinder.DI_BoundaryFlowPressure,BOOL,61472,1451472,
+MAIN.m_container.m_stack.o_slidingCylinder.DI_BoundaryPressure,BOOL,61472,1451471,NOT USED BUT USABLE
+MAIN.m_container.m_stack.o_slidingCylinder.DI_Extended,BOOL,61472,1451468,Hardware
+MAIN.m_container.m_stack.o_slidingCylinder.DI_Retracted,BOOL,61472,1451469,
+MAIN.m_container.m_stack.o_slidingCylinder.DO_Extend,BOOL,61488,1451470,
+MAIN.m_container.m_stamp.m_presenceSensor.DI_WPDetected,BOOL,61472,1451592,
+MAIN.m_container.m_stamp.m_pressureSensor.AI_CurrentPressure,INT,61472,1451604,Hardware
+MAIN.m_container.m_stamp.m_pressureValve.AO_SetPressure,INT,61488,1451580,Hardware
+MAIN.m_container.m_stamp.m_slidingCylinder.AI_FlowPressure,INT,61472,1451568,
+MAIN.m_container.m_stamp.m_slidingCylinder.AI_PositionTransmitter,INT,61472,1451570,
+MAIN.m_container.m_stamp.m_slidingCylinder.AI_PressureSensor,INT,61472,1451566,
+MAIN.m_container.m_stamp.m_slidingCylinder.DI_BoundaryFlowPressure,BOOL,61472,1451564,
+MAIN.m_container.m_stamp.m_slidingCylinder.DI_BoundaryPressure,BOOL,61472,1451563,NOT USED BUT USABLE
+MAIN.m_container.m_stamp.m_slidingCylinder.DI_Extended,BOOL,61472,1451560,Hardware
+MAIN.m_container.m_stamp.m_slidingCylinder.DI_Retracted,BOOL,61472,1451561,
+MAIN.m_container.m_stamp.m_slidingCylinder.DO_Extend,BOOL,61488,1451562,
+MAIN.m_container.m_stamp.m_slidingCylinder.DO_Retract,BOOL,61488,1451572,Hardware
+MAIN.m_container.m_stamp.m_stampingCylinder.AI_FlowPressure,INT,61472,1451548,
+MAIN.m_container.m_stamp.m_stampingCylinder.AI_PositionTransmitter,INT,61472,1451550,
+MAIN.m_container.m_stamp.m_stampingCylinder.AI_PressureSensor,INT,61472,1451546,
+MAIN.m_container.m_stamp.m_stampingCylinder.DI_BoundaryFlowPressure,BOOL,61472,1451544,
+MAIN.m_container.m_stamp.m_stampingCylinder.DI_BoundaryPressure,BOOL,61472,1451543,NOT USED BUT USABLE
+MAIN.m_container.m_stamp.m_stampingCylinder.DI_Extended,BOOL,61472,1451540,Hardware
+MAIN.m_container.m_stamp.m_stampingCylinder.DI_Retracted,BOOL,61472,1451541,
+MAIN.m_container.m_stamp.m_stampingCylinder.DO_Extend,BOOL,61488,1451542,
+MAIN.m_customSeqStatus,Resi4MPM.EOperationResult,16448,1584932,
+MAIN.m_didFinishPrimitives,BOOL,16448,1584930,
+MAIN.m_emptyParams,Resi4MPM.ParameterSet,16448,1584936,
+MAIN.m_errorManager,xPPU.ErrorManager,16448,474416,
+MAIN.m_services,Resi4MPM.ServiceContainer,16448,476192,
+MAIN.m_startAuto,BOOL,16448,474389,"INTERLOCKS - must always be True
+ ...
+ MANUAL STRATEGY"
+MAIN.m_startManual,BOOL,16448,474390,
+MAIN.m_statesEnum,xPPU.EProcessVariables,16448,1584928,
+MAIN.m_steps,ARRAY [0..2] OF STRING(80),16448,1606080,
+MAIN.m_stopManual,BOOL,16448,474391,
+MAIN.m_strategyState,Resi4MPM.EOperationResult,16448,1584924,
+MAIN.m_xPPU,xPPU_Automatic,16448,1587056,
+MAIN.SFCCurrentStep,STRING(80),16448,1606432,
+MAIN.SFCInit,BOOL,16448,1584934,
+MAIN.SFCReset,BOOL,16448,1584935,

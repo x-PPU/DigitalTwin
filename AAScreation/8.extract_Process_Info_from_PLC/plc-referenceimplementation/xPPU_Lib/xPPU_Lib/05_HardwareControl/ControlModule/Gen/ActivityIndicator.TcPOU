@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ActivityIndicator" Id="{fc0acb11-6196-4410-a362-9beb79765b3f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ActivityIndicator EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	DO_indic AT%Q*: BOOL;
+	
+	
+	m_sigVar: UINT;
+	m_sigState: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{fee9e128-cc88-404f-a848-a4f328aea5a4}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)
+	
+	i_signalProcVar: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_sigVar := i_signalProcVar;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FlipIndicator" Id="{ebe86216-9bfa-490d-a0c0-08b84d241d97}">
+      <Declaration><![CDATA[METHOD FlipIndicator : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_sigState := FALSE;
+DO_indic := NOT DO_indic;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{e22c59ad-cbe5-487a-b192-d96df39e56ad}">
+      <Declaration><![CDATA[METHOD  ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_sigState := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDoneSignal" Id="{95b734b2-e5f3-4897-80b5-680931ea816a}">
+      <Declaration><![CDATA[METHOD ResetDoneSignal : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF m_sigVar = 0 THEN
+	ResetDoneSignal := FALSE;
+ELSE
+	m_sigState  := FALSE;
+	ResetDoneSignal := TRUE;
+	DO_indic := FALSE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetDoneSignal" Id="{58314ac0-973b-40f5-b372-560314e1af36}">
+      <Declaration><![CDATA[(*
+	Sets the global variable for the "Done" signal to TRUE.
+	WIll be reset FlipIndicator is called the next time.
+*)
+METHOD SetDoneSignal : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF m_sigVar = 0 THEN
+	SetDoneSignal := FALSE;
+ELSE
+	m_sigState  := TRUE;
+	SetDoneSignal := TRUE;
+	DO_indic := FALSE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{24c2b38d-f4ff-4734-9150-fdf84dad5fad}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[io_processState.UpdateState_Binary(m_sigVar, m_sigState, i_force := TRUE);
+io_processState.UpdateState_Defined(m_sigVar, TRUE);
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ActivityIndicator">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ActivityIndicator.FB_init">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="ActivityIndicator.FlipIndicator">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="ActivityIndicator.ResetDefinition">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="ActivityIndicator.ResetDoneSignal">
+      <LineId Id="1" Count="7" />
+    </LineIds>
+    <LineIds Name="ActivityIndicator.SetDoneSignal">
+      <LineId Id="1" Count="4" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="6" Count="1" />
+    </LineIds>
+    <LineIds Name="ActivityIndicator.UpdateProcessObservation">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EWPWeight" Id="{da38a016-f085-4716-ad05-7016b612a050}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EWPWeight :
+(
+	light :=1,
+	medium := 2,
+	heavy := 3,
+	undetermined :=4,
+	enum_member := 0
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

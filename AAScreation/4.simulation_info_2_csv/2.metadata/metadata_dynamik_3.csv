@@ -1,0 +1,11 @@
+idShort,Value
+ModelName,dynamik_3
+Creator,Alexa
+LastModifiedBy,lijia
+CreatedOn,Fri Jun 01 17:14:17 2018
+ModelVersion,1.44
+Description,N/A
+SolverType,Variable-step
+SolverName,ode45
+FixedStepSize,auto
+StopTime,80

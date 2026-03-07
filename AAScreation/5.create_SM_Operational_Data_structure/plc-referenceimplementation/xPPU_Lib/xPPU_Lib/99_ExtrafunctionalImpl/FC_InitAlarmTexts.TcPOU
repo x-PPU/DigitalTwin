@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="FC_InitAlarmTexts" Id="{4ec44118-7e62-4a62-8dc8-b544699bf45d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION FC_InitAlarmTexts : BOOL
+VAR_INPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[HMI_Texts.AlarmTexts[EAlarms.none] := 'unspecified';
+HMI_Texts.AlarmTexts[EAlarms.not_initialized] := 'the component is not initialized yet';
+HMI_Texts.AlarmTexts[EAlarms.did_execute] := 'the component executed';
+HMI_Texts.AlarmTexts[EAlarms.did_shutdown] := 'the system shut down';
+
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampStart_almost_full] := 'LSC RampStart almost full';
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampMid_almost_full] := 'LSC RampMid almost full';
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampEnd_almost_full] := 'LSC RampEnd almost full';
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampStart_full] := 'LSC RampStart full';
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampMid_full] := 'LSC RampMid full';
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampEnd_full] := 'LSC RampEnd full';
+
+HMI_Texts.AlarmTexts[EAlarms.stack_no_WP] := 'Stack no WP';
+
+HMI_Texts.AlarmTexts[EAlarms.crane_gripper_failed_stack] := 'crane gripper failed stack';
+HMI_Texts.AlarmTexts[EAlarms.crane_dropped_WP_stack] := 'crane dropped WP stack';
+HMI_Texts.AlarmTexts[EAlarms.crane_dropped_WP_WayToStamp] :=  'crane dropped WP WayToStamp';
+HMI_Texts.AlarmTexts[EAlarms.crane_putdown_failed_stamp] := 'crane putdown failed stamp';
+HMI_Texts.AlarmTexts[EAlarms.crane_gripper_failed_stamp] := 'crane gripper failed stamp';
+HMI_Texts.AlarmTexts[EAlarms.crane_dropped_WP_stamp] := 'crane dropped WP stamp';
+HMI_Texts.AlarmTexts[EAlarms.crane_dropped_WP_WayToLSC] := 'crane dropped WP WayToLSC';
+
+HMI_Texts.AlarmTexts[EAlarms.stamp_WP_wrong_position] := 'stamp WP wrong position';
+
+//HMI_Texts.AlarmTexts[EAlarms.LSC_Entry_accmulated] := 'LSC Entry accmulated';
+HMI_Texts.AlarmTexts[EAlarms.LSC_FirstPairOfSensors_accumulated] := 'LSC FirstPairOfSensors accumulated';
+HMI_Texts.AlarmTexts[EAlarms.LSC_SecondPairOfSensors_accumulated] := 'SecondPairOfSensors accumulated';
+HMI_Texts.AlarmTexts[EAlarms.LSC_End_accumulated] := 'LSC End accumulated';
+HMI_Texts.AlarmTexts[EAlarms.stack_WP_stuck] := 'stack WP stuck';
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampStart_wrong_eject] := 'LSC RampStart wrong eject';
+HMI_Texts.AlarmTexts[EAlarms.LSC_RampMid_wrong_eject] := 'LSC RampMid wrong eject';
+HMI_Texts.AlarmTexts[EAlarms.LSC_WP_abnormal_Entry] := 'LSC WP abnormal Entry';
+HMI_Texts.AlarmTexts[EAlarms.LSC_WPType_ToRampStart_changed] := 'LSC WPType ToRampStart changed';
+HMI_Texts.AlarmTexts[EAlarms.LSC_WPType_ToRampMid_changed] := 'LSC WPType ToRampMid changed';
+HMI_Texts.AlarmTexts[EAlarms.LSC_WPType_ToRampEnd_changed] := 'LSC WPType ToRampEnd changed';
+HMI_Texts.AlarmTexts[EAlarms.LSC_WPType_ToPAC_changed] := 'LSC WPType ToPAC changed';
+HMI_Texts.AlarmTexts[EAlarms.LSC_Cylinder1_abnormal] := 'LSC Cylinder1 abnormal';
+HMI_Texts.AlarmTexts[EAlarms.LSC_Cylinder2_abnormal] := 'LSC Cylinder2 abnormal';
+
+HMI_Texts.AlarmTexts[EAlarms.LSC_WP_ToPAC_abnormal] := 'LSC WP ToPAC abnormal';
+HMI_Texts.AlarmTexts[EAlarms.PicAlpha_abnormal] := 'PicAlpha abnormal';
+HMI_Texts.AlarmTexts[EAlarms.PicAlpha_pickup_failed_Pos1] := 'PicAlpha pickup failed Pos1';
+HMI_Texts.AlarmTexts[EAlarms.PicAlpha_pickup_failed_Pos2] := 'PicAlpha pickup failed Pos2';
+HMI_Texts.AlarmTexts[EAlarms.PicAlpha_dropped_SecondWP_ToPos4] := 'PicAlpha dropped SecondWP ToPos4';
+HMI_Texts.AlarmTexts[EAlarms.PicAlpha_dropped_ThirdWP_ToPos3] := 'PicAlpha dropped ThirdWP ToPos3';
+HMI_Texts.AlarmTexts[EAlarms.PAC_Count_abnormal] := 'PAC Count abnormal';
+
+HMI_Texts.AlarmTexts[EAlarms.PAC_FirstWP_abnormal] := 'PAC FirstWP abnormal';
+HMI_Texts.AlarmTexts[EAlarms.PAC_ThirdWP_abnormal] := 'PAC ThirdWP abnormal';
+HMI_Texts.AlarmTexts[EAlarms.PAC_DNGP4] := 'WP did not get positon4 on PAC';
+HMI_Texts.AlarmTexts[EAlarms.PAC_Pos4NotFree] := 'PAC Position4 is not free';
+HMI_Texts.AlarmTexts[EAlarms.PAC_End_accumulated] := 'PAC End accumulated';
+
+HMI_Texts.AlarmTexts[EAlarms.SSC_Entry_accumulated] := 'SSC Entry accumulated';
+HMI_Texts.AlarmTexts[EAlarms.SSC_End_accumulated] := 'SSC End accumulated';
+HMI_Texts.AlarmTexts[EAlarms.SSC_WP_METAL] := ' WP on SSC was made up of metal';
+HMI_Texts.AlarmTexts[EAlarms.SSC_Ramp_full] := 'SSC Ramp is full';
+HMI_Texts.AlarmTexts[EAlarms.SSC_RampEnd_almost_full] := 'SSC Ramp is almost full';
+HMI_Texts.AlarmTexts[EAlarms.SSC_WPNotGetRamp] := 'WP can not get SSC ramp';
+HMI_Texts.AlarmTexts[EAlarms.SSC_WPNotGetRFC] := 'WP can not get RFC start';
+
+HMI_Texts.AlarmTexts[EAlarms.RFC_Entry_accumulated] := 'RFC Entry accumulated';
+HMI_Texts.AlarmTexts[EAlarms.RFC_End_accumulated] := 'RFC End accumulated';
+HMI_Texts.AlarmTexts[EAlarms.RFC_NotGetEnd] := 'WP in RFC can not get end from start';]]></ST>
+    </Implementation>
+    <LineIds Name="FC_InitAlarmTexts">
+      <LineId Id="211" Count="3" />
+      <LineId Id="216" Count="44" />
+      <LineId Id="209" Count="0" />
+      <LineId Id="261" Count="0" />
+      <LineId Id="264" Count="1" />
+      <LineId Id="263" Count="0" />
+      <LineId Id="262" Count="0" />
+      <LineId Id="268" Count="1" />
+      <LineId Id="271" Count="2" />
+      <LineId Id="267" Count="0" />
+      <LineId Id="266" Count="0" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="274" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

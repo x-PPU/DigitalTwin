@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Crane_PickPutBase" Id="{b9425a63-9f7a-4db0-81cf-f5bc5eb4e2d3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT Crane_PickPutBase EXTENDS ControlPrimitiveBase
+VAR
+	m_ptrCrane: POINTER TO Crane;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="ShiftProduct" Id="{53dce5c0-967b-44fe-a74b-f33365a97b81}">
+      <Declaration><![CDATA[METHOD PROTECTED ShiftProduct : BOOL
+VAR_INPUT
+	i_isIncoming: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF m_ptrCrane^.AtStack THEN
+	IF i_isIncoming THEN
+		ShiftProduct := m_st^.ShiftProduct(EProducts.stack_product, EProducts.crane_product);
+	ELSE
+		ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stack_product);
+	END_IF
+ELSIF m_ptrCrane^.AtConveyor THEN
+	IF i_isIncoming THEN
+		ShiftProduct := m_st^.ShiftProduct(EProducts.LSC_product, EProducts.crane_product);
+	ELSE
+		ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.LSC_product);
+	END_IF
+ELSIF m_ptrCrane^.AtStamp THEN
+	IF i_isIncoming THEN
+		ShiftProduct := m_st^.ShiftProduct(EProducts.stamp_product, EProducts.crane_product);
+	ELSE
+		ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stamp_product);
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Crane_PickPutBase">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Crane_PickPutBase.ShiftProduct">
+      <LineId Id="1" Count="18" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

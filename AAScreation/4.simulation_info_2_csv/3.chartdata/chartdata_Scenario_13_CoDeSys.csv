@@ -1,0 +1,660 @@
+Name,Port,DataType,Scope
+Band_Vor,1,Inherit: Same as Simulink,Input
+Band_Zurueck,2,Inherit: Same as Simulink,Input
+Band_Vor_FS,1,double,Output
+Band_Zurueck_FS,2,double,Output
+Zyl_1_Einfahren,1,Inherit: Same as Simulink,Input
+Zyl_1_X_Achse,1,double,Output
+Zyl_1_Ausfahren,2,Inherit: Same as Simulink,Input
+Band_Zyl_1_Eingefahren,2,double,Output
+Band_Zyl_1_Ausgefahren,3,double,Output
+Sample_Time,3,Inherit: Same as Simulink,Input
+Schrittgroesse,4,double,Output
+Naechste_Position,N/A,double,Local
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+Zyl_2_Einfahren,1,Inherit: Same as Simulink,Input
+Schrittgroesse,1,double,Output
+Zyl_2_X_Achse,2,double,Output
+Zyl_2_Ausfahren,2,Inherit: Same as Simulink,Input
+Band_Zyl_2_Eingefahren,3,double,Output
+Band_Zyl_2_Ausgefahren,4,double,Output
+Sample_Time,3,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+BT_Y_Achse,1,double,Output
+BT_1_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_1_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,2,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,5,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,7,Inherit: Same as Simulink,Input
+Kran_Sauger,8,Inherit: Same as Simulink,Input
+Kran_Hochheben,9,Inherit: Same as Simulink,Input
+Kran_Runterlassen,10,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,12,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,14,Inherit: Same as Simulink,Input
+Band_Vor,15,Inherit: Same as Simulink,Input
+Band_Zurueck,16,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,17,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,18,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,19,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,20,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,22,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,23,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,25,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,26,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,27,double,Input
+Band_Geschwindigkeit,28,Inherit: Same as Simulink,Input
+Lager_1_Status,29,Inherit: Same as Simulink,Input
+Lager_2_Status,30,Inherit: Same as Simulink,Input
+Lager_3_Status,31,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+BT_2_Bereit,35,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+BT_2_Bereit,35,Inherit: Same as Simulink,Input
+BT_3_Bereit,36,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+BT_2_Bereit,35,Inherit: Same as Simulink,Input
+BT_3_Bereit,36,Inherit: Same as Simulink,Input
+BT_4_Bereit,37,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+BT_2_Bereit,35,Inherit: Same as Simulink,Input
+BT_3_Bereit,36,Inherit: Same as Simulink,Input
+BT_4_Bereit,37,Inherit: Same as Simulink,Input
+BT_5_Bereit,38,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+BT_2_Bereit,35,Inherit: Same as Simulink,Input
+BT_3_Bereit,36,Inherit: Same as Simulink,Input
+BT_4_Bereit,37,Inherit: Same as Simulink,Input
+BT_5_Bereit,38,Inherit: Same as Simulink,Input
+BT_6_Bereit,39,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+BT_2_Bereit,35,Inherit: Same as Simulink,Input
+BT_3_Bereit,36,Inherit: Same as Simulink,Input
+BT_4_Bereit,37,Inherit: Same as Simulink,Input
+BT_5_Bereit,38,Inherit: Same as Simulink,Input
+BT_6_Bereit,39,Inherit: Same as Simulink,Input
+BT_7_Bereit,40,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+BT_Y_Achse,1,double,Output
+BT_Lager,2,double,Output
+Kran_Sauger_BT,3,double,Output
+BT_Bereit,4,double,Output
+BT_X_Achse,5,double,Output
+BT_Z_Achse,6,double,Output
+x,N/A,double,Local
+Lager_X_Achse,1,Inherit: Same as Simulink,Input
+Lager_Ver_Eingefahren,2,Inherit: Same as Simulink,Input
+Lager_Ver_Ausgefahren,3,Inherit: Same as Simulink,Input
+Kran_Stellung_Lager,4,Inherit: Same as Simulink,Input
+Kran_Stellung_Band,5,Inherit: Same as Simulink,Input
+Kran_Stellung_Stempel,6,Inherit: Same as Simulink,Input
+Kran_Zyl_Oben,7,Inherit: Same as Simulink,Input
+Kran_Zyl_Unten,8,Inherit: Same as Simulink,Input
+Kran_Sauger,9,Inherit: Same as Simulink,Input
+Kran_Hochheben,10,Inherit: Same as Simulink,Input
+Kran_Runterlassen,11,Inherit: Same as Simulink,Input
+Kran_Drehen_Links,12,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,13,Inherit: Same as Simulink,Input
+Stempel_Halterung_Ausfahren,14,Inherit: Same as Simulink,Input
+Stempel_Halterung_Einfahren,15,Inherit: Same as Simulink,Input
+Band_Vor,16,Inherit: Same as Simulink,Input
+Band_Zurueck,17,Inherit: Same as Simulink,Input
+Band_Zyl_1_X_Achse,18,Inherit: Same as Simulink,Input
+Band_Zyl_2_X_Achse,19,Inherit: Same as Simulink,Input
+BT_Rotation_1,7,double,Output
+BT_Rotation_2,8,double,Output
+BT_Rotation_3,9,double,Output
+BT_Rotation_4,10,double,Output
+Lager_Ver_Ausfahren,20,Inherit: Same as Simulink,Input
+Lager_Vereinzler_Schritt_Aus,21,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Hoch,22,Inherit: Same as Simulink,Input
+Kran_Zyl_Schritt_Runter,23,Inherit: Same as Simulink,Input
+Kran_Drehen_Schritt,24,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Aus,25,Inherit: Same as Simulink,Input
+Stempel_Halterung_Schritt_Ein,26,Inherit: Same as Simulink,Input
+Band_Zyl_1_Schritt,27,Inherit: Same as Simulink,Input
+Band_Zyl_2_Schritt,28,double,Input
+Band_Geschwindigkeit,29,Inherit: Same as Simulink,Input
+Bauteil_Fallgeschwindigkeit,30,double,Input
+Lager_1_Status,31,Inherit: Same as Simulink,Input
+Lager_2_Status,32,Inherit: Same as Simulink,Input
+Lager_3_Status,33,Inherit: Same as Simulink,Input
+Naechste_Position,N/A,double,Local
+BT_1_Bereit,34,Inherit: Same as Simulink,Input
+BT_2_Bereit,35,Inherit: Same as Simulink,Input
+BT_3_Bereit,36,Inherit: Same as Simulink,Input
+BT_4_Bereit,37,Inherit: Same as Simulink,Input
+BT_5_Bereit,38,Inherit: Same as Simulink,Input
+BT_6_Bereit,39,Inherit: Same as Simulink,Input
+BT_7_Bereit,40,Inherit: Same as Simulink,Input
+BT_8_Bereit,41,Inherit: Same as Simulink,Input
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MaxWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Achse,N/A,double,Input
+Schrittgroesse,N/A,double,Input
+MinWert,N/A,double,Input
+Ausgabe,N/A,double,Output
+Lager_Status,N/A,double,Input
+Pos_1,N/A,double,Input
+Pos_2,N/A,double,Input
+Ausgabe,N/A,double,Output
+Pos_3,N/A,double,Input
+Halterung_Ausfahren,1,Inherit: Same as Simulink,Input
+Halterung_Einfahren,2,Inherit: Same as Simulink,Input
+Halterung_X_Achse,1,double,Output
+Stempel_Halterung_Ausgefahren,2,double,Output
+Stempel_Halterung_Eingefahren,3,double,Output
+Stempel_Halterung_Ausfahren_FS,4,double,Output
+Stempel_Halterung_Einfahren_FS,5,double,Output
+Sample_Time,3,Inherit: Same as Simulink,Input
+Schrittgroesse_Ausfahren,6,double,Output
+Schrittgroesse_Einfahren,7,double,Output
+Naechste_Position,N/A,double,Local
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+Kran_Drehen_Links,1,Inherit: Same as Simulink,Input
+Kran_Drehen_Rechts,2,Inherit: Same as Simulink,Input
+Kran_Stellung,1,Inherit: Same as Simulink,Output
+Kran_Drehen_Links_FS,2,Inherit: Same as Simulink,Output
+Kran_Drehen_Rechts_FS,3,Inherit: Same as Simulink,Output
+Sample_Time,3,Inherit: Same as Simulink,Input
+Schrittgroesse_Drehen,4,double,Output
+Kran_Drehwinkel,5,double,Output
+Kran_Drehwinkel_90_Grad,4,double,Input
+Kran_Dauer_90_Grad,5,Inherit: Same as Simulink,Input
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+Kran_Sauger_An,1,Inherit: Same as Simulink,Input
+Kran_Sauger_Aus,2,Inherit: Same as Simulink,Input
+Kran_Sauger_On,1,double,Output
+Kran_Zyl_Y_Achse,1,double,Output
+Kran_Zyl_Oben,2,double,Output
+Kran_Zyl_Unten,3,double,Output
+Kran_Hochheben,4,double,Output
+Kran_Runterlassen,5,double,Output
+Sample_Time,1,Inherit: Same as Simulink,Input
+Kran_Zyl_Runter,2,Inherit: Same as Simulink,Input
+Schrittgroesse_Ausfahren,6,double,Output
+Schrittgroesse_Einfahren,7,double,Output
+Naechste_Position,N/A,double,Local
+Kran_Zyl_Hoch,3,Inherit: Same as Simulink,Input
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+Vereinzler_Einfahren,1,Inherit: Same as Simulink,Input
+Vereinzler_Ausfahren,2,Inherit: Same as Simulink,Input
+Sample_Time,3,Inherit: Same as Simulink,Input
+Vereinzler_X_Achse,1,double,Output
+Vereinzler_Eingefahren,2,double,Output
+Vereinzler_Ausgefahren,3,double,Output
+Lager_Ver_Einfahren,4,double,Output
+Lager_Ver_Ausfahren,5,double,Output
+Schrittgroesse_Ausfahren,6,double,Output
+Schrittgroesse_Einfahren,7,double,Output
+Naechste_Position,N/A,double,Local
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+Stempel_Einfahren,1,Inherit: Same as Simulink,Input
+Stempel_Ausfahren,2,Inherit: Same as Simulink,Input
+Zylinder_Y_Achse,1,double,Output
+Stempel_Zylinder_Eingefahren,2,double,Output
+Stempel_Zylinder_Ausgefahren,3,double,Output
+Sample_Time,3,Inherit: Same as Simulink,Input
+Schrittgroesse_Ausfahren,4,double,Output
+Schrittgroesse_Einfahren,5,double,Output
+Naechste_Position,N/A,double,Local
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output
+r,N/A,double,Output

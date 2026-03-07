@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SPrimitiveCondition" Id="{79b0176c-1263-4b1d-ab98-2762ccbd8ec8}">
+    <Declaration><![CDATA[TYPE SPrimitiveCondition EXTENDS SConditionSpec :
+STRUCT
+	PrimitiveId: UINT;
+	// if it's not a precondition, it's a postcondition
+	IsPre: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

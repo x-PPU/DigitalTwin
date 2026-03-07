@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EExpressionType" Id="{28617026-6187-454d-85c0-c71c15d16cc7}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EExpressionType :
+(
+	none := 0,
+	boolean := 1,
+	comparison := 2,
+	value := 3
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

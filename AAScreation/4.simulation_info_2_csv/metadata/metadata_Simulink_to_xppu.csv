@@ -1,0 +1,11 @@
+idShort,Value
+ModelName,Simulink_to_xppu
+Creator,Leonardo Igler
+LastModifiedBy,lijia
+CreatedOn,Mon Nov 30 17:49:09 2020
+ModelVersion,1.6
+Description,N/A
+SolverType,Fixed-step
+SolverName,FixedStepDiscrete
+FixedStepSize,0.1
+StopTime,10.0

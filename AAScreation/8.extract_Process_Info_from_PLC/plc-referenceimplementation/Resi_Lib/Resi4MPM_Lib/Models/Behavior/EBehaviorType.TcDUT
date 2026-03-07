@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EBehaviorType" Id="{9fddf20c-bebf-406b-9973-1261dd17312c}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EBehaviorType :
+(
+	none := 0,
+	control_primitive := 1,
+	user_sequence := 2,
+	generated_sequence := 3
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

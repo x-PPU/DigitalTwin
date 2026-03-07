@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BaseCylinder" Id="{36b2f985-d5f3-48e5-b80f-dac311c9bd0d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT BaseCylinder IMPLEMENTS ITF_Cylinder
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Hardware
+	DI_Extended AT %I* : BOOL;
+	DI_Retracted AT %I* : BOOL;
+	DO_Extend AT %Q* : BOOL;
+	//NOT USED BUT USABLE	
+	DI_BoundaryPressure AT %I* : BOOL;
+	DI_BoundaryFlowPressure AT %I* : BOOL;
+	AI_PressureSensor AT %I* : INT;
+	AI_FlowPressure AT %I* : INT;
+	AI_PositionTransmitter AT %I* : INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Extended" Id="{9367427e-a835-4ef4-b154-d791f37f3f22}">
+      <Declaration><![CDATA[PROPERTY Extended : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2817200b-01a6-4881-8fcb-9b4d452386df}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Extended := DI_Extended;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="METH_Extend" Id="{5e0ba800-5d79-4df2-a234-753f93e95d9d}">
+      <Declaration><![CDATA[METHOD ABSTRACT METH_Extend : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Retract" Id="{6f018710-d838-4c74-b33d-83bb4eeb23f1}">
+      <Declaration><![CDATA[METHOD ABSTRACT METH_Retract : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Retracted" Id="{94a5ad90-698f-486b-b4d1-4bb9819771f8}">
+      <Declaration><![CDATA[PROPERTY Retracted : BOOL]]></Declaration>
+      <Get Name="Get" Id="{efbc6477-e169-400e-a903-88ef8cb38647}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Retracted := DI_Retracted;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="BaseCylinder">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BaseCylinder.Extended.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BaseCylinder.METH_Extend">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BaseCylinder.METH_Retract">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BaseCylinder.Retracted.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

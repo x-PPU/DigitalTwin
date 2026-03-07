@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EOperatingModes" Id="{03720489-733d-4e2f-ada5-a53accd3fbeb}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+// TODO - adapt to PackML (?)
+TYPE EOperatingModes :
+(
+	none := 0,
+	init := 1,
+	automatic := 2,
+	manual := 3,
+	recovering := 4,
+	shutting_down := 5,
+	shutdown := 6,
+	custom_sequence := 7
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,1802 @@
+#VRML V2.0 utf8
+
+PROTO Switch_Button [
+  exposedField SFVec3f Switch_Translation 0 0 0
+  exposedField SFVec3f Switch_Scale 1 1 1
+  exposedField MFString Switch_Caption "Switch" 
+  eventOut SFBool Switch_State 
+]
+{
+  Transform {
+    translation IS Switch_Translation
+    scale IS Switch_Scale
+    children [
+      Transform {
+        translation 0 0.2 0
+        children Shape {
+          geometry Cylinder {
+            radius 2.2
+            height 0.4
+          }
+          appearance Appearance {
+            material Material {
+              specularColor 0.39 0.39 0.39
+              shininess 0.11
+              diffuseColor 0.61 0.61 0.61
+              ambientIntensity 0.25
+            }
+          }
+        }
+      }
+      Transform {
+        translation -1.5 0.1 4.6
+        rotation 1 0 0 -1.5708
+        children Shape {
+          geometry Text {
+            fontStyle FontStyle {
+              style "BOLD"
+              size 1.2
+              family "SANS" 
+            }
+            string IS Switch_Caption
+          }
+          appearance Appearance {
+            material Material {
+              specularColor 0.5 0.5 0.5
+              emissiveColor 0 0 0.13
+              diffuseColor 0 0 0
+              ambientIntensity 0
+            }
+          }
+        }
+      }
+      Transform {
+        scale 1 0.5 1
+        children [
+          DEF SwitchButton_Sensor TouchSensor {
+          }
+          DEF SwitchButton_Core Transform {
+            translation 0 1 0
+            children Shape {
+              geometry Cylinder {
+                radius 1.5
+              }
+              appearance Appearance {
+                material DEF SwitchButton_Mat Material {
+                  specularColor 0.5 0.5 0.5
+                  emissiveColor 0 0.15 0
+                  diffuseColor 0 0 0
+                  ambientIntensity 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  DEF SwitchButton_Script Script {
+    eventIn SFBool SButton_Active 
+    field SFNode Node1 USE SwitchButton_Mat
+    field SFNode Node2 USE SwitchButton_Core
+    eventOut SFBool state IS Switch_State
+    url "vrmlscript:
+	 function SButton_Active (value) {
+
+		 if (state)
+		 { 
+			 if (value) {
+				 Node1.diffuseColor = new SFColor (0, 0, 0);
+				 Node2.translation = new SFVec3f (0, 1, 0);
+				 state = FALSE;
+			 }
+		 }
+		 else 
+		 {
+		  if (value) {
+				 Node1.diffuseColor = new SFColor (0, 0, 0);
+				 Node2.translation = new SFVec3f (0, 0, 0);		
+				 state = TRUE;
+			 }
+		 }
+		
+	 }
+	 " 
+  }
+  ROUTE SwitchButton_Sensor.isActive TO SwitchButton_Script.SButton_Active
+}
+
+PROTO SetPoint_Area [
+  exposedField SFVec3f Marker_Translation 0 0 0
+  exposedField SFInt32 Marker_Visible 0
+  eventOut SFVec3f SetPoint_Changed 
+  eventOut SFBool isActive 
+]
+{
+  Switch {
+    whichChoice IS Marker_Visible
+    choice Transform {
+      translation IS Marker_Translation
+      children Shape {
+        geometry Cone {
+          height 0.1
+          bottomRadius 0.05
+        }
+        appearance Appearance {
+          material Material {
+            diffuseColor 0 1 0
+          }
+        }
+      }
+    }
+  }
+  DEF Plane_with_Sensor Transform {
+    children [
+      DEF Touch_Sensor TouchSensor {
+        isActive IS isActive
+        hitPoint_changed IS SetPoint_Changed
+      }
+      Shape {
+        geometry IndexedFaceSet {
+          coordIndex [
+            0, 1, 2, 3, -1 
+          ]
+          coord DEF Sensor_Coord Coordinate {
+            point [
+              -1 0 1,
+              1 0 1,
+              1 0 -1,
+              -1 0 -1 
+            ]
+          }
+        }
+        appearance Appearance {
+          material Material {
+            transparency 0.8
+            diffuseColor 0 0 1
+          }
+        }
+      }
+    ]
+  }
+}
+
+PROTO Push_Button [
+  exposedField MFString Button_Caption [
+  "Push" 
+  "Button" 
+]
+  exposedField SFVec3f Button_Scale 1 1 1
+  exposedField SFVec3f Button_Translation 0 0 0
+  eventOut SFBool Button_State 
+]
+{
+  Transform {
+    translation IS Button_Translation
+    scale IS Button_Scale
+    children [
+      Transform {
+        translation 0 0.2 0
+        children Shape {
+          geometry Cylinder {
+            radius 2.2
+            height 0.4
+          }
+          appearance Appearance {
+            material Material {
+              specularColor 0.39 0.39 0.39
+              shininess 0.11
+              diffuseColor 0.61 0.61 0.61
+              ambientIntensity 0.25
+            }
+          }
+        }
+      }
+      Transform {
+        translation -1.5 0.1 4.5
+        rotation 1 0 0 -1.5708
+        children Shape {
+          geometry Text {
+            fontStyle FontStyle {
+              style "BOLD"
+              size 1.2
+              family "SANS" 
+            }
+            string IS Button_Caption
+          }
+          appearance Appearance {
+            material Material {
+              specularColor 0.5 0.5 0.5
+              diffuseColor 0 0 0
+              ambientIntensity 0
+            }
+          }
+        }
+      }
+      Transform {
+        scale 1 0.5 1
+        children [
+          DEF PushButton_Sensor TouchSensor {
+          }
+          DEF PushButton_Core Transform {
+            translation 0 1 0
+            children Shape {
+              geometry Cylinder {
+                radius 1.5
+              }
+              appearance Appearance {
+                material DEF PushButton_Mat Material {
+                  specularColor 0.5 0.5 0.5
+                  emissiveColor 0 0.15 0
+                  diffuseColor 0 0 0
+                  ambientIntensity 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  DEF PushButton_Script Script {
+    eventIn SFBool PButton_Active 
+    field SFNode Node1 USE PushButton_Mat
+    field SFNode Node2 USE PushButton_Core
+    eventOut SFBool state IS Button_State
+    url "vrmlscript:
+	 function PButton_Active (value) {
+
+		 if (state)
+		 { 
+			 Node1.diffuseColor = new SFColor (0, 0, 0);
+			 Node2.translation = new SFVec3f (0, 1, 0);
+			 state = FALSE;
+		 }
+		 else 
+		 { 
+			 Node1.diffuseColor = new SFColor (0.4, 0, 0);
+			 Node2.translation = new SFVec3f (0, 0, 0);		
+			 state = TRUE;
+		 }
+		
+	 }
+	 " 
+  }
+  ROUTE PushButton_Sensor.isActive TO PushButton_Script.PButton_Active
+}
+
+PROTO ON_OFF_Switch [
+  exposedField SFVec3f Switch_Translation 0 0 0
+  exposedField SFVec3f Switch_Scale 0 0 0
+  exposedField MFString Switch_Caption "Switch" 
+  eventOut SFBool Switch_State 
+]
+{
+  Transform {
+    translation IS Switch_Translation
+    scale IS Switch_Scale
+    children [
+      Transform {
+        translation 0 0.2 0
+        children Shape {
+          geometry Cylinder {
+            radius 2.2
+            height 0.4
+          }
+          appearance Appearance {
+            material Material {
+              specularColor 0.39 0.39 0.39
+              shininess 0.11
+              diffuseColor 0.61 0.61 0.61
+              ambientIntensity 0.25
+            }
+          }
+        }
+      }
+      Transform {
+        translation -1.5 0.1 4.6
+        rotation 1 0 0 -1.5708
+        children Shape {
+          geometry Text {
+            fontStyle FontStyle {
+              style "BOLD"
+              size 1.2
+              family "SANS" 
+            }
+            string IS Switch_Caption
+          }
+          appearance Appearance {
+            material Material {
+              specularColor 0.5 0.5 0.5
+              emissiveColor 0 0 0.13
+              diffuseColor 0 0 0.72
+              ambientIntensity 0
+            }
+          }
+        }
+      }
+      Transform {
+        scale 1 0.5 1
+        children [
+          DEF SwitchButton_Sensor TouchSensor {
+          }
+          DEF SwitchButton_Core Transform {
+            translation 0 1 0
+            children Shape {
+              geometry Cylinder {
+                radius 1.5
+              }
+              appearance Appearance {
+                material DEF SwitchButton_Mat Material {
+                  specularColor 0.5 0.5 0.5
+                  emissiveColor 0 0.15 0
+                  diffuseColor 0 0.4 0
+                  ambientIntensity 0
+                }
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+  DEF SwitchButton_Script Script {
+    eventIn SFBool SButton_Active 
+    field SFNode Node1 USE SwitchButton_Mat
+    field SFNode Node2 USE SwitchButton_Core
+    eventOut SFBool state IS Switch_State
+    url "vrmlscript:
+	 function SButton_Active (value) {
+
+		 if (state)
+		 { 
+			 if (value) {
+				 Node1.diffuseColor = new SFColor (0, 0.4, 0);
+				 Node2.translation = new SFVec3f (0, 1, 0);
+				 state = FALSE;
+			 }
+		 }
+		 else 
+		 {
+		  if (value) {
+				 Node1.diffuseColor = new SFColor (0.4, 0, 0);
+				 Node2.translation = new SFVec3f (0, 0, 0);		
+				 state = TRUE;
+			 }
+		 }
+		
+	 }
+	 " 
+  }
+  ROUTE SwitchButton_Sensor.isActive TO SwitchButton_Script.SButton_Active
+}
+
+DEF No_Moving Transform {
+  children [
+    Shape {
+      geometry Cylinder {
+        radius 1.4
+        height 0.4
+      }
+      appearance Appearance {
+        material Material {
+          diffuseColor 0.941176 0.941176 0.941176
+        }
+      }
+    }
+    Transform {
+      translation 5 0 0
+      children [
+        Transform {
+          translation -2.6 0.5 0
+          children [
+            Transform {
+              translation 1 0 0.9
+              children [
+                Transform {
+                  translation 0 0 -1.8
+                  children [
+                    Transform {
+                    }
+                    Shape {
+                      geometry Box {
+                        size 2 0.7 0.2
+                      }
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0.941176 0.941176 0.941176
+                        }
+                      }
+                    }
+                  ]
+                }
+                Shape {
+                  geometry Box {
+                    size 2 0.7 0.2
+                  }
+                  appearance Appearance {
+                    material Material {
+                      diffuseColor 0.941176 0.941176 0.941176
+                    }
+                  }
+                }
+              ]
+            }
+            Shape {
+              geometry Box {
+                size 0.2 0.7 2
+              }
+              appearance Appearance {
+                material Material {
+                  diffuseColor 0.941176 0.941176 0.941176
+                }
+              }
+            }
+          ]
+        }
+        Shape {
+          geometry Box {
+            size 6 0.3 3
+          }
+          appearance Appearance {
+            material Material {
+              diffuseColor 0.941176 0.941176 0.941176
+            }
+          }
+        }
+      ]
+    }
+    Appearance {
+      material Material {
+        diffuseColor 0.941176 0.941176 0.941176
+      }
+    }
+  ]
+}
+DEF Kran Transform {
+  translation 0 2 0
+  rotation 0 1 0 0
+  children [
+    DEF Main Transform {
+      translation 0 -1 0
+      children DEF Kran_Sockel Transform {
+        children [
+          DEF Kran_Zyl Transform {
+            translation 0 1.3 0
+            children [
+              DEF Zyl Shape {
+                geometry Cylinder {
+                  radius 0.15
+                  height 2.2
+                }
+                appearance Appearance {
+                  material Material {
+                  }
+                }
+              }
+              Transform {
+                translation -0.4 0.45 0
+                children [
+                  DEF Mast_Transform Transform {
+                    translation 1.8 0.75 0
+                    children [
+                      DEF Ausleger_Shape Shape {
+                        geometry Box {
+                          size 3.8 0.5 0.5
+                        }
+                        appearance Appearance {
+                          material Material {
+                          }
+                        }
+                      }
+                      DEF AIS_Logo Transform {
+                        children Transform {
+                          translation 0.1 0.6 -1.78
+                          rotation 1 0 0 1.507
+                          children Shape {
+                            geometry IndexedFaceSet {
+                              solid FALSE
+                              creaseAngle 1
+                              coordIndex [
+                                0, 1, 2, 3, -1 
+                              ]
+                              colorPerVertex FALSE
+                              texCoord TextureCoordinate {
+                                point [
+                                  0 0,
+                                  1 0,
+                                  1 1,
+                                  0 1 
+                                ]
+                              }
+                              coord Coordinate {
+                                point [
+                                  -1 2 1,
+                                  1 2 1,
+                                  1 2 0.5,
+                                  -1 2 0.5 
+                                ]
+                              }
+                            }
+                            appearance Appearance {
+                              texture ImageTexture {
+                                url "AIS.png" 
+                              }
+                            }
+                          }
+                        }
+                      }
+                      Transform {
+                      }
+                      DEF Ausleger_Transform Transform {
+                        translation 2.1 0 0
+                        children [
+                          DEF Kran_Zylinder Transform {
+                            translation 0 -0.75 0
+                            children [
+                              DEF Kolben Cylinder {
+                                radius 0.1
+                                height 1
+                              }
+                              DEF Kolben_Transform Transform {
+                                translation 0 -0.45 0
+                                children Shape {
+                                  geometry DEF Halter Cone {
+                                    height 0.3
+                                    bottomRadius 0.4
+                                  }
+                                  appearance Appearance {
+                                    material Material {
+                                    }
+                                  }
+                                }
+                              }
+                            ]
+                          }
+                          DEF Zylinder Cylinder {
+                            radius 0.3
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                  Shape {
+                    geometry Box {
+                      size 0.2 2 0.9
+                    }
+                    appearance Appearance {
+                      material Material {
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+          DEF Mast_Shape Shape {
+            geometry Box {
+              size 0.5 2 1.5
+            }
+            appearance Appearance {
+              material Material {
+              }
+            }
+          }
+        ]
+      }
+    }
+    Appearance {
+      material Material {
+        diffuseColor 0.941176 0.941176 0.941176
+      }
+    }
+  ]
+}
+DEF Band Group {
+  children [
+    DEF Foerderband_Vereinzler_2 Transform {
+      translation 2 0.5 -8.2
+      children [
+        Transform {
+          translation -0.5 0 -4.2
+          children [
+            Box {
+              size 0.2 1 1
+            }
+            Transform {
+              translation 0.4 0 0
+              rotation 0 0 1 1.5708
+              children [
+                Cylinder {
+                  radius 0.3
+                  height 1.5
+                }
+                DEF Foerd_Vereinz_2 Transform {
+                  translation 0 -1 0
+                  children [
+                    Cylinder {
+                      radius 0.1
+                      height 4
+                    }
+                    Transform {
+                      translation 0.05 2 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+        Appearance {
+          material Material {
+          }
+        }
+      ]
+    }
+    DEF Foerderband_Vereinzler_1 Transform {
+      translation 2 0.5 -8.3
+      children [
+        Transform {
+          translation -0.5 0 0
+          children [
+            Box {
+              size 0.2 1 1
+            }
+            Transform {
+              translation 0.4 0 0
+              rotation 0 0 1 1.5708
+              children [
+                Cylinder {
+                  radius 0.3
+                  height 1.5
+                }
+                DEF Foerd_Vereinz_1 Transform {
+                  translation 0 -1 0
+                  children [
+                    Cylinder {
+                      radius 0.1
+                      height 4
+                    }
+                    Transform {
+                      translation 0.05 2 0
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+        Appearance {
+          material Material {
+            diffuseColor 0.941176 0.941176 0.941176
+          }
+        }
+      ]
+    }
+    DEF Band_Lager_3 Transform {
+      translation 0 -0.5 -17
+      rotation -1 0 0 0.2
+      children [
+        DEF Lager_3 Box {
+          size 2 0.3 5
+        }
+        Transform {
+          translation 0 0 -2.6
+          children [
+            Shape {
+              geometry Box {
+                size 2.2 0.7 0.2
+              }
+              appearance Appearance {
+                material Material {
+                }
+              }
+            }
+            Transform {
+              translation -1.05 0 2.15
+              children [
+                Shape {
+                  geometry Box {
+                    size 0.2 0.7 4.5
+                  }
+                  appearance Appearance {
+                    material Material {
+                    }
+                  }
+                }
+                Transform {
+                  translation 2.1 0 0
+                  children Shape {
+                    geometry Box {
+                      size 0.2 0.7 4.5
+                    }
+                    appearance Appearance {
+                      material Material {
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    DEF Foerderband Transform {
+      translation 0 0 -6.75
+      children Transform {
+        translation 0 0 -2
+        children [
+          Transform {
+            translation -3 0 4
+            children Transform {
+              translation 0 0 -3.5
+              children Transform {
+                translation 3 0 -4.5
+                children Transform {
+                  translation 1.5 0 4
+                  children [
+                    Box {
+                      size 1.5 0.3 12
+                    }
+                    Transform {
+                      translation -3 0 0
+                      children [
+                        Box {
+                          size 1.5 0.3 12
+                        }
+                        Transform {
+                          translation -3.1 -0.5 0.5
+                          rotation 0 0 1 0.2
+                          children [
+                            DEF Lager1 Box {
+                              size 5 0.3 2
+                            }
+                            Transform {
+                              translation 0 0 -4.07
+                              children [
+                                DEF Lager2 Box {
+                                  size 5 0.3 2
+                                }
+                                Transform {
+                                  translation -0.3 0.175 -1.05
+                                  children [
+                                    Shape {
+                                      geometry Box {
+                                        size 4.5 0.7 0.2
+                                      }
+                                      appearance Appearance {
+                                        material Material {
+                                        }
+                                      }
+                                    }
+                                    Transform {
+                                      translation 0 0 2.1
+                                      children [
+                                        Shape {
+                                          geometry Box {
+                                            size 4.5 0.7 0.2
+                                          }
+                                          appearance Appearance {
+                                            material Material {
+                                            }
+                                          }
+                                        }
+                                        Transform {
+                                          translation 0 0 1.95
+                                          children [
+                                            Shape {
+                                              geometry Box {
+                                                size 4.5 0.7 0.2
+                                              }
+                                              appearance Appearance {
+                                                material Material {
+                                                }
+                                              }
+                                            }
+                                            Transform {
+                                              translation 0 0 2.12
+                                              children [
+                                                Shape {
+                                                  geometry Box {
+                                                    size 4.5 0.7 0.2
+                                                  }
+                                                  appearance Appearance {
+                                                    material Material {
+                                                    }
+                                                  }
+                                                }
+                                                Transform {
+                                                  translation -2.15 0 -1
+                                                  children [
+                                                    Shape {
+                                                      geometry Box {
+                                                        size 0.2 0.7 2.2
+                                                      }
+                                                      appearance Appearance {
+                                                        material Material {
+                                                        }
+                                                      }
+                                                    }
+                                                    Transform {
+                                                      translation 0 0 -4.1
+                                                      children Shape {
+                                                        geometry Box {
+                                                          size 0.2 0.7 2.2
+                                                        }
+                                                        appearance Appearance {
+                                                          material Material {
+                                                          }
+                                                        }
+                                                      }
+                                                    }
+                                                  ]
+                                                }
+                                              ]
+                                            }
+                                          ]
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+          Shape {
+            geometry Box {
+              size 1.5 0.3 12
+            }
+            appearance Appearance {
+              material Material {
+                diffuseColor 0.2 0.8 0
+              }
+            }
+          }
+        ]
+      }
+    }
+    DEF Band_Sensoren Transform {
+      translation 1.5 0.4 -3.5
+      children [
+        Transform {
+          rotation 0 0 1 1.5708
+          children [
+            Transform {
+              translation 0 3 0
+              children [
+                Transform {
+                  children Transform {
+                    children [
+                      Cylinder {
+                        radius 0.1
+                        height 0.8
+                      }
+                      Transform {
+                        translation 0 0 -3
+                        children [
+                          Box {
+                            size 0.5 0.2 0.5
+                          }
+                          Transform {
+                            children [
+                              Cylinder {
+                                radius 0.1
+                                height 0.8
+                              }
+                              Transform {
+                                translation 0 -3 0
+                                children [
+                                  Box {
+                                    size 0.5 0.2 0.5
+                                  }
+                                  Transform {
+                                    children [
+                                      Cylinder {
+                                        radius 0.1
+                                        height 0.8
+                                      }
+                                      Transform {
+                                        translation 0 0 -3.86
+                                        children [
+                                          Box {
+                                            size 0.5 0.2 0.5
+                                          }
+                                          Transform {
+                                            children [
+                                              Cylinder {
+                                                radius 0.1
+                                                height 0.8
+                                              }
+                                              Transform {
+                                                translation 0 3 0
+                                                children [
+                                                  Box {
+                                                    size 0.5 0.2 0.5
+                                                  }
+                                                  Transform {
+                                                    children [
+                                                      Cylinder {
+                                                        radius 0.1
+                                                        height 0.8
+                                                      }
+                                                      Transform {
+                                                        translation 0 0 -3.5
+                                                        children [
+                                                          Box {
+                                                            size 0.5 0.2 0.5
+                                                          }
+                                                          Cylinder {
+                                                            radius 0.1
+                                                            height 0.8
+                                                          }
+                                                        ]
+                                                      }
+                                                    ]
+                                                  }
+                                                ]
+                                              }
+                                            ]
+                                          }
+                                        ]
+                                      }
+                                    ]
+                                  }
+                                ]
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+                Box {
+                  size 0.5 0.2 0.5
+                }
+              ]
+            }
+            Cylinder {
+              radius 0.1
+              height 0.8
+            }
+          ]
+        }
+        Box {
+          size 0.2 0.5 0.5
+        }
+      ]
+    }
+  ]
+}
+DEF Bauteile Group {
+  children [
+    DEF Bauteil_1 Transform {
+      translation 5.75 0.6 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B1_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_2 Transform {
+      translation 5.75 1.65 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B2_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_3 Transform {
+      translation 5.75 2.7 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B3_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_4 Transform {
+      translation 5.75 3.75 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B4_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_5 Transform {
+      translation 5.75 4.8 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B5_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_6 Transform {
+      translation 5.75 5.85 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B6_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_7 Transform {
+      translation 5.75 6.9 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B7_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_8 Transform {
+      translation 5.75 7.95 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B8_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+    DEF Bauteil_9 Transform {
+      translation 5.75 9 0
+      children Shape {
+        geometry Cylinder {
+          radius 0.5
+          height 1
+        }
+        appearance Appearance {
+          material DEF B9_Material Material {
+            diffuseColor 1 1 1
+          }
+        }
+      }
+    }
+  ]
+}
+DEF Magazin Group {
+  children [
+    DEF Lager Transform {
+      translation 5 5.5 0
+      children [
+        Transform {
+          translation 0 -0.75 0.7
+          children [
+            Cylinder {
+              radius 0.1
+              height 9
+            }
+            Transform {
+              translation 0 0 -1.4
+              children [
+                Cylinder {
+                  radius 0.1
+                  height 9
+                }
+                Transform {
+                  translation 0.7 0 0
+                  children [
+                    Cylinder {
+                      radius 0.1
+                      height 9
+                    }
+                    Transform {
+                      translation 0.7 0 0
+                      children [
+                        Cylinder {
+                          radius 0.1
+                          height 9
+                        }
+                        Transform {
+                          translation 0 0.75 0.7
+                          children [
+                            Cylinder {
+                              radius 0.1
+                              height 8
+                            }
+                            Transform {
+                              translation 0 -0.75 0.7
+                              children [
+                                Cylinder {
+                                  radius 0.1
+                                  height 9
+                                }
+                                Transform {
+                                  translation -0.7 0 0
+                                  children [
+                                    Cylinder {
+                                      radius 0.1
+                                      height 9
+                                    }
+                                    Transform {
+                                      translation 0.7 -3.25 -0.7
+                                      rotation 1 0 0 1.5707
+                                      children [
+                                        Cylinder {
+                                          radius 0.1
+                                          height 1.35
+                                        }
+                                        Transform {
+                                          translation -1.4 0 0
+                                          rotation 1 0 0 0
+                                          children Cylinder {
+                                            radius 0.1
+                                            height 1.35
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  ]
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+        Shape {
+          geometry Cylinder {
+            radius 0.1
+            height 8
+          }
+          appearance Appearance {
+            material Material {
+              diffuseColor 0.941176 0.941176 0.941176
+            }
+          }
+        }
+      ]
+    }
+    DEF Lager_Vereinzler Transform {
+      translation 7.5 0.5 0
+      children [
+        DEF A Transform {
+          translation -0.5 0 0
+          children [
+            Box {
+              size 0.2 1 1
+            }
+            DEF B Transform {
+              translation 0.4 0 0
+              rotation 0 0 1 1.5708
+              children [
+                Cylinder {
+                  radius 0.3
+                  height 1.5
+                }
+                DEF Lager_Vereinz_Translation Transform {
+                  translation 0 -0.6 0
+                  children [
+                    Cylinder {
+                      radius 0.1
+                      height 3
+                    }
+                    DEF D Transform {
+                      translation 0.15 1.6 0
+                      children [
+                        Box {
+                          size 1 0.25 1
+                        }
+                        Transform {
+                          translation 0.45 -1.5 0
+                          children Box {
+                            size 0.1 3 1
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+        Box {
+          size 0.2 1 1
+        }
+        Appearance {
+          material Material {
+          }
+        }
+      ]
+    }
+    DEF Lager_Deckel Transform {
+      translation 5 9.4 0
+      children [
+        Box {
+          size 0.2 0.4 1.6
+        }
+        Transform {
+          translation 1.4 0 0
+          children [
+            Box {
+              size 0.2 0.4 1.6
+            }
+            Transform {
+              translation -0.7 0 -0.7
+              children [
+                Box {
+                  size 1.6 0.4 0.2
+                }
+                Transform {
+                  translation 0 0 1.4
+                  children Box {
+                    size 1.6 0.4 0.2
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+    DEF Sensor_Lager Transform {
+      translation 3 0 1.5
+      children [
+        Transform {
+          translation 0 0.75 0
+          rotation 1 0 0 1.5708
+          children [
+            Box {
+              size 0.5 0.2 1.5
+            }
+            Transform {
+              translation 0 0 -0.25
+              rotation 1 0 0 0
+              children Cylinder {
+                radius 0.1
+                height 0.8
+              }
+            }
+          ]
+        }
+        Shape {
+          geometry Box {
+            size 2 0.3 1
+          }
+          appearance Appearance {
+            material Material {
+              diffuseColor 0.941176 0.941176 0.941176
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
+DEF Stempel Group {
+  children [
+    DEF Stempel_No_Moving Transform {
+      translation -5 0 0
+      children [
+        Transform {
+          translation -1 0.75 1
+          children [
+            Transform {
+              translation -1 0 0
+              children [
+                Transform {
+                  translation 0 0 -2
+                  children [
+                    Transform {
+                      translation 1 0 0
+                      children [
+                        Transform {
+                          translation -0.5 0.75 1
+                          children [
+                            Transform {
+                              translation 0 0.25 0
+                              children [
+                                Transform {
+                                  translation 0 1 0
+                                  children [
+                                    Transform {
+                                      translation 1 0.5 0
+                                      children [
+                                        Transform {
+                                          translation 0 -1 0
+                                          children [
+                                            Transform {
+                                              translation 0.75 0.75 0
+                                              children Shape {
+                                                geometry Cylinder {
+                                                  radius 0.3
+                                                  height 2.25
+                                                }
+                                                appearance Appearance {
+                                                  material Material {
+                                                    diffuseColor 0.941176 0.941176 0.941176
+                                                  }
+                                                }
+                                              }
+                                            }
+                                            Shape {
+                                              geometry Box {
+                                                size 1.5 0.5 0.5
+                                              }
+                                              appearance Appearance {
+                                                material Material {
+                                                  diffuseColor 0.941176 0.941176 0.941176
+                                                }
+                                              }
+                                            }
+                                          ]
+                                        }
+                                        Shape {
+                                          geometry Box {
+                                            size 1.5 0.5 0.5
+                                          }
+                                          appearance Appearance {
+                                            material Material {
+                                              diffuseColor 0.941176 0.941176 0.941176
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                    Shape {
+                                      geometry Cylinder {
+                                        radius 0.4
+                                      }
+                                      appearance Appearance {
+                                        material Material {
+                                          diffuseColor 0.941176 0.941176 0.941176
+                                        }
+                                      }
+                                    }
+                                  ]
+                                }
+                                Shape {
+                                  geometry Cylinder {
+                                    radius 0.75
+                                    height 0.15
+                                  }
+                                  appearance Appearance {
+                                    material Material {
+                                      diffuseColor 0.941176 0.941176 0.941176
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                            Shape {
+                              geometry Box {
+                                size 2 0.25 2.5
+                              }
+                              appearance Appearance {
+                                material Material {
+                                  diffuseColor 0.941176 0.941176 0.941176
+                                }
+                              }
+                            }
+                          ]
+                        }
+                        Shape {
+                          geometry Cylinder {
+                            radius 0.2
+                            height 1.5
+                          }
+                          appearance Appearance {
+                            material Material {
+                              diffuseColor 0.941176 0.941176 0.941176
+                            }
+                          }
+                        }
+                      ]
+                    }
+                    Shape {
+                      geometry Cylinder {
+                        radius 0.2
+                        height 1.5
+                      }
+                      appearance Appearance {
+                        material Material {
+                          diffuseColor 0.941176 0.941176 0.941176
+                        }
+                      }
+                    }
+                  ]
+                }
+                Shape {
+                  geometry Cylinder {
+                    radius 0.2
+                    height 1.5
+                  }
+                  appearance Appearance {
+                    material Material {
+                      diffuseColor 0.941176 0.941176 0.941176
+                    }
+                  }
+                }
+              ]
+            }
+            Shape {
+              geometry Cylinder {
+                radius 0.2
+                height 1.5
+              }
+              appearance Appearance {
+                material Material {
+                  diffuseColor 0.941176 0.941176 0.941176
+                }
+              }
+            }
+          ]
+        }
+        Shape {
+          geometry Box {
+            size 6 0.3 3
+          }
+          appearance Appearance {
+            material Material {
+              diffuseColor 0.941176 0.941176 0.941176
+            }
+          }
+        }
+      ]
+    }
+    DEF Stempel_Zylinder Transform {
+      translation -4.75 3.75 0
+      children [
+        Transform {
+          translation 0 -2 0
+          children Cylinder {
+            radius 0.5
+            height 0.1
+          }
+        }
+        Cylinder {
+          radius 0.1
+          height 4
+        }
+        Appearance {
+          material Material {
+            diffuseColor 0.941176 0.941176 0.941176
+          }
+        }
+      ]
+    }
+    DEF Stempel_Vereinzler Transform {
+      translation -6.5 0.5 0
+      children [
+        Transform {
+          translation -1 0 0
+          children [
+            Box {
+              size 0.2 1 2
+            }
+            Transform {
+              translation 0.5 0 0
+              rotation 0 0 1 1.5708
+              children [
+                Cylinder {
+                  radius 0.3
+                  height 1.5
+                }
+                DEF Stempel_Halterung Transform {
+                  children [
+                    Cylinder {
+                      radius 0.1
+                      height 3.5
+                    }
+                    Transform {
+                      translation 0 -1.75 0
+                      children [
+                        Box {
+                          size 1 0.2 2
+                        }
+                        Transform {
+                          translation 0 -1.5 0
+                          children [
+                            Box {
+                              size 1 0.2 2
+                            }
+                            Transform {
+                              translation 0 0.75 -0.9
+                              children [
+                                Transform {
+                                  translation 0 0 1.8
+                                  children Box {
+                                    size 1 1.5 0.2
+                                  }
+                                }
+                                Box {
+                                  size 1 1.4 0.2
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+            Appearance {
+              material Material {
+              }
+            }
+          ]
+        }
+        Box {
+          size 0.2 1 2
+        }
+        Appearance {
+          material Material {
+            diffuseColor 0.941176 0.941176 0.941176
+          }
+        }
+      ]
+    }
+  ]
+}
+DirectionalLight {
+  direction 0 -1 -0.6
+}
+Background {
+  skyColor [
+    0 0.1 0.8,
+    0 0.5 1,
+    1 1 1 
+  ]
+  skyAngle [0.785, 1.571]
+  groundColor [
+    0.2 0.2 0.2,
+    0.4 0.4 0.4,
+    0.8 0.8 0.8 
+  ]
+  groundAngle [0.785, 1.571]
+}
+NavigationInfo {
+  type "EXAMINE" 
+  headlight FALSE
+}
+DEF Knoepfe_und_Konsole Group {
+  children [
+    DEF Switch_Lager_On_Off Transform {
+      translation 3 0.1 5
+      children DEF Switch_1 Push_Button {
+        Button_Caption "Start" 
+        Button_Scale 0.3 0.3 0.3
+      }
+    }
+    DEF Konsole_Lager Transform {
+      translation 5 0 4.5
+      children [
+        Shape {
+          geometry Box {
+            size 6 0.2 4
+          }
+          appearance Appearance {
+            material Material {
+            }
+          }
+        }
+        DEF Lager_Lampe_Gruen Transform {
+          translation -2 0.2 -1
+          children [
+            Shape {
+              geometry Cylinder {
+                radius 0.5
+                height 0.3
+              }
+              appearance Appearance {
+                material DEF Lampe_1 Material {
+                  emissiveColor 0.2 0.2 0.2
+                }
+              }
+            }
+            DEF Lager_Lampe_Weiss Transform {
+              translation 2 0 0
+              children Shape {
+                geometry Cylinder {
+                  radius 0.5
+                  height 0.3
+                }
+                appearance Appearance {
+                  material DEF Lampe_2 Material {
+                    emissiveColor 0.2 0.2 0.2
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+    DEF Switch_Lager_Not_Aus Transform {
+      translation 5 0.1 5
+      children DEF Switch_2 Switch_Button {
+        Switch_Scale 0.3 0.3 0.3
+        Switch_Caption "Not Aus" 
+      }
+    }
+    DEF Konsole_Stempel Transform {
+      translation -6 0 4.5
+      children [
+        Shape {
+          geometry Box {
+            size 4 0.2 4
+          }
+          appearance Appearance {
+            material Material {
+            }
+          }
+        }
+        Transform {
+          translation -1 0.2 -1
+          children [
+            Shape {
+              geometry Cylinder {
+                radius 0.5
+                height 0.3
+              }
+              appearance Appearance {
+                material DEF Lampe_3 Material {
+                  emissiveColor 0.2 0.2 0.2
+                }
+              }
+            }
+            Transform {
+              translation 2 0 0
+              children Shape {
+                geometry Cylinder {
+                  radius 0.5
+                  height 0.3
+                }
+                appearance Appearance {
+                  material DEF Lampe_4 Material {
+                    emissiveColor 0.2 0.2 0.2
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+    DEF Switch_Stempel_On_Off Transform {
+      translation -7 0.1 5
+      children DEF Switch_3 Push_Button {
+        Button_Caption "Start" 
+        Button_Scale 0.3 0.3 0.3
+      }
+    }
+    DEF Switch_Stempel_Not_Aus Transform {
+      translation -5 0.1 5
+      children DEF Switch_4 Switch_Button {
+        Switch_Scale 0.3 0.3 0.3
+        Switch_Caption "Not Aus" 
+      }
+    }
+    DEF Konsole_Band Transform {
+      translation 7 0 -8
+      rotation 0 1 0 1.5707
+      children [
+        Shape {
+          geometry Box {
+            size 4 0.2 4
+          }
+          appearance Appearance {
+            material Material {
+            }
+          }
+        }
+        Transform {
+          translation -1 0.2 -1
+          children [
+            Shape {
+              geometry Cylinder {
+                radius 0.5
+                height 0.3
+              }
+              appearance Appearance {
+                material DEF Lampe_5 Material {
+                  emissiveColor 0.2 0.2 0.2
+                }
+              }
+            }
+            Transform {
+              translation 2 0 0
+              children Shape {
+                geometry Cylinder {
+                  radius 0.5
+                  height 0.3
+                }
+                appearance Appearance {
+                  material DEF Lampe_6 Material {
+                    emissiveColor 0.2 0.2 0.2
+                  }
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+    DEF Switch_Band_On_Off Transform {
+      translation 7.5 0.1 -7
+      rotation 0 1 0 1.5707
+      children DEF Switch_5 Push_Button {
+        Button_Caption "Start" 
+        Button_Scale 0.3 0.3 0.3
+      }
+    }
+    DEF Switch_Band_Not_Aus Transform {
+      translation 7.5 0.1 -9
+      rotation 0 1 0 1.5707
+      children DEF Switch_6 Switch_Button {
+        Switch_Scale 0.3 0.3 0.3
+        Switch_Caption "Not Aus" 
+      }
+    }
+    DEF Taster Transform {
+      translation 7 0.1 5
+      rotation 0 1 0 0
+      children DEF Taster_1 Push_Button {
+        Button_Caption "Shuffle" 
+        Button_Scale 0.3 0.3 0.3
+      }
+    }
+  ]
+}

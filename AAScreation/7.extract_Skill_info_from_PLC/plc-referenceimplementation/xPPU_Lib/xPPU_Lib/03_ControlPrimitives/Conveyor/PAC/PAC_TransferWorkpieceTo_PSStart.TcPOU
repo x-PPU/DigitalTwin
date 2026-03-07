@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PAC_TransferWorkpieceTo_PSStart" Id="{45adfc66-1c0e-4538-97b5-917634b1005e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PAC_TransferWorkpieceTo_PSStart EXTENDS PAC_MoveWorkpiece_Base
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// (EProcessVariables.LSC_ProductType = 4) AND (EProcessVariables.PAC_WPNumber < 3)
+	m_compExpr120: ComparisonExpression(EProcessVariables.LSC_ProductType, EComparisonType.equals, EDataType.numeric, FALSE, 4, '', TRUE);
+	m_compExpr122: ComparisonExpression(EProcessVariables.PAC_WPNumber, EComparisonType.less, EDataType.numeric, FALSE, 3, '', TRUE);
+	m_precondition: BoolExpression(m_compExpr120, EBoolOperation.and_op, m_compExpr122);
+	
+	// EProcessVariables.PAC_WPAtStart = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.PAC_WPAtStart, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_timer: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{7c7695dc-def5-4d6c-ab8b-a062d02354cd}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+
+m_timer(IN := TRUE, PT := T#2500MS);
+IF m_timer.Q THEN
+	m_timer(IN := FALSE);
+	m_ptrPAC^.METH_IncreaseWPNumberAtPAC();
+	AtTarget := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{7a7c841c-1b3e-4137-bb32-8ca21ddfa99e}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//m_ptrPAC^.METH_IncreaseWPNumberAtPAC();
+EjectOperation := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{d740995f-f8e1-440b-902c-b9f0f5d98139}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPAC: POINTER TO PicAlphaConveyor;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPAC := i_ptrPAC;
+
+m_id := EPrimitives.PAC_TransferWorkpieceTo_PSStart;
+m_timeout := T#200S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PAC_TransferWorkpieceTo_PSStart">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PAC_TransferWorkpieceTo_PSStart.AtTarget">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+    <LineIds Name="PAC_TransferWorkpieceTo_PSStart.EjectOperation">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="PAC_TransferWorkpieceTo_PSStart.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

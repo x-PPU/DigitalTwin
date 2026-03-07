@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ObserveLSC" Id="{619a5ec8-262c-4a2d-99f0-ec249f1bf71e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ObserveLSC EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrLSC: POINTER TO LargeSortingConveyor;
+	m_ptrLSCWP: POINTER TO xPPUProduct;
+	
+	m_rtAtStart: R_TRIG;
+	m_rtLightAtStart: R_TRIG;
+	m_rtLightAtMid: R_TRIG;
+	m_rtLightAtEnd: R_TRIG;
+	m_rtMetalAtStart: R_TRIG;
+	m_rtMetalAtMid: R_TRIG;
+	m_rtWpAtRampStart: R_TRIG;
+	m_rtWpAtRampMiddle: R_TRIG;
+	m_rtWpAtRampEnd: R_TRIG;
+	
+	m_LSCemptytimeout: TON;
+	m_resetProductDefined: BOOL;
+	
+	m_didInit: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{c0dcac15-2833-4461-859c-3152b176418f}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+	i_ptrWP: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC := i_ptrLSC;
+m_ptrLSCWP := i_ptrWP;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{8099ef1e-0d36-498a-b13d-4e571e58df55}">
+      <Declaration><![CDATA[METHOD  ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_resetProductDefined := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{3631d7c3-a1ff-4125-90d1-3d1dfebce7e3}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_rtAtStart(CLK := m_ptrLSC^.WPAtStart);
+m_rtLightAtStart(CLK := m_ptrLSC^.LightWPAtStart);
+m_rtLightAtMid(CLK := m_ptrLSC^.LightWPAtMid);
+m_rtLightAtEnd(CLK := m_ptrLSC^.LightWPAtEnd);
+m_rtMetalAtStart(CLK := m_ptrLSC^.MetalWPAtStart);
+m_rtMetalAtMid(CLK := m_ptrLSC^.MetalWPAtMid);
+m_rtWpAtRampStart(CLK := m_ptrLSC^.WPAtRampStart);
+m_rtWpAtRampMiddle(CLK := m_ptrLSC^.WPAtRampMiddle);
+m_rtWpAtRampEnd(CLK := m_ptrLSC^.WPAtRampEnd);
+
+io_processState.UpdateState_Binary(EProcessVariables.LSC_WorkpieceAtEntry, m_ptrLSC^.WPAtStart, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_WPAtRampStart, m_ptrLSC^.WPAtRampStart, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_WPAtRampMiddle, m_ptrLSC^.WPAtRampMiddle, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_WPAtRampEnd, m_ptrLSC^.WPAtRampEnd, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_SwitchExtended, m_ptrLSC^.m_Switch.Extended, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_SwitchRetracted, m_ptrLSC^.m_Switch.Retracted, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_WPAtInductiveSensorEnd, m_ptrLSC^.MetalWPAtMid, TRUE);
+
+io_processState.UpdateState_Binary(EProcessVariables.LSC_LightWPAtEnd, m_ptrLSC^.LightWPAtEnd, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_LightWPAtMid, m_ptrLSC^.LightWPAtMid, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_LightWPAtStart, m_ptrLSC^.LightWPAtStart, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_MetalWPAtMid, m_ptrLSC^.MetalWPAtMid, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_LightWPAtStart, m_ptrLSC^.MetalWPAtStart, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_CylinderRampStartExtended, m_ptrLSC^.m_rampPusherStart.Extended, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_CylinderRampMidExtended, m_ptrLSC^.m_rampPusherMid.Extended, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_CylinderRampStartRetracted, m_ptrLSC^.m_rampPusherStart.Retracted, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.LSC_CylinderRampMidRetracted, m_ptrLSC^.m_rampPusherMid.Retracted, i_force := TRUE);
+
+IF NOT m_didInit THEN
+	io_processState.UpdateState_Numeric(EProcessVariables.LSC_RampStartWPCount, 0, TRUE);
+	io_processState.UpdateState_Numeric(EProcessVariables.LSC_RampMiddleWPCount, 0, TRUE);
+	io_processState.UpdateState_Numeric(EProcessVariables.LSC_RampEndWPCount, 0, TRUE);
+	m_didInit := TRUE;
+END_IF
+
+IF m_rtWpAtRampStart.Q THEN
+	io_processState.UpdateState_NumericIncrement(EProcessVariables.LSC_RampStartWPCount, TRUE);
+END_IF
+IF m_rtWpAtRampMiddle.Q THEN
+	io_processState.UpdateState_NumericIncrement(EProcessVariables.LSC_RampMiddleWPCount, TRUE);
+END_IF
+IF m_rtWpAtRampEnd.Q THEN
+	io_processState.UpdateState_NumericIncrement(EProcessVariables.LSC_RampEndWPCount, TRUE);
+END_IF
+
+io_processState.UpdateState_Defined(EProcessVariables.LSC_WorkpieceAtEntry, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_WPAtRampStart, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_WPAtRampMiddle, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_WPAtRampEnd, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_SwitchExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_SwitchRetracted, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_WPAtInductiveSensorEnd, TRUE);
+// TODO - the following are technically not defined but how can we avoid that?
+io_processState.UpdateState_Defined(EProcessVariables.LSC_RampStartWPCount, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_RampMiddleWPCount, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_RampEndWPCount, TRUE);
+
+io_processState.UpdateState_Defined(EProcessVariables.LSC_LightWPAtEnd, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_LightWPAtMid, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_LightWPAtStart, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_MetalWPAtMid, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_MetalWPAtStart, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_CylinderRampStartExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_CylinderRampMidExtended,TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_CylinderRampStartRetracted, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.LSC_CylinderRampMidRetracted,TRUE);
+
+// update WP info (if there are sensors available), then update the process variables list
+IF m_rtAtStart.Q THEN
+	m_ptrLSCWP^.IsPresent := TRUE;
+END_IF
+IF m_rtLightAtStart.Q OR m_rtLightAtMid.Q OR m_rtLightAtEnd.Q THEN
+	m_ptrLSCWP^.IsLight := TRUE;
+END_IF
+IF m_rtMetalAtStart.Q OR m_rtMetalAtMid.Q THEN
+	m_ptrLSCWP^.IsMetal := TRUE;
+END_IF
+
+// reset IsPresent if any of the ramps are triggered
+IF m_ptrLSC^.WPAtRampStart OR m_ptrLSC^.WPAtRampMiddle OR m_ptrLSC^.WPAtRampEnd THEN
+	m_ptrLSCWP^.IsPresent := FALSE;
+END_IF
+
+//if the conveyor moves forward for a certain time, it has to empty, therefore LSCProductType is defined
+IF m_ptrLSC^.Motor.TurningClockwise THEN
+	m_LSCemptytimeout(IN:= TRUE, PT:=T#3500MS);
+ELSE
+	m_LSCemptytimeout(IN:= FALSE);
+END_IF
+
+IF m_LSCemptytimeout.Q THEN
+	io_processState.UpdateState_Defined(EProcessVariables.LSC_ProductType, TRUE);
+	m_LSCemptytimeout(IN:= FALSE);
+END_IF
+
+IF m_resetProductDefined THEN
+	m_resetProductDefined := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ObserveLSC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveLSC.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="5" Count="1" />
+    </LineIds>
+    <LineIds Name="ObserveLSC.ResetDefinition">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="ObserveLSC.UpdateProcessObservation">
+      <LineId Id="1" Count="16" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="86" Count="4" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="76" Count="2" />
+      <LineId Id="80" Count="2" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="18" Count="21" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="94" Count="4" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="116" Count="1" />
+      <LineId Id="40" Count="3" />
+      <LineId Id="45" Count="11" />
+      <LineId Id="59" Count="16" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

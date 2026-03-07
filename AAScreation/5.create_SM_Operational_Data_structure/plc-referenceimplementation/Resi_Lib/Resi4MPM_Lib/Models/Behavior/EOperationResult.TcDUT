@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EOperationResult" Id="{afa859f2-7f45-4169-abee-8a72f37b2ea3}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EOperationResult :
+(
+	none := 0,
+	success := 1,
+	busy := 2,
+	recovering := 3,
+	waiting := 4,
+	failed := 5,
+	synced_success := 6
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

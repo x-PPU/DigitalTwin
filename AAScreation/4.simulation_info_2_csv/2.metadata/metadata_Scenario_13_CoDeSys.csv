@@ -1,0 +1,11 @@
+idShort,Value
+ModelName,Scenario_13_CoDeSys
+Creator,Aicher
+LastModifiedBy,lijia
+CreatedOn,Wed Mar 06 16:26:02 2013
+ModelVersion,1.854
+Description,N/A
+SolverType,Fixed-step
+SolverName,ode3
+FixedStepSize,Sample_Time_Model
+StopTime,inf

@@ -1,0 +1,2665 @@
+SMC Crane
+  -SMC Process Crane_MoveBase
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_ptrCrane: POINTER TO Crane;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrCrane^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+          -Prop angle := m_st^.GetNumeric(EProcessVariables.Crane_Angle);
+          -Prop diff := TargetAngle - angle;
+          -Prop logic:
+              IF ABS(diff) < tolerance THEN
+              m_ptrCrane^.METH_CarrierStop();
+              ExecuteInternal := TRUE;
+              ELSIF diff < 0 THEN
+              m_ptrCrane^.METH_CarrierTurnClockwise();
+              ELSE
+              m_ptrCrane^.METH_CarrierTurnCounterClockwise();
+              END_IF
+    -SMC Call Skill:
+      -Ref Skill1: Crane_Skill_CarrierStop
+      -Ref Skill2: Crane_Skill_CarrierTurnClockwise
+      -Ref Skill3: Crane_Skill_CarrierTurnCounterClockwise
+    -SMC Control Variable:
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_crane.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_crane.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_crane.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process Crane_MoveToLSC
+    -Ref Extends: Crane_MoveBase
+    -SMC VAR:
+      -Prop m_postcondition: Crane_AtLSC = TRUE;
+      -Prop m_precondition: ((Crane_CylinderRetracted = TRUE)) AND ((((Crane_HoldingWorkpiece = FALSE)) OR ((LSC_ProductType = 0))));
+      -Prop m_ptrCrane: POINTER TO Crane;
+    -SMC Property:
+      -Prop TargetAngle := 90;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrCrane^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+          -Prop angle := m_st^.GetNumeric(EProcessVariables.Crane_Angle);
+          -Prop diff := TargetAngle - angle;
+          -Prop logic:
+              IF ABS(diff) < tolerance THEN
+              m_ptrCrane^.METH_CarrierStop();
+              ExecuteInternal := TRUE;
+              ELSIF diff < 0 THEN
+              m_ptrCrane^.METH_CarrierTurnClockwise();
+              ELSE
+              m_ptrCrane^.METH_CarrierTurnCounterClockwise();
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrCrane := i_ptrCrane;
+          -Prop m_id := EPrimitives.Crane_MoveToLSC;
+          -Prop m_timeout := T#30S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: Crane_Skill_CarrierStop
+      -Ref Skill2: Crane_Skill_CarrierTurnClockwise
+      -Ref Skill3: Crane_Skill_CarrierTurnCounterClockwise
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Crane_AtLSC: MAIN.m_container.m_crane.m_PresenceSensorAtConveyor.DI_WPDetected
+      -Ref Crane_CylinderRetracted: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+      -Ref Crane_HoldingWorkpiece: MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn
+      -Ref LSC_ProductType: MAIN.m_container.m_LSC.m_presenceSensorStart.DI_WPDetected
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_crane.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_crane.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_crane.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process Crane_MoveToStack
+    -Ref Extends: Crane_MoveBase
+    -SMC VAR:
+      -Prop m_postcondition: Crane_AtStack = TRUE;
+      -Prop m_precondition: Crane_CylinderRetracted = TRUE;
+      -Prop m_ptrCrane: POINTER TO Crane;
+    -SMC Property:
+      -Prop TargetAngle := 0;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrCrane^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+          -Prop angle := m_st^.GetNumeric(EProcessVariables.Crane_Angle);
+          -Prop diff := TargetAngle - angle;
+          -Prop logic:
+              IF ABS(diff) < tolerance THEN
+              m_ptrCrane^.METH_CarrierStop();
+              ExecuteInternal := TRUE;
+              ELSIF diff < 0 THEN
+              m_ptrCrane^.METH_CarrierTurnClockwise();
+              ELSE
+              m_ptrCrane^.METH_CarrierTurnCounterClockwise();
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrCrane := i_ptrCrane;
+          -Prop m_id := EPrimitives.Crane_MoveToStack;
+          -Prop m_timeout := T#30S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: Crane_Skill_CarrierStop
+      -Ref Skill2: Crane_Skill_CarrierTurnClockwise
+      -Ref Skill3: Crane_Skill_CarrierTurnCounterClockwise
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Crane_AtStack: MAIN.m_container.m_crane.m_PresenceSensorAtStack.DI_WPDetected
+      -Ref Crane_CylinderRetracted: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_crane.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_crane.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_crane.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process Crane_MoveToStamp
+    -Ref Extends: Crane_MoveBase
+    -SMC VAR:
+      -Prop m_postcondition: Crane_AtStamp = TRUE;
+      -Prop m_precondition: Crane_CylinderRetracted = TRUE;
+      -Prop m_ptrCrane: POINTER TO Crane;
+    -SMC Property:
+      -Prop TargetAngle := 180;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrCrane^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+          -Prop angle := m_st^.GetNumeric(EProcessVariables.Crane_Angle);
+          -Prop diff := TargetAngle - angle;
+          -Prop logic:
+              IF ABS(diff) < tolerance THEN
+              m_ptrCrane^.METH_CarrierStop();
+              ExecuteInternal := TRUE;
+              ELSIF diff < 0 THEN
+              m_ptrCrane^.METH_CarrierTurnClockwise();
+              ELSE
+              m_ptrCrane^.METH_CarrierTurnCounterClockwise();
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrCrane := i_ptrCrane;
+          -Prop m_id := EPrimitives.Crane_MoveToStamp;
+          -Prop m_timeout := T#30S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: Crane_Skill_CarrierStop
+      -Ref Skill2: Crane_Skill_CarrierTurnClockwise
+      -Ref Skill3: Crane_Skill_CarrierTurnCounterClockwise
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Crane_AtStamp: MAIN.m_container.m_crane.m_PresenceSensorAtStamp.DI_WPDetected
+      -Ref Crane_CylinderRetracted: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_crane.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_crane.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_crane.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process Crane_PickPutBase
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_ptrCrane: POINTER TO Crane;
+    -SMC METHODS:
+      -SMC ShiftProduct:
+          -Prop logic:
+              IF m_ptrCrane^.AtStack THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.stack_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stack_product);
+              END_IF
+              ELSIF m_ptrCrane^.AtConveyor THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.LSC_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.LSC_product);
+              END_IF
+              ELSIF m_ptrCrane^.AtStamp THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.stamp_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stamp_product);
+              END_IF
+              END_IF
+
+  -SMC Process Crane_PickUpWP
+    -Ref Extends: Crane_PickPutBase
+    -SMC VAR:
+      -Prop m_postcondition: ((((Crane_HoldingWorkpiece = TRUE)) AND ((Crane_CylinderRetracted = TRUE)))) AND ((((((Crane_AtStack = TRUE)) AND ((Stack_ProductType = 0.0)))) OR ((((((Crane_AtStamp = TRUE)) AND ((Stamp_ProductType = 0.0)))) OR ((((Crane_AtLSC = TRUE)) AND ((LSC_ProductType = 0.0))))))));
+      -Prop m_precondition: ((Crane_HoldingWorkpiece = FALSE)) AND ((Crane_CylinderRetracted = TRUE));
+      -Prop m_ptrCrane: POINTER TO Crane;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrCrane^.o_MonostableCylinder.METH_Retract();
+          -Prop logic:
+              IF m_ptrCrane^.o_VacuumGripper.WPTaken THEN
+              m_ptrCrane^.o_VacuumGripper.METH_Intake();
+              ELSE
+              m_ptrCrane^.o_VacuumGripper.METH_Release();
+              END_IF
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 extend:
+          -Prop m_ptrCrane^.o_MonostableCylinder.METH_Extend();
+          -Prop logic 1:
+              IF m_ptrCrane^.o_MonostableCylinder.Extended THEN
+              m_step := 1;
+              END_IF
+        -SMC step 1 grip:
+          -Prop m_ptrCrane^.o_VacuumGripper.METH_Intake();
+          -Prop m_timer(IN := TRUE, PT := T#1S);
+          -Prop logic 1:
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_step := 2;
+              END_IF
+        -SMC step 2 shift register:
+          -Prop logic 1:
+              IF ShiftProduct(TRUE) THEN
+              m_step := 3;
+              END_IF
+        -SMC step 3 retract:
+          -Prop m_ptrCrane^.o_MonostableCylinder.METH_Retract();
+          -Prop logic 1:
+              IF m_ptrCrane^.o_MonostableCylinder.Retracted THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrCrane := i_ptrCrane;
+          -Prop m_id := EPrimitives.Crane_PickUpWP;
+          -Prop m_timeout := T#10S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+      -SMC ShiftProduct:
+          -Prop logic:
+              IF m_ptrCrane^.AtStack THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.stack_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stack_product);
+              END_IF
+              ELSIF m_ptrCrane^.AtConveyor THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.LSC_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.LSC_product);
+              END_IF
+              ELSIF m_ptrCrane^.AtStamp THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.stamp_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stamp_product);
+              END_IF
+              END_IF
+    -SMC Call Skill:
+      -Ref Skill1: MonostableCylinder_Skill_Extend
+      -Ref Skill2: MonostableCylinder_Skill_Retract
+      -Ref Skill3: VacuumGripper_Skill_Intake
+      -Ref Skill4: VacuumGripper_Skill_Release
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Crane_AtLSC: MAIN.m_container.m_crane.m_PresenceSensorAtConveyor.DI_WPDetected
+      -Ref Crane_AtStack: MAIN.m_container.m_crane.m_PresenceSensorAtStack.DI_WPDetected
+      -Ref Crane_AtStamp: MAIN.m_container.m_crane.m_PresenceSensorAtStamp.DI_WPDetected
+      -Ref Crane_CylinderRetracted: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+      -Ref Crane_HoldingWorkpiece: MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn
+      -Ref LSC_ProductType: MAIN.m_container.m_LSC.m_presenceSensorStart.DI_WPDetected
+      -Ref Stack_ProductType: MAIN.m_container.m_stack.m_Presencesensor.DI_WPDetected
+      -Ref Stamp_ProductType: MAIN.m_container.m_stamp.m_presenceSensor.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.o_MonostableCylinder.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_crane.o_MonostableCylinder.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_crane.o_MonostableCylinder.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_crane.o_MonostableCylinder.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_crane.o_MonostableCylinder.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_crane.o_MonostableCylinder.DO_Extend
+     -SMC Skill3 and Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn
+      -Ref  Variable2: MAIN.m_container.m_crane.o_VacuumGripper.DO_VacuumOn
+      -Ref  Variable3: MAIN.m_container.m_crane.o_VacuumGripper.VacuumHit
+
+
+  -SMC Process Crane_PutDownWP
+    -Ref Extends: Crane_PickPutBase
+    -SMC VAR:
+      -Prop m_postcondition: ((Crane_HoldingWorkpiece = FALSE)) AND ((Crane_CylinderRetracted = TRUE));
+      -Prop m_precondition: ((Crane_HoldingWorkpiece = TRUE)) AND ((Crane_CylinderRetracted = TRUE));
+      -Prop m_ptrCrane: POINTER TO Crane;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrCrane^.o_MonostableCylinder.METH_Retract();
+          -Prop logic:
+              IF m_ptrCrane^.o_VacuumGripper.WPTaken THEN
+              m_ptrCrane^.o_VacuumGripper.METH_Intake();
+              ELSE
+              m_ptrCrane^.o_VacuumGripper.METH_Release();
+              END_IF
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 extend:
+          -Prop m_ptrCrane^.o_MonostableCylinder.METH_Extend();
+          -Prop logic 1:
+              IF m_ptrCrane^.o_MonostableCylinder.Extended THEN
+              m_step := 1;
+              END_IF
+        -SMC step 1 release:
+          -Prop m_ptrCrane^.o_VacuumGripper.METH_Release();
+          -Prop m_timer(IN := TRUE, PT := T#100MS);
+          -Prop logic 1:
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_step := 2;
+              END_IF
+        -SMC step 2 shift register:
+          -Prop logic 1:
+              IF ShiftProduct(FALSE) THEN
+              m_step := 3;
+              END_IF
+        -SMC step 3 retract:
+          -Prop m_ptrCrane^.o_MonostableCylinder.METH_Retract();
+          -Prop logic 1:
+              IF m_ptrCrane^.o_MonostableCylinder.Retracted THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrCrane := i_ptrCrane;
+          -Prop m_id := EPrimitives.Crane_PutDownWP;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+      -SMC ShiftProduct:
+          -Prop logic:
+              IF m_ptrCrane^.AtStack THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.stack_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stack_product);
+              END_IF
+              ELSIF m_ptrCrane^.AtConveyor THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.LSC_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.LSC_product);
+              END_IF
+              ELSIF m_ptrCrane^.AtStamp THEN
+              IF i_isIncoming THEN
+              ShiftProduct := m_st^.ShiftProduct(EProducts.stamp_product, EProducts.crane_product);
+              ELSE
+              ShiftProduct := m_st^.ShiftProduct(EProducts.crane_product, EProducts.stamp_product);
+              END_IF
+              END_IF
+    -SMC Call Skill:
+      -Ref Skill1: MonostableCylinder_Skill_Extend
+      -Ref Skill2: MonostableCylinder_Skill_Retract
+      -Ref Skill3: VacuumGripper_Skill_Intake
+      -Ref Skill4: VacuumGripper_Skill_Release
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Crane_CylinderRetracted: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+      -Ref Crane_HoldingWorkpiece: MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.o_MonostableCylinder.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_crane.o_MonostableCylinder.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_crane.o_MonostableCylinder.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_crane.o_MonostableCylinder.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_crane.o_MonostableCylinder.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_crane.o_MonostableCylinder.DO_Extend
+     -SMC Skill3 and Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn
+      -Ref  Variable2: MAIN.m_container.m_crane.o_VacuumGripper.DO_VacuumOn
+      -Ref  Variable3: MAIN.m_container.m_crane.o_VacuumGripper.VacuumHit
+
+SMC Generic
+  -SMC Process Delay
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: TRUE;
+      -Prop m_ton: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+          -Prop m_msVal := i_params.Retrieve('ms');
+          -Prop m_ton(IN := TRUE, PT := LREAL_TO_TIME(m_msVal.Value.Numeric));
+          -Prop logic:
+              IF m_ton.Q THEN
+              m_ton(IN := FALSE);
+              ExecuteInternal := TRUE;
+              ELSE
+              ExecuteInternal := FALSE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_id := EPrimitives.Gen_Delay;
+          -Prop m_timeout := T#99999S;
+          -Prop m_paramDefinition := 'ms:UINT;';
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+
+  -SMC Process ForceProcessVariable
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: TRUE;
+    -SMC METHODS:
+      -SMC ExecuteInternal:
+          -Prop ExecuteInternal := FALSE;
+          -Prop namedVal := i_params.Retrieve('variable_id');
+          -Prop varId := LREAL_TO_UINT(namedVal.Value.Numeric);
+          -Prop namedVal := i_params.Retrieve('type');
+          -Prop dType := LREAL_TO_USINT(namedVal.Value.Numeric);
+        -SMC CASE:
+      -SMC FB_init:
+          -Prop m_id := i_id;
+          -Prop m_timeout := T#5S;
+          -Prop m_paramDefinition := 'variable_id:UINT;type:EDataType;bool_val:BOOL;num_val:LREAL;string_val:STRING;';
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+
+  -SMC Process IndicateActivity
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_blinkTon: TON;
+      -Prop m_execTon: TON;
+      -Prop m_postcondition: LSC_RampEndWPCount > 0;
+      -Prop m_precondition: TRUE;
+      -Prop m_ptrIndic: POINTER TO ActivityIndicator;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+          -Prop m_val := i_params.Retrieve('duration_ms');
+          -Prop m_dur := LREAL_TO_TIME(m_val.Value.Numeric);
+          -Prop m_ptrIndic^.ResetDoneSignal();
+          -Prop ExecuteInternal := FALSE;
+          -Prop m_execTon(IN := TRUE, PT := m_dur);
+          -Prop logic:
+              IF m_execTon.Q THEN
+              ExecuteInternal := TRUE;
+              m_ptrIndic^.SetDoneSignal();
+              m_execTon(IN := FALSE);
+              ELSE
+              m_blinkTon(IN := TRUE, PT := T#200MS);
+              IF m_blinkTon.Q THEN
+              m_ptrIndic^.FlipIndicator();
+              m_blinkTon(IN := FALSE);
+              END_IF
+              END_IF
+      -SMC FB_init:
+          -Prop m_id := i_id;
+          -Prop m_timeout := T#5S;
+          -Prop m_paramDefinition := 'duration_ms:UINT;';
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop m_ptrIndic := i_ptrIndicator;
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -SMC LSC_RampEndWPCount
+       -Ref LSC_RampEndWPCount_1: MAIN.m_container.m_LSC.m_rampEnd.m_presenceSensorRampFull.DI_WPDetected
+
+SMC LSC
+  -SMC Process LSC_MoveWorkpiece_Base
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_ptrLSC: POINTER TO LargeSortingConveyor;
+      -Prop m_step: INT := 0;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrLSC^.METH_ConveyorStop();
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorStop();
+              m_ptrLSC^.METH_Switch_Retract();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: LargeSortingConveyor_Skill_Ramp1Pusher_Retract
+      -Ref Skill4: LargeSortingConveyor_Skill_Ramp2Pusher_Retract
+      -Ref Skill5: LargeSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_LSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_LSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend
+     -SMC Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend
+     -SMC Skill5 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_Switch.DO_Extend
+
+
+  -SMC Process LSC_SearchWorkpiece
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_passby: BOOL;
+      -Prop m_postcondition: LSC_ProductType >= 0;
+      -Prop m_precondition: TRUE;
+      -Prop m_ptrLSC: POINTER TO LargeSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrLSC^.METH_ConveyorStop();
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 search in front of presence sensor:
+          -Prop m_ptrLSC^.METH_ConveyorForward();
+          -Prop m_timer(IN := TRUE, PT := T#600MS);
+          -Prop logic 1:
+              IF m_timer.Q THEN	//empty in front of presence sensor;
+              m_timer(IN := FALSE);
+              m_ptrLSC^.METH_ConveyorStop();
+              m_step := 1;
+              END_IF
+          -Prop logic 2:
+              IF m_ptrLSC^.WPAtStart THEN //Workpiece detected;
+              m_timer(IN := FALSE);
+              m_ptrLSC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 1 search behind presence sensor:
+          -Prop m_ptrLSC^.METH_ConveyorBackward();
+          -Prop m_timer(IN := TRUE, PT := T#3000MS);
+          -Prop logic 1:
+              IF m_timer.Q THEN	//empty behind presence sensor;
+              m_timer(IN := FALSE);
+              m_ptrLSC^.METH_ConveyorStop();
+              m_step := 4;
+              END_IF
+          -Prop logic 2:
+              IF m_ptrLSC^.WPAtStart THEN //Workpiece detected;
+              m_timer(IN := FALSE);
+              m_ptrLSC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2 workpiece found, identify workpiece  (300ms):
+          -Prop m_ptrLSC^.METH_ConveyorForward();
+          -Prop m_timer(IN := TRUE, PT := T#300MS);
+          -Prop logic 1:
+              IF m_timer.Q THEN	//workpiece at inductive and optical sensor;
+              m_timer(IN := FALSE);
+              m_ptrLSC^.METH_ConveyorStop();
+              m_step := 3;
+              END_IF
+        -SMC step 3 move workpiece to presence sensor:
+          -Prop m_ptrLSC^.METH_ConveyorBackward();
+          -Prop logic 1:
+              IF m_ptrLSC^.WPAtStart THEN
+              m_ptrLSC^.METH_ConveyorStop();
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+        -SMC step 4 no workpiece found; empty conveyor:
+          -Prop m_ptrLSC^.METH_ConveyorForward();
+          -Prop m_timer(IN := TRUE, PT := T#4000MS);
+          -Prop logic 1:
+              IF m_timer.Q THEN	//conveyor is empty;
+              m_timer(IN := FALSE);
+              m_ptrLSC^.METH_ConveyorStop();
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrLSC := i_ptrLSC;
+          -Prop m_id := EPrimitives.LSC_SearchWorkpiece;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorBackward
+      -Ref Skill2: LargeSortingConveyor_Skill_ConveyorForward
+      -Ref Skill3: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill4: LargeSortingConveyor_Skill_Ramp1Pusher_Retract
+      -Ref Skill5: LargeSortingConveyor_Skill_Ramp2Pusher_Retract
+      -Ref Skill6: LargeSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -SMC LSC_ProductType
+       -Ref LSC_ProductType_1: MAIN.m_container.m_LSC.m_inductiveSensorStart.DI_WPMetallic
+       -Ref LSC_ProductType_2: MAIN.m_container.m_LSC.m_presenceSensorStart.DI_WPDetected
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_LSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_LSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend
+     -SMC Skill5 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend
+     -SMC Skill6 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_Switch.DO_Extend
+
+
+  -SMC Process LSC_TransferWorkpieceTo_PAC
+    -Ref Extends: LSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_passby: BOOL;
+      -Prop m_postcondition: PAC_WPAtStart = TRUE;
+      -Prop m_precondition: ((PAC_WPNumber < 3)) AND ((((((PicAlpha_AtPos1 = FALSE)) AND ((PicAlpha_AtPos2 = FALSE)))) OR ((PicAlpha_CylinderRetracted = TRUE))));
+      -Prop m_ptrLSC: POINTER TO LargeSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+      -Prop m_timerEject  : TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrLSC^.METH_ConveyorStop();
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop m_ptrLSC^.METH_Switch_Extend();
+          -Prop logic:
+              IF m_ptrLSC^.WPAtStart THEN
+              m_passby := TRUE;
+              END_IF
+              IF m_passby THEN
+              m_timer(IN := TRUE, PT := T#2000MS);
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE, PT := T#0MS);
+              m_passby := FALSE;
+              AtTarget := TRUE;
+              END_IF
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := FALSE;
+          -Prop m_ptrLSC^.METH_Switch_Extend();
+          -Prop m_ptrLSC^.METH_ConveyorForward();
+          -Prop m_timerEject(IN := TRUE, PT := T#2000MS);
+          -Prop logic:
+              IF m_timerEject.Q THEN
+              m_timerEject(IN := FALSE, PT := T#0MS);
+              m_ptrLSC^.METH_Switch_Retract();
+              m_ptrLSC^.METH_ConveyorStop();
+              EjectOperation := TRUE;
+              END_IF
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorStop();
+              m_ptrLSC^.METH_Switch_Retract();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrLSC := i_ptrLSC;
+          -Prop m_id := EPrimitives.LSC_TransferWorkpieceTo_PAC;
+          -Prop m_timeout := T#5S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: LargeSortingConveyor_Skill_Ramp1Pusher_Retract
+      -Ref Skill4: LargeSortingConveyor_Skill_Ramp2Pusher_Retract
+      -Ref Skill5: LargeSortingConveyor_Skill_Switch_Extend
+      -Ref Skill6: LargeSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PAC_WPAtStart: MAIN.m_container.m_PAC.m_PresencesensorStart.DI_WPDetected
+      -Ref PicAlpha_AtPos1: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition1.DI_WPDetected
+      -Ref PicAlpha_AtPos2: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition2.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_LSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_LSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend
+     -SMC Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend
+     -SMC Skill5 and Skill6 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_Switch.DO_Extend
+
+
+  -SMC Process LSC_TransferWorkpieceTo_RampEnd
+    -Ref Extends: LSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: LSC_WPAtRampEnd = FALSE;
+      -Prop m_ptrLSC: POINTER TO LargeSortingConveyor;
+      -Prop m_step: INT := 0;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrLSC^.METH_ConveyorStop();
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := m_ptrLSC^.WPAtRampEnd;
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorStop();
+              m_ptrLSC^.METH_Switch_Retract();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrLSC := i_ptrLSC;
+          -Prop m_id := EPrimitives.LSC_TransferWorkpieceTo_RampEnd;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: LargeSortingConveyor_Skill_Ramp1Pusher_Retract
+      -Ref Skill4: LargeSortingConveyor_Skill_Ramp2Pusher_Retract
+      -Ref Skill5: LargeSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref LSC_WPAtRampEnd: MAIN.m_container.m_LSC.m_rampEnd.m_presenceSensorRampFull.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_LSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_LSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend
+     -SMC Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend
+     -SMC Skill5 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_Switch.DO_Extend
+
+
+  -SMC Process LSC_TransferWorkpieceTo_RampMid
+    -Ref Extends: LSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_passby : BOOL;
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: LSC_WPAtRampMiddle = FALSE;
+      -Prop m_ptrLSC: POINTER TO LargeSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrLSC^.METH_ConveyorStop();
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF m_ptrLSC^.WPAtStart THEN
+              m_passby := TRUE;
+              END_IF
+              IF m_passby THEN
+              m_timer(IN := TRUE, PT := T#2200MS);
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_passby := FALSE;
+              AtTarget := TRUE;
+              END_IF
+              END_IF
+      -SMC EjectOperation:
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Extend();
+          -Prop logic:
+              IF m_ptrLSC^.WPAtRampMiddle THEN
+              m_ptrLSC^.METH_Ramp2Pusher_Retract();
+              EjectOperation := TRUE;
+              END_IF
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorStop();
+              m_ptrLSC^.METH_Switch_Retract();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrLSC := i_ptrLSC;
+          -Prop m_id := EPrimitives.LSC_TransferWorkpieceTo_RampMid;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: LargeSortingConveyor_Skill_Ramp1Pusher_Retract
+      -Ref Skill4: LargeSortingConveyor_Skill_Ramp2Pusher_Extend
+      -Ref Skill5: LargeSortingConveyor_Skill_Ramp2Pusher_Retract
+      -Ref Skill6: LargeSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref LSC_WPAtRampMiddle: MAIN.m_container.m_LSC.m_rampMiddle.m_presenceSensorRampFull.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_LSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_LSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend
+     -SMC Skill4 and Skill5 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend
+     -SMC Skill6 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_Switch.DO_Extend
+
+
+  -SMC Process LSC_TransferWorkpieceTo_RampStart
+    -Ref Extends: LSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_passby: BOOL;
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: LSC_WPAtRampStart = FALSE;
+      -Prop m_ptrLSC: POINTER TO LargeSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrLSC^.METH_ConveyorStop();
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF m_ptrLSC^.WPAtStart THEN
+              m_passby := TRUE;
+              END_IF
+              IF m_passby THEN
+              m_timer(IN := TRUE, PT := T#700MS);
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_passby := FALSE;
+              AtTarget := TRUE;
+              END_IF
+              END_IF
+      -SMC EjectOperation:
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Extend();
+          -Prop logic:
+              IF m_ptrLSC^.WPAtRampStart THEN
+              m_ptrLSC^.METH_Ramp1Pusher_Retract();
+              EjectOperation := TRUE;
+              END_IF
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorStop();
+              m_ptrLSC^.METH_Switch_Retract();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrLSC := i_ptrLSC;
+          -Prop m_id := EPrimitives.LSC_TransferWorkpieceTo_RampStart;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: LargeSortingConveyor_Skill_Ramp1Pusher_Extend
+      -Ref Skill4: LargeSortingConveyor_Skill_Ramp1Pusher_Retract
+      -Ref Skill5: LargeSortingConveyor_Skill_Ramp2Pusher_Retract
+      -Ref Skill6: LargeSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref LSC_WPAtRampStart: MAIN.m_container.m_LSC.m_rampStart.m_presenceSensorRampFull.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_LSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_LSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 and Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend
+     -SMC Skill5 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend
+     -SMC Skill6 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_Switch.DO_Extend
+
+
+  -SMC Process LSC_TransferWPAtStart
+    -Ref Extends: LSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: LSC_WorkpieceAtEntry = FALSE;
+      -Prop m_ptrLSC: POINTER TO LargeSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrLSC^.METH_ConveyorStop();
+          -Prop m_ptrLSC^.METH_Ramp1Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Ramp2Pusher_Retract();
+          -Prop m_ptrLSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop m_ptrLSC^.METH_ConveyorForward();
+          -Prop m_timer(IN := TRUE, PT := T#2000MS);
+          -Prop logic:
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_ptrLSC^.METH_ConveyorStop();
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrLSC^.METH_ConveyorStop();
+              m_ptrLSC^.METH_Switch_Retract();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrLSC := i_ptrLSC;
+          -Prop i_ptrRFC := i_ptrRFC;
+          -Prop m_id := EPrimitives.LSC_TransferWPAtStart;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop FB_init := TRUE;
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: LargeSortingConveyor_Skill_Ramp1Pusher_Retract
+      -Ref Skill4: LargeSortingConveyor_Skill_Ramp2Pusher_Retract
+      -Ref Skill5: LargeSortingConveyor_Skill_Switch_Retract
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref LSC_WorkpieceAtEntry: MAIN.m_container.m_LSC.m_presenceSensorStart.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_LSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_LSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_LSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherStart.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherStart.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherStart.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherStart.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherStart.DO_Extend
+     -SMC Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_rampPusherMid.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_rampPusherMid.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_LSC.m_rampPusherMid.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_LSC.m_rampPusherMid.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_LSC.m_rampPusherMid.DO_Extend
+     -SMC Skill5 Variable:
+      -Ref  Variable1: MAIN.m_container.m_LSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_LSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_LSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_LSC.m_Switch.DO_Extend
+
+SMC PAC
+  -SMC Process PAC_MoveWorkpiece_Base
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_ptrPAC: POINTER TO PicAlphaConveyor;
+      -Prop m_step: INT := 0;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPAC^.METH_ConveyorStop();
+          -Prop m_ptrPAC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+    -SMC Call Skill:
+      -Ref Skill1: PicAlphaConveyor_Skill_ConveyorForward
+      -Ref Skill2: PicAlphaConveyor_Skill_ConveyorStop
+      -Ref Skill3: PicAlphaConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PAC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PAC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PAC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_PAC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_PAC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_PAC.m_Switch.DO_Extend
+
+
+  -SMC Process PAC_TransferFirstWorkpieceTo_SSCStart
+    -Ref Extends: PAC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_passby: BOOL;
+      -Prop m_postcondition: PAC_WPAtEnd = TRUE;
+      -Prop m_precondition: ((PicAlpha_CylinderRetracted = TRUE)) AND ((PAC_WPAtEnd = FALSE));
+      -Prop m_ptrPAC: POINTER TO PicAlphaConveyor;
+      -Prop m_ptrSSC : POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_switchExtended: BOOL;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPAC^.METH_ConveyorStop();
+          -Prop m_ptrPAC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF NOT m_passby THEN
+              m_ptrPAC^.METH_Switch_Extend();
+              END_IF
+              IF m_ptrPAC^.WPAtEnd THEN
+              m_passby := TRUE;
+              END_IF
+              IF m_passby THEN
+              m_ptrPAC^.METH_Switch_Retract();
+              END_IF
+              IF m_ptrSSC^.WPAtStart THEN
+              AtTarget := TRUE;
+              m_passby := FALSE;
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrPAC := i_ptrPAC;
+          -Prop m_ptrSSC := i_ptrSSC;
+          -Prop m_id := EPrimitives.PAC_TransferFitsrWorkpieceTo_SSCStart;
+          -Prop m_timeout := T#200S;
+          -Prop m_passby := FALSE;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlphaConveyor_Skill_ConveyorForward
+      -Ref Skill2: PicAlphaConveyor_Skill_ConveyorStop
+      -Ref Skill3: PicAlphaConveyor_Skill_Switch_Extend
+      -Ref Skill4: PicAlphaConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PAC_WPAtEnd: MAIN.m_container.m_PAC.m_PresencesensorEnd.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PAC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PAC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PAC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 and Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_PAC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_PAC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_PAC.m_Switch.DO_Extend
+
+
+  -SMC Process PAC_TransferWorkpieceTo_PSStart
+    -Ref Extends: PAC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_postcondition: PAC_WPAtStart = TRUE;
+      -Prop m_precondition: ((LSC_ProductType = 4)) AND ((PAC_WPNumber < 3));
+      -Prop m_ptrPAC: POINTER TO PicAlphaConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPAC^.METH_ConveyorStop();
+          -Prop m_ptrPAC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop m_timer(IN := TRUE, PT := T#2500MS);
+          -Prop logic:
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_ptrPAC^.METH_IncreaseWPNumberAtPAC();
+              AtTarget := TRUE;
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrPAC := i_ptrPAC;
+          -Prop m_id := EPrimitives.PAC_TransferWorkpieceTo_PSStart;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlphaConveyor_Skill_ConveyorForward
+      -Ref Skill2: PicAlphaConveyor_Skill_ConveyorStop
+      -Ref Skill3: PicAlphaConveyor_Skill_IncreaseWPNumberAtPAC
+      -Ref Skill4: PicAlphaConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PAC_WPAtStart: MAIN.m_container.m_PAC.m_PresencesensorStart.DI_WPDetected
+      -Ref LSC_ProductType: MAIN.m_container.m_LSC.m_inductiveSensorStart.DI_WPMetallic
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PAC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PAC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PAC.Motor.DO_TurnCounterclockwise
+     -SMC Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_PAC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_PAC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_PAC.m_Switch.DO_Extend
+
+
+  -SMC Process PAC_TransferWorkpieceTo_SSC
+    -Ref Extends: PAC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_postcondition: PAC_WPAtEnd = FALSE;
+      -Prop m_precondition: ((PicAlpha_AtPos3 = TRUE)) AND ((((PicAlpha_HoldingWorkpiece = FALSE)) AND ((((PicAlpha_CylinderRetracted = TRUE)) AND ((((PAC_WPAtStart = FALSE)) AND ((((SSC_ProductType_1 = 0)) AND ((SSC_ProductType_2 = 0))))))))));
+      -Prop m_ptrPAC: POINTER TO PicAlphaConveyor;
+      -Prop m_ptrSSC    : POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer : TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPAC^.METH_ConveyorStop();
+          -Prop m_ptrPAC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF NOT m_ptrPAC^.WPAtEnd THEN
+              m_timer(IN := TRUE, PT := T#1500MS);
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_ptrPAC^.METH_ResetWPNumberAtPAC();
+              AtTarget := TRUE;
+              END_IF
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrPAC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrPAC := i_ptrPAC;
+          -Prop SUPER^(); //;
+          -Prop m_ptrSSC := i_ptrSSC; //;
+          -Prop FB_init := TRUE; //;
+          -Prop m_id := EPrimitives.PAC_TransferWorkpieceTo_SSC;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlphaConveyor_Skill_ConveyorForward
+      -Ref Skill2: PicAlphaConveyor_Skill_ConveyorStop
+      -Ref Skill3: PicAlphaConveyor_Skill_ResetWPNumberAtPAC
+      -Ref Skill4: PicAlphaConveyor_Skill_Switch_Retract
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PAC_WPAtEnd: MAIN.m_container.m_PAC.m_PresencesensorEnd.DI_WPDetected
+      -Ref PAC_WPAtStart: MAIN.m_container.m_PAC.m_PresencesensorStart.DI_WPDetected
+      -Ref PicAlpha_AtPos3: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition3.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref PicAlpha_HoldingWorkpiece: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+      -Ref SSC_ProductType_1: MAIN.m_container.m_SSC.m_PresencesensorStart.DI_WPDetected
+      -Ref SSC_ProductType_2: MAIN.m_container.m_SSC.m_PresencesensorEnd.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PAC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PAC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PAC.Motor.DO_TurnCounterclockwise
+     -SMC Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PAC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_PAC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_PAC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_PAC.m_Switch.DO_Extend
+
+SMC PickAlpha
+  -SMC Process PicAlpha_MoveBase
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_initDirection: BOOL; //TRUE: towards Pos4, FALSE: towards Pos1 m_step: INT := 0;
+      -Prop m_ptrPicAlpha: POINTER TO PicAlpha;
+      -Prop m_targetTimeout: TIME;
+      -Prop m_targettimer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0:
+          -Prop m_targettimer(IN := TRUE, PT := m_targetTimeout);
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_targettimer(IN:= FALSE);
+              ELSIF m_targettimer.Q THEN
+              m_step := 1;
+              m_targettimer(IN:= FALSE);
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 2:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop ExecuteInternal := TRUE;
+          -Prop m_step := 0;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlpha_Skill_CarrierBackward
+      -Ref Skill2: PicAlpha_Skill_CarrierForward
+      -Ref Skill3: PicAlpha_Skill_CarrierStop
+    -SMC Control Variable:
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PicAlpha.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process PicAlpha_MoveToPos1
+    -Ref Extends: PicAlpha_MoveBase
+    -SMC VAR:
+      -Prop m_initDirection: BOOL; //TRUE: towards Pos4, FALSE: towards Pos1 m_step: INT := 0;
+      -Prop m_postcondition: ((PicAlpha_AtPos1 = TRUE)) AND ((PicAlpha_CylinderRetracted = TRUE));
+      -Prop m_precondition: PicAlpha_CylinderRetracted = TRUE;
+      -Prop m_ptrPicAlpha: POINTER TO PicAlpha;
+      -Prop m_targetTimeout: TIME;
+      -Prop m_targettimer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := m_ptrPicAlpha^.PresenceSensorPosition1Value AND NOT (m_ptrPicAlpha^.PresenceSensorPosition3Value OR m_ptrPicAlpha^.PresenceSensorPosition4Value);
+      -SMC ExecuteInternal:
+        -SMC step 0:
+          -Prop m_targettimer(IN := TRUE, PT := m_targetTimeout);
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_targettimer(IN:= FALSE);
+              ELSIF m_targettimer.Q THEN
+              m_step := 1;
+              m_targettimer(IN:= FALSE);
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 2:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop ExecuteInternal := TRUE;
+          -Prop m_step := 0;
+      -SMC FB_init:
+          -Prop m_ptrPicAlpha := i_ptrPicAlpha;
+          -Prop m_id := EPrimitives.PicAlpha_MoveToPos1;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop m_initDirection := FALSE;	//TRUE: towards Pos1;
+          -Prop m_targetTimeout := T#10S;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlpha_Skill_CarrierBackward
+      -Ref Skill2: PicAlpha_Skill_CarrierForward
+      -Ref Skill3: PicAlpha_Skill_CarrierStop
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_AtPos1: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition1.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PicAlpha.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process PicAlpha_MoveToPos2
+    -Ref Extends: PicAlpha_MoveBase
+    -SMC VAR:
+      -Prop m_initDirection: BOOL; //TRUE: towards Pos4, FALSE: towards Pos1 m_step: INT := 0;
+      -Prop m_postcondition: ((PicAlpha_AtPos2 = TRUE)) AND ((PicAlpha_CylinderRetracted = TRUE));
+      -Prop m_precondition: PicAlpha_CylinderRetracted = TRUE;
+      -Prop m_ptrPicAlpha: POINTER TO PicAlpha;
+      -Prop m_targetTimeout: TIME;
+      -Prop m_targettimer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := m_ptrPicAlpha^.PresenceSensorPosition2Value AND NOT (m_ptrPicAlpha^.PresenceSensorPosition3Value OR m_ptrPicAlpha^.PresenceSensorPosition4Value);
+      -SMC ExecuteInternal:
+        -SMC step 0:
+          -Prop m_targettimer(IN := TRUE, PT := m_targetTimeout);
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_targettimer(IN:= FALSE);
+              ELSIF m_targettimer.Q THEN
+              m_step := 1;
+              m_targettimer(IN:= FALSE);
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 2:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop ExecuteInternal := TRUE;
+          -Prop m_step := 0;
+      -SMC FB_init:
+          -Prop m_ptrPicAlpha := i_ptrPicAlpha;
+          -Prop m_id := EPrimitives.PicAlpha_MoveToPos2;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop m_initDirection := FALSE;	//TRUE: towards Pos1;
+          -Prop m_targetTimeout := T#10S;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlpha_Skill_CarrierBackward
+      -Ref Skill2: PicAlpha_Skill_CarrierForward
+      -Ref Skill3: PicAlpha_Skill_CarrierStop
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_AtPos2: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition2.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PicAlpha.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process PicAlpha_MoveToPos3
+    -Ref Extends: PicAlpha_MoveBase
+    -SMC VAR:
+      -Prop m_initDirection: BOOL; //TRUE: towards Pos4, FALSE: towards Pos1 m_step: INT := 0;
+      -Prop m_postcondition: ((PicAlpha_AtPos3 = TRUE)) AND ((PicAlpha_CylinderRetracted = TRUE));
+      -Prop m_precondition: PicAlpha_CylinderRetracted = TRUE;
+      -Prop m_ptrPicAlpha: POINTER TO PicAlpha;
+      -Prop m_targetTimeout: TIME;
+      -Prop m_targettimer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := m_ptrPicAlpha^.PresenceSensorPosition3Value AND NOT (m_ptrPicAlpha^.PresenceSensorPosition1Value OR m_ptrPicAlpha^.PresenceSensorPosition2Value OR m_ptrPicAlpha^.PresenceSensorPosition4Value);
+      -SMC ExecuteInternal:
+        -SMC step 0:
+          -Prop m_targettimer(IN := TRUE, PT := m_targetTimeout);
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_targettimer(IN:= FALSE);
+              ELSIF m_targettimer.Q THEN
+              m_step := 1;
+              m_targettimer(IN:= FALSE);
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 2:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop ExecuteInternal := TRUE;
+          -Prop m_step := 0;
+      -SMC FB_init:
+          -Prop m_ptrPicAlpha := i_ptrPicAlpha;
+          -Prop m_id := EPrimitives.PicAlpha_MoveToPos3;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop m_initDirection := TRUE;	//TRUE: towards Pos4;
+          -Prop m_targetTimeout := T#10S;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlpha_Skill_CarrierBackward
+      -Ref Skill2: PicAlpha_Skill_CarrierForward
+      -Ref Skill3: PicAlpha_Skill_CarrierStop
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_AtPos3: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition3.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PicAlpha.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process PicAlpha_MoveToPos4
+    -Ref Extends: PicAlpha_MoveBase
+    -SMC VAR:
+      -Prop m_initDirection: BOOL; //TRUE: towards Pos4, FALSE: towards Pos1 m_step: INT := 0;
+      -Prop m_postcondition: ((PicAlpha_AtPos4 = TRUE)) AND ((((PicAlpha_CylinderRetracted = TRUE)) AND ((((SSC_ProductType_1 = 0)) AND ((SSC_ProductType_2 = 0))))));
+      -Prop m_precondition: PicAlpha_CylinderRetracted = TRUE;
+      -Prop m_ptrPicAlpha: POINTER TO PicAlpha;
+      -Prop m_targetTimeout: TIME;
+      -Prop m_targettimer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := m_ptrPicAlpha^.PresenceSensorPosition4Value AND NOT (m_ptrPicAlpha^.PresenceSensorPosition1Value OR m_ptrPicAlpha^.PresenceSensorPosition2Value OR m_ptrPicAlpha^.PresenceSensorPosition3Value);
+      -SMC ExecuteInternal:
+        -SMC step 0:
+          -Prop m_targettimer(IN := TRUE, PT := m_targetTimeout);
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_targettimer(IN:= FALSE);
+              ELSIF m_targettimer.Q THEN
+              m_step := 1;
+              m_targettimer(IN:= FALSE);
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_step := 2;
+              m_initDirection := NOT m_initDirection;
+              END_IF
+          -Prop logic 2:
+              IF m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierForward();
+              ELSIF NOT m_initDirection THEN
+              m_ptrPicAlpha^.METH_CarrierBackward();
+              END_IF
+        -SMC step 2:
+          -Prop m_ptrPicAlpha^.METH_CarrierStop();
+          -Prop ExecuteInternal := TRUE;
+          -Prop m_step := 0;
+      -SMC FB_init:
+          -Prop m_ptrPicAlpha := i_ptrPicAlpha;
+          -Prop m_id := EPrimitives.PicAlpha_MoveToPos4;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop m_initDirection := TRUE;	//TRUE: towards Pos4;
+          -Prop m_targetTimeout := T#10S;
+    -SMC Call Skill:
+      -Ref Skill1: PicAlpha_Skill_CarrierBackward
+      -Ref Skill2: PicAlpha_Skill_CarrierForward
+      -Ref Skill3: PicAlpha_Skill_CarrierStop
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_AtPos4: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition4.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref SSC_ProductType_1: MAIN.m_container.m_SSC.m_PresencesensorStart.DI_WPDetected
+      -Ref SSC_ProductType_2: MAIN.m_container.m_SSC.m_PresencesensorEnd.DI_WPDetected
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_PicAlpha.Motor.DO_TurnCounterclockwise
+
+
+  -SMC Process PicAlpha_PickUpWP
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_postcondition: ((PicAlpha_CylinderRetracted = TRUE)) AND ((PicAlpha_HoldingWorkpiece = TRUE));
+      -Prop m_precondition: ((PicAlpha_CylinderRetracted = TRUE)) AND ((PicAlpha_HoldingWorkpiece = FALSE));
+      -Prop m_ptrPicAlpha: POINTER TO PicAlpha;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+          -Prop logic:
+              IF m_ptrPicAlpha^.o_VacuumGripper.WPTaken THEN
+              m_ptrPicAlpha^.o_VacuumGripper.METH_Intake();
+              ELSE
+              m_ptrPicAlpha^.o_VacuumGripper.METH_Release();
+              END_IF
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 extend:
+          -Prop m_ptrPicAlpha^.o_MonostableCylinder.METH_Extend();
+          -Prop logic 1:
+              IF m_ptrPicAlpha^.o_MonostableCylinder.Extended THEN
+              m_step := 1;
+              END_IF
+        -SMC step 1 grip:
+          -Prop m_ptrPicAlpha^.o_VacuumGripper.METH_Intake();
+          -Prop m_timer(IN := TRUE, PT := T#200MS);
+          -Prop logic 1:
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_step := 2;
+              END_IF
+        -SMC step 2 retract:
+          -Prop m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+          -Prop logic 1:
+              IF m_ptrPicAlpha^.o_MonostableCylinder.Retracted THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrPicAlpha := i_ptrPicAlpha;
+          -Prop m_id := EPrimitives.PicAlpha_PickUpWp;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: MonostableCylinder_Skill_Extend
+      -Ref Skill2: MonostableCylinder_Skill_Retract
+      -Ref Skill3: VacuumGripper_Skill_Intake
+      -Ref Skill4: VacuumGripper_Skill_Release
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref PicAlpha_HoldingWorkpiece: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DO_Extend
+     -SMC Skill3 and Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DO_VacuumOn
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.o_VacuumGripper.VacuumHit
+
+
+  -SMC Process PicAlpha_PutDownWP
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_postcondition: ((PicAlpha_CylinderRetracted = TRUE)) AND ((PicAlpha_HoldingWorkpiece = FALSE));
+      -Prop m_precondition: ((PicAlpha_CylinderRetracted = TRUE)) AND ((PicAlpha_HoldingWorkpiece = TRUE));
+      -Prop m_ptrPAC: POINTER TO PicAlphaConveyor;
+      -Prop m_ptrPicAlpha: POINTER TO PicAlpha;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+          -Prop logic:
+              IF m_ptrPicAlpha^.o_VacuumGripper.WPTaken THEN
+              m_ptrPicAlpha^.o_VacuumGripper.METH_Intake();
+              ELSE
+              m_ptrPicAlpha^.o_VacuumGripper.METH_Release();
+              END_IF
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 extend:
+          -Prop m_ptrPicAlpha^.o_MonostableCylinder.METH_Extend();
+          -Prop logic 1:
+              IF m_ptrPicAlpha^.o_MonostableCylinder.Extended THEN
+              m_step := 1;
+              END_IF
+        -SMC step 1 grip:
+          -Prop m_ptrPicAlpha^.o_VacuumGripper.METH_Release();
+          -Prop m_ptrPicAlpha^.o_VacuumGripper.METH_VacuumHitOn();
+          -Prop m_timer(IN := TRUE, PT := T#200MS);
+          -Prop logic 1:
+              IF m_timer.Q THEN
+              m_ptrPicAlpha^.o_VacuumGripper.METH_VacuumHitOff();
+              m_timer(IN := FALSE);
+              m_step := 2;
+              IF m_ptrPicAlpha^.PresenceSensorPosition4Value THEN
+              m_ptrPAC^.METH_ReduceWPNumberAtPAC();
+              END_IF
+              END_IF
+        -SMC step 2 retract:
+          -Prop m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+          -Prop logic 1:
+              IF m_ptrPicAlpha^.o_MonostableCylinder.Retracted THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrPicAlpha := i_ptrPicAlpha;
+          -Prop m_ptrPAC := i_ptrPAC;
+          -Prop m_id := EPrimitives.PicAlpha_PutDownWp;
+          -Prop m_timeout := T#20S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: MonostableCylinder_Skill_Extend
+      -Ref Skill2: MonostableCylinder_Skill_Retract
+      -Ref Skill3: PicAlphaConveyor_Skill_ReduceWPNumberAtPAC
+      -Ref Skill4: VacuumGripper_Skill_Intake
+      -Ref Skill5: VacuumGripper_Skill_Release
+      -Ref Skill6: VacuumGripper_Skill_VacuumHitOff
+      -Ref Skill7: VacuumGripper_Skill_VacuumHitOn
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref PicAlpha_HoldingWorkpiece: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DO_Extend
+     -SMC Skill4 and Skill5 and Skill6 and Skill7 Variable:
+      -Ref  Variable1: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+      -Ref  Variable2: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DO_VacuumOn
+      -Ref  Variable3: MAIN.m_container.m_PicAlpha.o_VacuumGripper.VacuumHit
+
+SMC RFC
+  -SMC Process RFC_MoveWorkpiece_Base
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_ptrRFC: POINTER TO RefeedingConveyor;
+      -Prop m_step: INT := 0;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrRFC^.METH_ConveyorStop();
+          -Prop m_ptrRFC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrRFC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrRFC^.METH_ConveyorStop();
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+    -SMC Call Skill:
+      -Ref Skill1: RefeedingConveyor_Skill_ConveyorForward
+      -Ref Skill2: RefeedingConveyor_Skill_ConveyorStop
+      -Ref Skill3: RefeedingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_RFC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_RFC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_RFC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_RFC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_RFC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_RFC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_RFC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_RFC.m_Switch.DO_Extend
+
+
+  -SMC Process RFC_TransferWorkpieceTo_LSC
+    -Ref Extends: RFC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_case: UINT := 0;
+      -Prop m_passby : BOOL;
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: ((LSC_ProductType = 0)) AND ((((RFC_WPAtEnd = TRUE)) AND ((((Stack_WorkpieceAvailable = FALSE)) AND ((((Stamp_WPAtStamp = FALSE)) AND ((((Crane_HoldingWorkpiece = FALSE)) AND ((Crane_CylinderRetracted = TRUE))))))))));
+      -Prop m_ptrLSC : POINTER TO LargeSortingConveyor;
+      -Prop m_ptrRFC: POINTER TO RefeedingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+      -Prop m_timerEject : TON;
+      -Prop m_timer_a : TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrRFC^.METH_ConveyorStop();
+          -Prop m_ptrRFC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+        -SMC CASE:
+          -SMC CASE 0:
+            -Prop m_ptrRFC^.METH_Switch_Extend();
+            -Prop m_timer(IN := TRUE, PT := T#200MS);
+            -Prop logic 1:
+                IF m_timer.Q THEN
+                m_case := 1;
+                m_timer(IN := FALSE);
+                END_IF
+          -SMC CASE 1:
+            -Prop m_ptrRFC^.METH_Switch_Retract();
+            -Prop m_timer(IN := TRUE, PT := T#1000MS);
+            -Prop logic 1:
+                IF m_timer.Q  THEN
+                m_case := 0;
+                m_timer(IN := FALSE, PT := T#0MS);
+                AtTarget := TRUE;
+                END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := FALSE;
+          -Prop m_ptrRFC^.METH_ConveyorForward();
+          -Prop m_timerEject(IN := TRUE, PT := T#2000MS);
+          -Prop logic:
+              IF m_timerEject.Q THEN
+              m_timerEject(IN := FALSE, PT := T#0MS);
+              m_ptrLSC^.METH_ConveyorStop();
+              EjectOperation := TRUE;
+              END_IF
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrRFC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrRFC^.METH_ConveyorStop();
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrRFC := i_ptrRFC;
+          -Prop m_ptrLSC := i_ptrLSC;
+          -Prop m_id := EPrimitives.RFC_TransferWorkpieceTo_LSC;
+          -Prop m_timeout := T#10S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop FB_init := TRUE;
+    -SMC Call Skill:
+      -Ref Skill1: LargeSortingConveyor_Skill_ConveyorStop
+      -Ref Skill2: RefeedingConveyor_Skill_ConveyorForward
+      -Ref Skill3: RefeedingConveyor_Skill_ConveyorStop
+      -Ref Skill4: RefeedingConveyor_Skill_Switch_Extend
+      -Ref Skill5: RefeedingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Crane_CylinderRetracted: MAIN.m_container.m_crane.o_MonostableCylinder.DI_Retracted
+      -Ref Crane_HoldingWorkpiece: MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn
+      -Ref RFC_WPAtEnd: MAIN.m_container.m_RFC.m_PresencesensorEnd.DI_WPDetected
+      -Ref Stack_WorkpieceAvailable: MAIN.m_container.m_stack.m_Presencesensor.DI_WPDetected
+      -Ref Stamp_WPAtStamp: MAIN.m_container.m_stamp.m_presenceSensor.DI_WPDetected
+      -Ref LSC_ProductType: MAIN.m_container.m_LSC.m_presenceSensorStart.DI_WPDetected
+     -SMC Skill1 and Skill2 and Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_RFC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_RFC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_RFC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_RFC.Motor.DO_TurnCounterclockwise
+     -SMC Skill4 and Skill5 Variable:
+      -Ref  Variable1: MAIN.m_container.m_RFC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_RFC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_RFC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_RFC.m_Switch.DO_Extend
+
+
+  -SMC Process RFC_TransferWorkpieceTo_PSEnd
+    -Ref Extends: RFC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_passby : BOOL;
+      -Prop m_postcondition: RFC_WPAtEnd = TRUE;
+      -Prop m_precondition: SSC_WPAtEnd = TRUE;
+      -Prop m_ptrRFC: POINTER TO RefeedingConveyor;
+      -Prop m_ptrSSC : POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer : TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrRFC^.METH_ConveyorStop();
+          -Prop m_ptrRFC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF m_ptrRFC^.WPAtEnd THEN
+              m_timer(IN := TRUE, PT := T#2000MS);
+              IF m_timer.Q THEN
+              AtTarget := TRUE;
+              m_timer(IN := FALSE, PT := T#0MS);
+              END_IF
+              END_IF
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrRFC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrRFC^.METH_ConveyorStop();
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrRFC := i_ptrRFC;
+          -Prop m_id := EPrimitives.RFC_TransferWorkpieceTo_PSEnd;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: RefeedingConveyor_Skill_ConveyorForward
+      -Ref Skill2: RefeedingConveyor_Skill_ConveyorStop
+      -Ref Skill3: RefeedingConveyor_Skill_Switch_Retract
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref RFC_WPAtEnd: MAIN.m_container.m_RFC.m_PresencesensorEnd.DI_WPDetected
+      -Ref SSC_WPAtEnd: MAIN.m_container.m_SSC.m_PresencesensorEnd.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_RFC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_RFC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_RFC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_RFC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_RFC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_RFC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_RFC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_RFC.m_Switch.DO_Extend
+
+SMC SSC
+  -SMC Process SSC_MoveWorkpiece_Base
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_TurnSwitch : BOOL;
+      -Prop m_ptrSSC: POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrSSC^.METH_ConveyorStop();
+          -Prop m_ptrSSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+    -SMC Call Skill:
+      -Ref Skill1: SmallSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: SmallSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: SmallSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_SSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_SSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_SSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_SSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_SSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_SSC.m_Switch.DO_Extend
+
+
+  -SMC Process SSC_MoveWorkpieceTo_PSEnd
+    -Ref Extends: SSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_TurnSwitch : BOOL;
+      -Prop m_passby : BOOL;
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: ((PAC_WPAtEnd = TRUE)) AND ((((PicAlpha_HoldingWorkpiece = FALSE)) AND ((PicAlpha_CylinderRetracted = TRUE))));
+      -Prop m_ptrSSC: POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrSSC^.METH_ConveyorStop();
+          -Prop m_ptrSSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF m_ptrSSC^.WPAtEnd THEN
+              AtTarget := TRUE;
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_id := EPrimitives.SSC_TransferWorkpieceTo_RFC;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop FB_init := TRUE;
+    -SMC Call Skill:
+      -Ref Skill1: SmallSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: SmallSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: SmallSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PAC_WPAtEnd: MAIN.m_container.m_PAC.m_PresencesensorEnd.DI_WPDetected
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref PicAlpha_HoldingWorkpiece: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_SSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_SSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_SSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_SSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_SSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_SSC.m_Switch.DO_Extend
+
+
+  -SMC Process SSC_TransferWorkpieceTo_PSStart
+    -Ref Extends: SSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_TurnSwitch : BOOL;
+      -Prop m_passby: BOOL;
+      -Prop m_postcondition: SSC_WPAtStart = TRUE;
+      -Prop m_precondition: ((PicAlpha_HoldingWorkpiece = FALSE)) AND ((PicAlpha_CylinderRetracted = TRUE));
+      -Prop m_ptrPAC : POINTER TO PicAlphaConveyor;
+      -Prop m_ptrSSC: POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrSSC^.METH_ConveyorStop();
+          -Prop m_ptrSSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF m_ptrSSC^.WPAtStart THEN
+              m_passby := TRUE;
+              END_IF
+              IF m_ptrSSC^.WPAtStart THEN
+              m_passby := FALSE;
+              AtTarget := TRUE;
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrSSC := i_ptrSSC;
+          -Prop m_ptrPAC := i_ptrPAC;
+          -Prop m_passby := FALSE;
+          -Prop m_id := EPrimitives.SSC_TransferWorkpieceTo_PSStart;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop FB_init := TRUE;
+    -SMC Call Skill:
+      -Ref Skill1: SmallSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: SmallSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: SmallSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_CylinderRetracted: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Retracted
+      -Ref PicAlpha_HoldingWorkpiece: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+      -Ref SSC_WPAtStart: MAIN.m_container.m_SSC.m_PresencesensorStart.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_SSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_SSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_SSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_SSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_SSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_SSC.m_Switch.DO_Extend
+
+
+  -SMC Process SSC_TransferWorkpieceTo_RampEnd
+    -Ref Extends: SSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_TurnSwitch : BOOL;
+      -Prop m_passby : BOOL;
+      -Prop m_postcondition: TRUE;
+      -Prop m_precondition: ((PicAlpha_AtPos3 = TRUE)) AND ((((PicAlpha_HoldingWorkpiece = FALSE)) AND ((PicAlpha_CylinderExtended = FALSE))));
+      -Prop m_ptrSSC: POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_timer: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrSSC^.METH_ConveyorStop();
+          -Prop m_ptrSSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop logic:
+              IF m_ptrSSC^.WPAtRampEnd THEN
+              m_passby := TRUE;
+              END_IF
+              IF m_passby THEN
+              m_timer(IN := TRUE, PT := T#500MS);
+              IF m_timer.Q THEN
+              m_timer(IN := FALSE);
+              m_passby := FALSE;
+              AtTarget := TRUE;
+              END_IF
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrSSC := i_ptrSSC;
+          -Prop m_passby := FALSE;
+          -Prop m_id := EPrimitives.SSC_TransferWorkpieceTo_RampEnd;
+          -Prop m_timeout := T#200S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop FB_init := TRUE;
+    -SMC Call Skill:
+      -Ref Skill1: SmallSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: SmallSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: SmallSortingConveyor_Skill_Switch_Retract
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref PicAlpha_AtPos3: MAIN.m_container.m_PicAlpha.m_PresenceSensorPosition3.DI_WPDetected
+      -Ref PicAlpha_CylinderExtended: MAIN.m_container.m_PicAlpha.o_MonostableCylinder.DI_Extended
+      -Ref PicAlpha_HoldingWorkpiece: MAIN.m_container.m_PicAlpha.o_VacuumGripper.DI_TakenIn
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_SSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_SSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_SSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_SSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_SSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_SSC.m_Switch.DO_Extend
+
+
+  -SMC Process SSC_TransferWorkpieceTo_RFC
+    -Ref Extends: SSC_MoveWorkpiece_Base
+    -SMC VAR:
+      -Prop m_TurnSwitch : BOOL;
+      -Prop m_passby : BOOL;
+      -Prop m_postcondition: RFC_WPAtEnd = TRUE;
+      -Prop m_precondition: SSC_WPAtEnd = TRUE;
+      -Prop m_ptrRFC : POINTER TO RefeedingConveyor;
+      -Prop m_ptrSSC: POINTER TO SmallSortingConveyor;
+      -Prop m_step: INT := 0;
+      -Prop m_switchExtended: BOOL;
+      -Prop m_timer : TON;
+      -Prop m_timerEject: TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrSSC^.METH_ConveyorStop();
+          -Prop m_ptrSSC^.METH_Switch_Retract();
+          -Prop Abort := TRUE;
+      -SMC AtTarget:
+          -Prop AtTarget := FALSE;
+          -Prop m_ptrSSC^.METH_Switch_Extend();
+          -Prop logic:
+              IF m_ptrRFC^.WPAtStart THEN
+              m_passby := TRUE;
+              END_IF
+              IF m_passby THEN
+              m_timer(IN := TRUE, PT := T#2000MS);
+              IF m_timer.Q THEN
+              m_ptrSSC^.METH_Switch_Retract();
+              m_timer(IN := FALSE, PT := T#0MS);
+              m_passby := FALSE;
+              AtTarget := TRUE;
+              END_IF
+              END_IF
+      -SMC EjectOperation:
+          -Prop EjectOperation := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 to target:
+          -Prop logic 1:
+              IF NOT AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorForward();
+              m_step := 1;
+              END_IF
+        -SMC step 1:
+          -Prop logic 1:
+              IF AtTarget() THEN
+              m_ptrSSC^.METH_ConveyorStop();
+              m_step := 2;
+              END_IF
+        -SMC step 2:
+          -Prop logic 1:
+              IF EjectOperation() THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrSSC := i_ptrSSC;
+          -Prop m_ptrRFC := i_ptrRFC;
+          -Prop m_id := EPrimitives.SSC_TransferWorkpieceTo_RFC;
+          -Prop m_timeout := T#5S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+          -Prop FB_init := TRUE;
+    -SMC Call Skill:
+      -Ref Skill1: SmallSortingConveyor_Skill_ConveyorForward
+      -Ref Skill2: SmallSortingConveyor_Skill_ConveyorStop
+      -Ref Skill3: SmallSortingConveyor_Skill_Switch_Extend
+      -Ref Skill4: SmallSortingConveyor_Skill_Switch_Retract
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref RFC_WPAtEnd: MAIN.m_container.m_RFC.m_PresencesensorEnd.DI_WPDetected
+      -Ref SSC_WPAtEnd: MAIN.m_container.m_SSC.m_PresencesensorEnd.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.Motor.AI_Position
+      -Ref  Variable2: MAIN.m_container.m_SSC.Motor.AI_Speed
+      -Ref  Variable3: MAIN.m_container.m_SSC.Motor.DO_TurnClockwise
+      -Ref  Variable4: MAIN.m_container.m_SSC.Motor.DO_TurnCounterclockwise
+     -SMC Skill3 and Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_SSC.m_Switch.DI_BoundaryPressure
+      -Ref  Variable2: MAIN.m_container.m_SSC.m_Switch.DI_Extended
+      -Ref  Variable3: MAIN.m_container.m_SSC.m_Switch.DI_Retracted
+      -Ref  Variable4: MAIN.m_container.m_SSC.m_Switch.DO_Extend
+
+SMC Stack
+  -SMC Process Stack_ProvideWorkpiece
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_postcondition: Stack_WorkpieceAvailable = TRUE;
+      -Prop m_precondition: ((Stack_WorkpieceAvailable = FALSE)) AND ((((Crane_AtStack = FALSE)) OR ((((Crane_AtStack = TRUE)) AND ((Crane_HoldingWorkpiece = FALSE))))));
+      -Prop m_ptrStack: POINTER TO Stack;
+      -Prop m_step: INT;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrStack^.o_slidingCylinder.METH_Retract();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+        -SMC step 0 extend:
+          -Prop m_ptrStack^.o_slidingCylinder.METH_Extend();
+          -Prop logic 1:
+              IF m_ptrStack^.o_slidingCylinder.Extended THEN
+              m_step := 1;
+              END_IF
+        -SMC step 1 retract:
+          -Prop m_ptrStack^.o_slidingCylinder.METH_Retract();
+          -Prop logic 1:
+              IF m_ptrStack^.o_slidingCylinder.Retracted THEN
+              ExecuteInternal := TRUE;
+              m_step := 0;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrStack := i_ptrStack;
+          -Prop m_id := EPrimitives.Stack_ProvideWorkpiece;
+          -Prop m_timeout := T#5S;
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+    -SMC Call Skill:
+      -Ref Skill1: slidingCylinder_Skill_Extend
+      -Ref Skill2: slidingCylinder_Skill_Retract
+
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Crane_AtStack: MAIN.m_container.m_crane.m_PresenceSensorAtStack.DI_WPDetected
+      -Ref Crane_HoldingWorkpiece: MAIN.m_container.m_crane.o_VacuumGripper.DI_TakenIn
+      -Ref Stack_WorkpieceAvailable: MAIN.m_container.m_stack.m_Presencesensor.DI_WPDetected
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_stack.o_slidingCylinder.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_stack.o_slidingCylinder.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_stack.o_slidingCylinder.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_stack.o_slidingCylinder.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_stack.o_slidingCylinder.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_stack.o_slidingCylinder.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_stack.o_slidingCylinder.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_stack.o_slidingCylinder.DO_Extend
+
+SMC Stamp
+  -SMC Process Stamp_StampWorkpiece
+    -Ref Extends: ControlPrimitiveBase
+    -SMC VAR:
+      -Prop m_postcondition: Stamp_WorkpieceState = 2;
+      -Prop m_precondition: Stamp_WPAtStamp = TRUE;
+      -Prop m_ptrStamp: POINTER TO Stamp;
+      -Prop m_step: INT := 0;
+      -Prop t_Stamp : TON;
+    -SMC METHODS:
+      -SMC Abort:
+          -Prop m_ptrStamp^.m_stampingCylinder.METH_Retract();
+          -Prop m_ptrStamp^.m_slidingCylinder.METH_Extend();
+          -Prop Abort := TRUE;
+      -SMC ExecuteInternal:
+          -Prop ExecuteInternal := FALSE;
+        -SMC step 0 take in wp:
+          -Prop m_ptrStamp^.m_slidingCylinder.METH_Retract();
+          -Prop logic 1:
+              IF m_ptrStamp^.m_slidingCylinder.Retracted THEN
+              m_step := 1;
+              END_IF
+        -SMC step 1 stamp wp:
+          -Prop m_ptrStamp^.StampPressure := GetPressure(i_params);
+          -Prop m_ptrStamp^.m_stampingCylinder.METH_Extend();
+          -Prop t_Stamp(IN:=TRUE, PT:=T#1500MS);
+          -Prop logic 1:
+              IF t_Stamp.Q THEN
+              IF m_ptrStamp^.StampPressure >= m_pressureVal.Value.Numeric THEN
+              m_step := 2;
+              t_Stamp(IN:=FALSE);
+              END_IF
+              END_IF
+        -SMC step 2 retract stamp:
+          -Prop m_ptrStamp^.m_stampingCylinder.METH_Retract();
+          -Prop logic 1:
+              IF m_ptrStamp^.m_stampingCylinder.Retracted THEN
+              m_step := 3;
+              END_IF
+        -SMC step 3 provide wp:
+          -Prop m_ptrStamp^.m_slidingCylinder.METH_Extend();
+          -Prop logic 1:
+              IF m_ptrStamp^.m_slidingCylinder.Extended THEN
+              m_step := 0;
+              ExecuteInternal := TRUE;
+              END_IF
+      -SMC FB_init:
+          -Prop m_ptrStamp := i_ptrStamp;
+          -Prop m_id := EPrimitives.Stamp_StampWorkpiece;
+          -Prop m_timeout := T#200S;
+          -Prop m_paramDefinition := 'pressure_white:INT;pressure_black:INT;pressure_metal:INT;';
+          -Prop Precondition := m_precondition;
+          -Prop Postcondition := m_postcondition;
+      -SMC GetPressure:
+          -Prop logic:
+              CASE LREAL_TO_UINT(m_st^.GetNumeric(EProcessVariables.Stamp_ProductType)) OF
+              EProductTypes.white:;
+              m_pressureVal := i_params.Retrieve('pressure_white');
+              GetPressure := LREAL_TO_INT(m_pressureVal.Value.Numeric);
+              EProductTypes.black:;
+              m_pressureVal := i_params.Retrieve('pressure_black');
+              GetPressure := LREAL_TO_INT(m_pressureVal.Value.Numeric);
+              EProductTypes.metal:;
+              m_pressureVal := i_params.Retrieve('pressure_metal');
+              GetPressure := LREAL_TO_INT(m_pressureVal.Value.Numeric);
+              ELSE
+              GetPressure := 0;
+              END_CASE
+    -SMC Call Skill:
+      -Ref Skill1: slidingCylinder_Skill_Extend
+      -Ref Skill2: slidingCylinder_Skill_Retract
+      -Ref Skill3: stampingCylinder_Skill_Extend
+      -Ref Skill4: stampingCylinder_Skill_Retract
+
+    -SMC Control Variable:
+     -SMC Condition Variable
+      -Ref Stamp_WPAtStamp: MAIN.m_container.m_stamp.m_presenceSensor.DI_WPDetected
+      -SMC Stamp_WorkpieceState
+       -Ref Stamp_WorkpieceState_1: MAIN.m_container.m_stamp.m_stampingCylinder.DI_Extended
+     -SMC Skill1 and Skill2 Variable:
+      -Ref  Variable1: MAIN.m_container.m_stamp.m_slidingCylinder.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_stamp.m_slidingCylinder.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_stamp.m_slidingCylinder.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_stamp.m_slidingCylinder.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_stamp.m_slidingCylinder.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_stamp.m_slidingCylinder.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_stamp.m_slidingCylinder.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_stamp.m_slidingCylinder.DO_Extend
+      -Ref  Variable9: MAIN.m_container.m_stamp.m_slidingCylinder.DO_Retract
+     -SMC Skill3 and Skill4 Variable:
+      -Ref  Variable1: MAIN.m_container.m_stamp.m_stampingCylinder.AI_FlowPressure
+      -Ref  Variable2: MAIN.m_container.m_stamp.m_stampingCylinder.AI_PositionTransmitter
+      -Ref  Variable3: MAIN.m_container.m_stamp.m_stampingCylinder.AI_PressureSensor
+      -Ref  Variable4: MAIN.m_container.m_stamp.m_stampingCylinder.DI_BoundaryFlowPressure
+      -Ref  Variable5: MAIN.m_container.m_stamp.m_stampingCylinder.DI_BoundaryPressure
+      -Ref  Variable6: MAIN.m_container.m_stamp.m_stampingCylinder.DI_Extended
+      -Ref  Variable7: MAIN.m_container.m_stamp.m_stampingCylinder.DI_Retracted
+      -Ref  Variable8: MAIN.m_container.m_stamp.m_stampingCylinder.DO_Extend
+

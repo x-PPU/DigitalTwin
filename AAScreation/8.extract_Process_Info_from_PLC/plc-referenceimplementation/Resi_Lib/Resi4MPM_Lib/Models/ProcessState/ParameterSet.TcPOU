@@ -1,0 +1,223 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ParameterSet" Id="{0414aea3-dc30-4459-88d1-98d427449fa1}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ParameterSet
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_parameters : ARRAY [ResiConst.ARR_MIN..ResiConst.PARAMS_ARR_MAX] OF SNamedValue;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Parameters" Id="{bb7dbcc1-d5e4-4ed4-9104-78fd5bee1924}">
+      <Declaration><![CDATA[PROPERTY Parameters : ARRAY [ResiConst.ARR_MIN..ResiConst.PARAMS_ARR_MAX] OF SNamedValue]]></Declaration>
+      <Get Name="Get" Id="{74fd8de9-37b0-43a9-acbb-42b6d28e6b4b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Parameters := m_parameters;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="Reset" Id="{a079cd93-aa7b-49e0-9c85-a2d315dd6e22}">
+      <Declaration><![CDATA[METHOD Reset : BOOL
+VAR
+	emptyVal: UValues;
+	i: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := ResiConst.ARR_MIN TO ResiConst.PARAMS_ARR_MAX DO
+	m_parameters[i].DataType := EDataType.none;
+	m_parameters[i].Defined := FALSE;
+	m_parameters[i].Name := '';
+	m_parameters[i].Value := emptyVal;
+END_FOR]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Retrieve" Id="{7d02fa4f-0efb-4fcb-a10f-c64cc6b592b9}">
+      <Declaration><![CDATA[METHOD Retrieve : SNamedValue
+VAR_INPUT
+	i_name: STRING;
+END_VAR
+VAR
+	i: UINT;
+	m_emptyParam: SNamedValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := ResiConst.ARR_MIN TO ResiConst.PARAMS_ARR_MAX DO
+	IF m_parameters[i].Name = i_name THEN
+		Retrieve := m_parameters[i];
+		RETURN;
+	END_IF
+END_FOR
+
+Retrieve := m_emptyParam;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetParam_Binary" Id="{83f70078-4b99-4b33-880b-b1a34b4d4b60}">
+      <Declaration><![CDATA[METHOD SetParam_Binary : BOOL
+VAR_INPUT
+	i_key: STRING;
+	i_value: BOOL;
+END_VAR
+VAR
+	i: UINT;
+	m_paramFound: BOOL;
+	nonEmptyIdx: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 0 TO ResiConst.PARAMS_ARR_MAX DO
+	IF m_parameters[i].Name = i_key THEN
+		m_parameters[i].DataType := EDataType.binary;
+		m_parameters[i].Value.Binary := i_value;
+		m_paramFound := TRUE;
+	ELSIF m_parameters[i].Name <> '' THEN
+		nonEmptyIdx := i;
+	ELSE
+		EXIT;
+	END_IF
+END_FOR
+
+IF NOT m_paramFound THEN
+	m_parameters[nonEmptyIdx + 1].DataType := EDataType.binary;
+	m_parameters[nonEmptyIdx + 1].Value.Binary := i_value;
+	m_parameters[nonEmptyIdx + 1].Name := i_key;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetParam_Defined" Id="{a349ce65-9b39-4aee-8145-291e1f635d4d}">
+      <Declaration><![CDATA[METHOD SetParam_Defined : BOOL
+VAR_INPUT
+	i_key: STRING;
+	i_defined: BOOL;
+END_VAR
+VAR
+	i: UINT;
+	m_paramsFound: BOOL;	
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 0 TO ResiConst.PARAMS_ARR_MAX DO
+	IF m_parameters[i].Name = i_key THEN
+		m_parameters[i].Defined := i_defined;
+		m_paramsFound := TRUE;
+		SetParam_Defined := TRUE;
+	END_IF
+END_FOR
+
+IF NOT m_paramsFound THEN
+	SetParam_Defined := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetParam_Numeric" Id="{85ee20d5-fe47-4439-8ef1-78d10a6ac15c}">
+      <Declaration><![CDATA[METHOD SetParam_Numeric : BOOL
+VAR_INPUT
+	i_key: STRING;
+	i_value: LREAL;
+END_VAR
+VAR
+	i: UINT;
+	m_paramFound: BOOL;
+	nonEmptyIdx: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 0 TO ResiConst.PARAMS_ARR_MAX DO
+	IF m_parameters[i].Name = i_key THEN
+		m_parameters[i].DataType := EDataType.numeric;
+		m_parameters[i].Value.Numeric := i_value;
+		m_paramFound := TRUE;
+	ELSIF m_parameters[i].Name <> '' THEN
+		nonEmptyIdx := i;
+	ELSE
+		EXIT;
+	END_IF
+END_FOR
+
+IF NOT m_paramFound THEN
+	m_parameters[nonEmptyIdx + 1].DataType := EDataType.numeric;
+	m_parameters[nonEmptyIdx + 1].Value.Numeric := i_value;
+	m_parameters[nonEmptyIdx + 1].Name := i_key;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetParam_String" Id="{38b4fcd4-5e2b-4272-8c6b-d379ad09829e}">
+      <Declaration><![CDATA[METHOD SetParam_String : BOOL
+VAR_INPUT
+	i_key: STRING;
+	i_value: STRING;
+END_VAR
+VAR
+	i: UINT;
+	m_paramFound: BOOL;
+	nonEmptyIdx: UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := 0 TO ResiConst.PARAMS_ARR_MAX DO
+	IF m_parameters[i].Name = i_key THEN
+		m_parameters[i].DataType := EDataType.string_t;
+		m_parameters[i].Value.String_t := i_value;
+		m_paramFound := TRUE;
+	ELSIF m_parameters[i].Name <> '' THEN
+		nonEmptyIdx := i;
+	ELSE
+		EXIT;
+	END_IF
+END_FOR
+
+IF NOT m_paramFound THEN
+	m_parameters[nonEmptyIdx + 1].DataType := EDataType.string_t;
+	m_parameters[nonEmptyIdx + 1].Value.String_t := i_value;
+	m_parameters[nonEmptyIdx + 1].Name := i_key;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ParameterSet">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ParameterSet.Parameters.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ParameterSet.Reset">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+    <LineIds Name="ParameterSet.Retrieve">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+    <LineIds Name="ParameterSet.SetParam_Binary">
+      <LineId Id="1" Count="4" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="17" Count="1" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="6" Count="3" />
+      <LineId Id="11" Count="3" />
+    </LineIds>
+    <LineIds Name="ParameterSet.SetParam_Defined">
+      <LineId Id="1" Count="10" />
+    </LineIds>
+    <LineIds Name="ParameterSet.SetParam_Numeric">
+      <LineId Id="1" Count="0" />
+      <LineId Id="3" Count="2" />
+      <LineId Id="17" Count="4" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="8" Count="2" />
+      <LineId Id="12" Count="4" />
+    </LineIds>
+    <LineIds Name="ParameterSet.SetParam_String">
+      <LineId Id="1" Count="3" />
+      <LineId Id="15" Count="4" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="7" Count="2" />
+      <LineId Id="11" Count="3" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

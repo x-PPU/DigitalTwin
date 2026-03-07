@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Crane_MoveToStamp" Id="{603c84dd-7da8-411f-b8c6-adc394ee5499}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Crane_MoveToStamp EXTENDS Crane_MoveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// Crane_CylinderRetracted
+	m_precondition: ComparisonExpression(EProcessVariables.Crane_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	// EProcessVariables.Crane_AtStamp = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.Crane_AtStamp, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{e24505c1-da34-445e-be96-5791ccb9b197}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+		
+	i_ptrCrane: POINTER TO Crane;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrCrane := i_ptrCrane;
+
+m_id := EPrimitives.Crane_MoveToStamp;
+m_timeout := T#30S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetAngle" Id="{8f3aae04-3e20-4b46-b6a3-ec6994978800}">
+      <Declaration><![CDATA[PROPERTY TargetAngle : UINT]]></Declaration>
+      <Get Name="Get" Id="{7145177b-79ea-425b-97f0-1d51772a8828}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[TargetAngle := 180;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="Crane_MoveToStamp">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Crane_MoveToStamp.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="Crane_MoveToStamp.TargetAngle.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

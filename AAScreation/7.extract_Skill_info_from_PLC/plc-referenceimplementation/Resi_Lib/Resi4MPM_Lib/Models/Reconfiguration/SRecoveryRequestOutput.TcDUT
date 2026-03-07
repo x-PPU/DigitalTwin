@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SRecoveryRequestOutput" Id="{282aac72-0a3e-4332-9c40-eec7c0fb124d}">
+    <Declaration><![CDATA[{attribute 'OPC.UA.DA.StructuredType' := '1'}
+TYPE SRecoveryRequestOutput EXTENDS STriggeredOutput :
+STRUCT
+	RequestedState: STRING(256);
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

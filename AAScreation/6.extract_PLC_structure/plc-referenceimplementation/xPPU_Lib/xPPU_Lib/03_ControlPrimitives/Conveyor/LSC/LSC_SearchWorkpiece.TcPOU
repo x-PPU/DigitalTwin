@@ -1,0 +1,150 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LSC_SearchWorkpiece" Id="{c2f4af91-ba3d-49e0-956b-f687ff1b9dae}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LSC_SearchWorkpiece EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrLSC: POINTER TO LargeSortingConveyor;
+	
+	// TRUE
+	m_precondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	
+	// EProcessVariables.LSC_ProductType >= 0
+	m_postcondition: ComparisonExpression(EProcessVariables.LSC_ProductType, EComparisonType.greater_eq, EDataType.numeric, FALSE, 0, '', TRUE);
+	
+	m_timer: TON;
+	m_passby: BOOL;
+	m_step: INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{0144eff6-9574-4710-8549-bc343d2dfed7}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC^.METH_ConveyorStop();
+m_ptrLSC^.METH_Ramp1Pusher_Retract();
+m_ptrLSC^.METH_Ramp2Pusher_Retract();
+m_ptrLSC^.METH_Switch_Retract();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{96d62614-9f54-4062-bd06-e4419b95c79d}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED  ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//searches for a workpiece on the large sorting conveyor.
+//If one is detected it is moved to the identifying sensors. 
+//If none is detected, the conveyor is run to move all possible objects of it.
+
+CASE m_step OF
+	0:	//search in front of presence sensor
+		m_ptrLSC^.METH_ConveyorForward();
+		m_timer(IN := TRUE, PT := T#600MS);
+		
+		IF m_timer.Q THEN	//empty in front of presence sensor
+			m_timer(IN := FALSE);
+			m_ptrLSC^.METH_ConveyorStop();
+			m_step := 1;
+		END_IF
+		IF m_ptrLSC^.WPAtStart THEN //Workpiece detected
+			m_timer(IN := FALSE);
+			m_ptrLSC^.METH_ConveyorStop();
+			m_step := 2;
+		END_IF
+
+	1:	//search behind presence sensor
+		m_ptrLSC^.METH_ConveyorBackward();
+		m_timer(IN := TRUE, PT := T#3000MS);
+		
+		IF m_timer.Q THEN	//empty behind presence sensor
+			m_timer(IN := FALSE);
+			m_ptrLSC^.METH_ConveyorStop();
+			m_step := 4;
+		END_IF	
+		IF m_ptrLSC^.WPAtStart THEN //Workpiece detected
+			m_timer(IN := FALSE);			
+			m_ptrLSC^.METH_ConveyorStop();
+			m_step := 2;
+		END_IF
+
+		
+	2:	//workpiece found, identify workpiece  (300ms)
+		m_ptrLSC^.METH_ConveyorForward();
+		m_timer(IN := TRUE, PT := T#300MS);
+		
+		IF m_timer.Q THEN	//workpiece at inductive and optical sensor
+			m_timer(IN := FALSE);
+			m_ptrLSC^.METH_ConveyorStop();
+			m_step := 3;
+		END_IF	
+
+	
+	3:	//move workpiece to presence sensor
+		m_ptrLSC^.METH_ConveyorBackward();
+		IF m_ptrLSC^.WPAtStart THEN
+			m_ptrLSC^.METH_ConveyorStop();
+			m_step := 0;
+			ExecuteInternal := TRUE;
+		END_IF
+	
+		
+	4:	//no workpiece found; empty conveyor
+		m_ptrLSC^.METH_ConveyorForward();
+		m_timer(IN := TRUE, PT := T#4000MS);
+		IF m_timer.Q THEN	//conveyor is empty 
+			m_timer(IN := FALSE);
+			m_ptrLSC^.METH_ConveyorStop();
+			m_step := 0;
+			ExecuteInternal := TRUE;
+		END_IF	
+	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{9035c822-feec-4c57-888e-1fed25956a40}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC := i_ptrLSC;
+
+m_id := EPrimitives.LSC_SearchWorkpiece;
+m_timeout := T#200S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LSC_SearchWorkpiece">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_SearchWorkpiece.Abort">
+      <LineId Id="1" Count="4" />
+    </LineIds>
+    <LineIds Name="LSC_SearchWorkpiece.ExecuteInternal">
+      <LineId Id="1" Count="58" />
+      <LineId Id="61" Count="7" />
+    </LineIds>
+    <LineIds Name="LSC_SearchWorkpiece.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

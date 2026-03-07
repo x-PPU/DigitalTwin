@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="MotorOutput" Id="{f28daf18-d411-4e0a-9f93-013fe10c5e47}">
+    <Declaration><![CDATA[TYPE MotorOutput :
+STRUCT
+	ConveyorForward : BOOL;
+	ConveyorBackward : BOOL;
+	ConveyorStop : BOOL;
+	ConveyorSpeed : UDINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

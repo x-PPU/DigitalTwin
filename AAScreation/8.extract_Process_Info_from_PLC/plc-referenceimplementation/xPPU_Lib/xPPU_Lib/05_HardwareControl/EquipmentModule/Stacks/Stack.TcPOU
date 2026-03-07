@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Stack" Id="{1e3fa84f-9e42-4403-ad18-2b7e89b35a5e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Stack
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	o_slidingCylinder : MonostableCylinder;
+END_VAR
+VAR
+	//Sensors
+	m_Presencesensor : PresenceSensor;
+	m_Opticalsensor : OpticalSensor;
+	m_Inductivesensor : InductiveSensor;
+	m_Weightsensor : WeightSensor;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="LightWPOnTray" Id="{c68d4113-17be-4d3a-a9fd-e1465f07ef87}">
+      <Declaration><![CDATA[PROPERTY LightWPOnTray : BOOL]]></Declaration>
+      <Get Name="Get" Id="{79b9e079-4f7b-402e-8feb-229e8b73d1f0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[LightWPOnTray:=m_Opticalsensor.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="MetalWPOnTray" Id="{4bf79261-dbde-4bb0-839a-4a5690f0b9bf}">
+      <Declaration><![CDATA[PROPERTY MetalWPOnTray : BOOL]]></Declaration>
+      <Get Name="Get" Id="{dcf5fe41-2293-481b-b2b5-ff6139360ce0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[MetalWPOnTray := m_Inductivesensor.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="WPOnTray" Id="{7075c1af-0b9e-4f28-93a5-c96b5aa3fd9a}">
+      <Declaration><![CDATA[PROPERTY WPOnTray : BOOL
+ //REFERENCE TO PresenceSensor]]></Declaration>
+      <Get Name="Get" Id="{6f5e7b24-0509-4eba-a08d-b26553b408f9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[WPOnTray:=m_Presencesensor.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="WPWeight" Id="{dac3abdf-3167-4b0b-b57f-f9aa92356f1d}">
+      <Declaration><![CDATA[PROPERTY WPWeight : INT]]></Declaration>
+      <Get Name="Get" Id="{b5c4852c-da2b-4ac3-a10f-6ce429dd0e84}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[WPWeight:=m_Weightsensor.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="Stack">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stack.LightWPOnTray.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stack.MetalWPOnTray.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stack.WPOnTray.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stack.WPWeight.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

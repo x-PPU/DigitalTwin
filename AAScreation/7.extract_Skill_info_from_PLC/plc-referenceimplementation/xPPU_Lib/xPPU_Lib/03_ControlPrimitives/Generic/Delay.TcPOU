@@ -1,0 +1,83 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Delay" Id="{08785a7a-1afc-4058-b373-6b4a90bd4ee5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Delay EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_precondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_ton: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{54930e5f-d0e2-47c4-85d3-12b0e01a4cce}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{1d002a75-dca1-4571-a521-6a95585e00b2}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	(*
+	 * ms: UINT
+	 *)
+	i_params: ParameterSet;
+END_VAR
+VAR
+	m_msVal: SNamedValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_msVal := i_params.Retrieve('ms');
+m_ton(IN := TRUE, PT := LREAL_TO_TIME(m_msVal.Value.Numeric));
+IF m_ton.Q THEN
+	m_ton(IN := FALSE);
+	ExecuteInternal := TRUE;
+ELSE
+	ExecuteInternal := FALSE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{d532b72d-8920-4422-8887-b53f5208108d}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_id := EPrimitives.Gen_Delay;
+m_timeout := T#99999S;
+m_paramDefinition := 'ms:UINT;';
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Delay">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Delay.Abort">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Delay.ExecuteInternal">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+    <LineIds Name="Delay.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

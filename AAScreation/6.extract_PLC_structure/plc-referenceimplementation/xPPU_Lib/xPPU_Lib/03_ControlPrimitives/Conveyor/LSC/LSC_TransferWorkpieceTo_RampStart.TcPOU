@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LSC_TransferWorkpieceTo_RampStart" Id="{0cde01a2-e6e8-4fd8-a7a4-22f562dbdb87}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LSC_TransferWorkpieceTo_RampStart EXTENDS LSC_MoveWorkpiece_Base
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// EProcessVariables.LSC_WPAtRampStart = FALSE
+	m_precondition: ComparisonExpression(EProcessVariables.LSC_WPAtRampStart, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	
+	// TRUE
+	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_timer: TON;
+	m_passby: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{6c1645c0-8f25-49b9-863c-7370ec0d5b79}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+
+IF m_ptrLSC^.WPAtStart THEN
+	m_passby := TRUE;
+END_IF
+
+IF m_passby THEN
+	m_timer(IN := TRUE, PT := T#700MS);
+	IF m_timer.Q THEN
+		m_timer(IN := FALSE);
+		m_passby := FALSE;
+		AtTarget := TRUE;
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{18535973-1750-4058-a003-d9ea361dc12e}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC^.METH_Ramp1Pusher_Extend();
+IF m_ptrLSC^.WPAtRampStart THEN
+	m_ptrLSC^.METH_Ramp1Pusher_Retract();
+	EjectOperation := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{5c391550-7a7c-46ac-bfb8-2fac6cc6884c}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC := i_ptrLSC;
+
+m_id := EPrimitives.LSC_TransferWorkpieceTo_RampStart;
+m_timeout := T#200S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampStart">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampStart.AtTarget">
+      <LineId Id="1" Count="13" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampStart.EjectOperation">
+      <LineId Id="1" Count="4" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_RampStart.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

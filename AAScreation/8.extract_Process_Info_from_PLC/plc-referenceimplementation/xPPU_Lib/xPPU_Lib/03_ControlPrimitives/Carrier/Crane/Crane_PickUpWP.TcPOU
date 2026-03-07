@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Crane_PickUpWP" Id="{f6d2f69b-8dc2-431f-a71b-d26bd8f14cb3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Crane_PickUpWP EXTENDS Crane_PickPutBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_step: INT := 0;
+	m_timer: TON;
+	
+	// (EProcessVariables.Crane_HoldingWorkpiece = FALSE) AND (EProcessVariables.Crane_CylinderRetracted = TRUE)
+	m_compExpr55: ComparisonExpression(EProcessVariables.Crane_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr57: ComparisonExpression(EProcessVariables.Crane_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_precondition: BoolExpression(m_compExpr55, EBoolOperation.and_op, m_compExpr57);
+	
+	// (Crane_HoldingWorkpiece AND Crane_CylinderRetracted) AND ((Crane_AtStack AND Stack_ProductType = 0.0) OR ((Crane_AtStamp AND Stamp_ProductType = 0.0) OR (Crane_AtLSC AND LSC_ProductType = 0.0)))
+	m_compExp224: ComparisonExpression(EProcessVariables.Crane_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExp226: ComparisonExpression(EProcessVariables.Crane_CylinderRetracted, EComparisonType.equals, EDataType.binary, True, 0, '', TRUE);
+	m_boolExp222: BoolExpression(m_compExp224, EBoolOperation.and_op, m_compExp226);
+	m_compExp232: ComparisonExpression(EProcessVariables.Crane_AtStack, EComparisonType.equals, EDataType.binary, True, 0, '', TRUE);
+	m_compExp234: ComparisonExpression(EProcessVariables.Stack_ProductType, EComparisonType.equals, EDataType.numeric, FALSE, 0.0, '', TRUE);
+	m_boolExp230: BoolExpression(m_compExp232, EBoolOperation.and_op, m_compExp234);
+	m_compExp244: ComparisonExpression(EProcessVariables.Crane_AtStamp, EComparisonType.equals, EDataType.binary, True, 0, '', TRUE);
+	m_compExp246: ComparisonExpression(EProcessVariables.Stamp_ProductType, EComparisonType.equals, EDataType.numeric, FALSE, 0.0, '', TRUE);
+	m_boolExp242: BoolExpression(m_compExp244, EBoolOperation.and_op, m_compExp246);
+	m_compExp259: ComparisonExpression(EProcessVariables.Crane_AtLSC, EComparisonType.equals, EDataType.binary, True, 0, '', TRUE);
+	m_compExp261: ComparisonExpression(EProcessVariables.LSC_ProductType, EComparisonType.equals, EDataType.numeric, FALSE, 0.0, '', TRUE);
+	m_boolExp257: BoolExpression(m_compExp259, EBoolOperation.and_op, m_compExp261);
+	m_boolExp241: BoolExpression(m_boolExp242, EBoolOperation.or_op, m_boolExp257);
+	m_boolExp229: BoolExpression(m_boolExp230, EBoolOperation.or_op, m_boolExp241);
+	m_postcondition: BoolExpression(m_boolExp222, EBoolOperation.and_op, m_boolExp229);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{a517eb93-3e17-4411-a238-0674e1651587}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrCrane^.o_MonostableCylinder.METH_Retract();
+IF m_ptrCrane^.o_VacuumGripper.WPTaken THEN
+	m_ptrCrane^.o_VacuumGripper.METH_Intake();
+ELSE
+	m_ptrCrane^.o_VacuumGripper.METH_Release();
+END_IF
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{e071548f-1cdc-4d97-ac08-6b161ee5d20a}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED  ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+	0:	// extend
+		m_ptrCrane^.o_MonostableCylinder.METH_Extend();
+		IF m_ptrCrane^.o_MonostableCylinder.Extended THEN
+			m_step := 1;
+		END_IF
+	
+	1:	// grip
+		m_ptrCrane^.o_VacuumGripper.METH_Intake();
+		m_timer(IN := TRUE, PT := T#1S);
+		IF m_timer.Q THEN
+			m_timer(IN := FALSE);
+			m_step := 2;
+		END_IF
+	
+	2: // shift register
+		IF ShiftProduct(TRUE) THEN
+			m_step := 3;
+		END_IF
+	
+	3:	// retract
+		m_ptrCrane^.o_MonostableCylinder.METH_Retract();
+		IF m_ptrCrane^.o_MonostableCylinder.Retracted THEN
+			m_step := 0;
+			ExecuteInternal := TRUE;
+		END_IF	
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{76b9ce27-5b9a-48ba-be23-4a21b3fc0e82}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrCrane: POINTER TO Crane;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrCrane := i_ptrCrane;
+
+m_id := EPrimitives.Crane_PickUpWP;
+m_timeout := T#10S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Crane_PickUpWP">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Crane_PickUpWP.Abort">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="Crane_PickUpWP.ExecuteInternal">
+      <LineId Id="1" Count="0" />
+      <LineId Id="3" Count="11" />
+      <LineId Id="25" Count="5" />
+      <LineId Id="16" Count="8" />
+    </LineIds>
+    <LineIds Name="Crane_PickUpWP.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

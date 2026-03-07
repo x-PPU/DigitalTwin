@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SStrategy" Id="{919936fe-6b28-430a-ba3e-fc9c4d6db738}">
+    <Declaration><![CDATA[TYPE SStrategy :
+STRUCT
+	State: EStrategyStates;
+	
+	LoopStrategy: BOOL;
+	Steps: ARRAY [ResiConst.ARR_MIN..ResiConst.STRAT_LEN_MAX] OF SStep;
+	Transitions: ARRAY [ResiConst.ARR_MIN..ResiConst.STRAT_LEN_MAX] OF STransition;
+	
+	IsMaster: BOOL;
+	NumPartners: UINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PAC_TransferFirstWorkpieceTo_SSCStart" Id="{68d1c684-0a31-4cf0-a21f-5e450b926f6f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PAC_TransferFirstWorkpieceTo_SSCStart EXTENDS PAC_MoveWorkpiece_Base
+VAR_INPUT
+	i_ptrPAC : POINTER TO PicAlphaConveyor;
+	i_ptrSSC : POINTER TO SmallSortingConveyor;	
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrSSC : POINTER TO SmallSortingConveyor;
+	m_timer: TON;
+	// (EProcessVariables.PicAlpha_CylinderRetracted = TRUE) AND (EProcessVariables.PAC_WPAtEnd = FALSE)
+	m_compExpr116: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr118: ComparisonExpression(EProcessVariables.PAC_WPAtEnd, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_precondition: BoolExpression(m_compExpr116, EBoolOperation.and_op, m_compExpr118);
+	
+	// EProcessVariables.PAC_WPAtEnd = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.PAC_WPAtEnd, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_switchExtended: BOOL;
+	m_passby: BOOL;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{9aa9c0e4-38f5-4067-b61d-ddef5745f56b}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+IF NOT m_passby THEN
+	m_ptrPAC^.METH_Switch_Extend();
+END_IF
+IF m_ptrPAC^.WPAtEnd THEN
+	m_passby := TRUE;
+END_IF
+IF m_passby THEN
+	m_ptrPAC^.METH_Switch_Retract();
+END_IF
+
+IF m_ptrSSC^.WPAtStart THEN
+    AtTarget := TRUE;
+	m_passby := FALSE;
+END_IF
+
+//IF NOT m_switchExtended THEN
+	//m_ptrPAC^.METH_Switch_Extend();
+	//m_switchExtended := TRUE;
+	//m_timer(IN := TRUE, PT := T#500MS);
+	//IF m_timer.Q THEN
+		//m_ptrPAC^.METH_Switch_Retract();
+		//m_switchExtended := FALSE;
+		//m_timer(IN := FALSE, PT := T#0MS);
+	//END_IF
+//END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{6069255b-ea6a-436a-b6bd-1ce4330118c4}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{43a9cc3b-21e5-4eca-9921-8013ffe37495}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPAC: POINTER TO PicAlphaConveyor;
+	i_ptrSSC: POINTER TO SmallSortingConveyor;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPAC := i_ptrPAC;
+m_ptrSSC := i_ptrSSC;
+m_id := EPrimitives.PAC_TransferFitsrWorkpieceTo_SSCStart;
+m_timeout := T#200S;
+m_passby := FALSE;
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PAC_TransferFirstWorkpieceTo_SSCStart">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PAC_TransferFirstWorkpieceTo_SSCStart.AtTarget">
+      <LineId Id="1" Count="0" />
+      <LineId Id="58" Count="2" />
+      <LineId Id="62" Count="1" />
+      <LineId Id="52" Count="1" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="41" Count="1" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="39" Count="0" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="3" Count="2" />
+      <LineId Id="7" Count="2" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="10" Count="1" />
+    </LineIds>
+    <LineIds Name="PAC_TransferFirstWorkpieceTo_SSCStart.EjectOperation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PAC_TransferFirstWorkpieceTo_SSCStart.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

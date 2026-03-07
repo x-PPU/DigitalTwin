@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PicAlpha" Id="{03071636-a184-4bb1-a2c6-5d782284ea47}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PicAlpha EXTENDS BaseCarrier
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	o_VacuumGripper: VacuumGripper;
+	o_MonostableCylinder: MonostableCylinder;
+	o_Distance: INT := 50;
+END_VAR
+VAR
+	m_PresenceSensorPosition1: PresenceSensor;
+	m_PresenceSensorPosition2: PresenceSensor;
+	m_PresenceSensorPosition3: PresenceSensor;
+	m_PresenceSensorPosition4: PresenceSensor;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="METH_CarrierBackward" Id="{907c736b-471f-4c74-bb3c-e3f968d7c191}">
+      <Declaration><![CDATA[METHOD METH_CarrierBackward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Motor.ACT_TurnCounterclockwise();
+
+IF m_PresenceSensorPosition1.Value THEN
+	o_Distance := 0;
+ELSIF m_PresenceSensorPosition2.Value THEN
+	o_Distance := 10;
+ELSIF m_PresenceSensorPosition3.Value THEN
+	o_Distance := 50;
+ELSIF m_PresenceSensorPosition4.Value THEN
+	o_Distance := 100;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_CarrierForward" Id="{b302867a-e7ad-427b-9cf6-40df8a3979e2}">
+      <Declaration><![CDATA[METHOD METH_CarrierForward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Motor.ACT_TurnClockwise();
+
+IF m_PresenceSensorPosition1.Value THEN
+	o_Distance := 0;
+ELSIF m_PresenceSensorPosition2.Value THEN
+	o_Distance := 10;
+ELSIF m_PresenceSensorPosition3.Value THEN
+	o_Distance := 50;
+ELSIF m_PresenceSensorPosition4.Value THEN
+	o_Distance := 100;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_CarrierStop" Id="{50d58e4d-322a-4c5a-9c9f-f777502b5be9}">
+      <Declaration><![CDATA[METHOD METH_CarrierStop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Motor.ACT_Stop();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="PresenceSensorPosition1Value" Id="{e96c7794-5ac9-4be1-abc7-0d40fe8317b5}">
+      <Declaration><![CDATA[PROPERTY PresenceSensorPosition1Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{d0cbf5aa-6d0a-4a0b-9728-cb6ec8b22d99}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PresenceSensorPosition1Value := m_PresenceSensorPosition1.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PresenceSensorPosition2Value" Id="{f997094f-9bfe-449c-9329-ab9fba3c55f6}">
+      <Declaration><![CDATA[PROPERTY PresenceSensorPosition2Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{d8daaf04-dc2b-4c2c-b9ef-374b252cc252}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PresenceSensorPosition2Value := m_PresenceSensorPosition2.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PresenceSensorPosition3Value" Id="{4431b3d5-9c0c-4905-9867-3fd8dfca0c86}">
+      <Declaration><![CDATA[PROPERTY PresenceSensorPosition3Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ffe2ac42-5a84-47a8-bbd9-f5dbba64c46d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PresenceSensorPosition3Value := m_PresenceSensorPosition3.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="PresenceSensorPosition4Value" Id="{19ce0e74-d2a8-41d6-8ed0-dafc504ad661}">
+      <Declaration><![CDATA[PROPERTY PresenceSensorPosition4Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{7d2b915d-f247-4c47-a486-8dc58545ecc9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[PresenceSensorPosition4Value := m_PresenceSensorPosition4.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="PicAlpha">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha.METH_CarrierBackward">
+      <LineId Id="1" Count="10" />
+    </LineIds>
+    <LineIds Name="PicAlpha.METH_CarrierForward">
+      <LineId Id="1" Count="10" />
+    </LineIds>
+    <LineIds Name="PicAlpha.METH_CarrierStop">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha.PresenceSensorPosition1Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha.PresenceSensorPosition2Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha.PresenceSensorPosition3Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha.PresenceSensorPosition4Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="STransition" Id="{0900d58e-a6e8-433e-a353-ce98bae666fe}">
+    <Declaration><![CDATA[{attribute 'OPC.UA.DA.StructuredType' := '1'}
+TYPE STransition :
+STRUCT
+	// determines whether this transition in a SStrategy's transition array is part of the strategy.
+	IsSet: BOOL;
+	
+	// -1 signifies unset (because ID 0 is the start node)
+	PrevStepIds: ARRAY [ResiConst.ARR_MIN..ResiConst.STRAT_PARALLEL_MAX] OF INT;
+	// -1 signifies unset (because ID 0 is the start node)	
+	NextStepIds: ARRAY [ResiConst.ARR_MIN..ResiConst.STRAT_PARALLEL_MAX] OF INT;
+	
+	ExpressionType: EExpressionType;
+	ExpressionIdx: UINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

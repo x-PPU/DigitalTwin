@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="SSC_MoveWorkpieceTo_PSEnd" Id="{4323d321-71e1-4524-9a29-ebf2b58f70d3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SSC_MoveWorkpieceTo_PSEnd EXTENDS SSC_MoveWorkpiece_Base
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+
+// (EProcessVariables.PicAlpha_AtPos3 = TRUE) AND ((EProcessVariables.PicAlpha_HoldingWorkpiece = FALSE) AND (EProcessVariables.PicAlpha_CylinderExtended = FALSE))
+	m_compExpr244: ComparisonExpression(EProcessVariables.PAC_WPAtEnd, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr246: ComparisonExpression(EProcessVariables.PicAlpha_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr248: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	//m_compExpr250: ComparisonExpression(EProcessVariables.RFC_ProductType_1, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+	//m_compExpr252: ComparisonExpression(EProcessVariables.RFC_ProductType_2, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+	//m_boolExpr253: BoolExpression(m_compExpr250, EBoolOperation.and_op, m_compExpr252);
+	//m_boolExpr254: BoolExpression(m_compExpr248, EBoolOperation.and_op, m_boolExpr253);
+	m_boolExpr255: BoolExpression(m_compExpr246, EBoolOperation.and_op, m_compExpr248);
+	m_precondition: BoolExpression(m_compExpr244, EBoolOperation.and_op, m_boolExpr255);
+	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_timer: TON;
+	m_passby : BOOL;
+
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{c6a06373-345b-4b06-b261-7e7ff67e7e42}">
+      <Declaration><![CDATA[METHOD PROTECTED AtTarget : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+
+IF m_ptrSSC^.WPAtEnd THEN
+	AtTarget := TRUE;
+END_IF	
+	]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{adae3110-3194-4cc8-b1c1-d2220c245566}">
+      <Declaration><![CDATA[{warning 'Methodenimplementierung hinzufügen'}
+METHOD PROTECTED EjectOperation : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{b9a80de8-89ab-46eb-88bf-1cf8a82b9d80}">
+      <Declaration><![CDATA[//FB_Init ist immer implizit verfügbar und wird primär für die Initialisierung verwendet.
+//Der Rückgabewert wird nicht ausgewertet. Für gezielte Einflussnahme können Sie
+//die Methoden explizit deklarieren und darin mit dem Standard-Initialisierungscode 
+//zusätzlichen Code bereitstellen. Sie können den Rückgabewert auswerten.
+METHOD FB_Init: BOOL
+VAR_INPUT    
+bInitRetains: BOOL; // TRUE: Die Retain-Variablen werden initialisiert (Reset warm / Reset kalt)    
+bInCopyCode: BOOL;  // TRUE: Die Instanz wird danach in den Kopiercode kopiert (Online-Change)
+i_ptrSSC: POINTER TO SmallSortingConveyor;
+END_VAR
+VAR
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[//m_ptrSSC := i_ptrSSC;
+
+m_id := EPrimitives.SSC_TransferWorkpieceTo_RFC;
+m_timeout := T#200S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+FB_init := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="SSC_MoveWorkpieceTo_PSEnd">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_MoveWorkpieceTo_PSEnd.AtTarget">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+    <LineIds Name="SSC_MoveWorkpieceTo_PSEnd.EjectOperation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_MoveWorkpieceTo_PSEnd.FB_init">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

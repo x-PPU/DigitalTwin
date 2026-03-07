@@ -1,0 +1,17 @@
+In xPPU_6 follow component AAS idshort is different from the Entity idshort in SM Mechanical Breakdown  
+
+
+AAS idshort
+Festo_EGC_50___TB_KF_Toothed_belt_axis:Festo_EGC_50_TB_KF_Toothed_belt_axis
+Festo_SME_8_S_LED_24_proximity_sensor: Festo_SME_8_S_LED_24_Proximity_Sensor
+Phonix_Contact_DIKD_1: Phonix_Contact_DIKD_1_5_Terminal_block_Load_cell_connection
+
+SMC PPU_2ubIBHQEeaen93uATCTQQ:PPU 
+
+Need to be modified manually
+
+
+SM Behavior
+- SMC Scenario_x
+- - SMC StateDiagram
+- - - SMC PPU_2ubIBHQEeaen93uATCTQQ      modified to PPU

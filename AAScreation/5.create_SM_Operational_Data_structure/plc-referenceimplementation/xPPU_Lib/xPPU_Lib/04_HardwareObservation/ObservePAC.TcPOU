@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ObservePAC" Id="{f655d9cb-93c8-4fa4-b968-cd86aa308a91}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ObservePAC EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrPAC: POINTER TO PicAlphaConveyor;
+	m_ptrPACWP1: POINTER TO xPPUProduct;
+	m_ptrPACWP2: POINTER TO xPPUProduct;
+	m_ptrPACWP3: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{585d10f7-907a-460f-bb8b-74fb5484cb9b}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPAC: POINTER TO PicAlphaConveyor;
+	i_ptrWP1: POINTER TO xPPUProduct;
+	i_ptrWP2: POINTER TO xPPUProduct;
+	i_ptrWP3: POINTER TO xPPUProduct;
+
+	
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPAC := i_ptrPAC;
+m_ptrPACWP1 := i_ptrWP1;
+m_ptrPACWP2 := i_ptrWP2;
+m_ptrPACWP3 := i_ptrWP3;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{040df874-5fd1-4e6f-9865-9806b259212e}">
+      <Declaration><![CDATA[METHOD  ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{55b685a7-d601-4f6d-81ea-0d036a54c12c}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[io_processState.UpdateState_Binary(EProcessVariables.PAC_WPAtStart, m_ptrPAC^.WPAtStart, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PAC_WPAtEnd, m_ptrPAC^.WPAtEnd, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PAC_SwitchExtended, m_ptrPAC^.m_Switch.Extended, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PAC_SwitchRetracted, m_ptrPAC^.m_Switch.Retracted, TRUE);
+io_processState.UpdateState_Numeric(EProcessVariables.PAC_WPNumber, INT_TO_LREAL(m_ptrPAC^.m_WPNumberAtPAC), TRUE);
+
+io_processState.UpdateState_Defined(EProcessVariables.PAC_WPAtStart, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.PAC_WPAtEnd, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.PAC_SwitchExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.PAC_SwitchRetracted, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.PAC_WPNumber, TRUE);
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ObservePAC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObservePAC.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="10" Count="1" />
+    </LineIds>
+    <LineIds Name="ObservePAC.ResetDefinition">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObservePAC.UpdateProcessObservation">
+      <LineId Id="1" Count="9" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EAbortState" Id="{fa221045-acf4-4ffc-9a76-99606418d2e2}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EAbortState :
+(
+	none := 0,
+	requested := 1,
+	aborting := 2,
+	aborted := 3
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="ResiConst" Id="{b688aea6-1f93-4f3c-aed0-992da43de70a}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL CONSTANT	
+	// Lower bound of all Resi4MPM arrays.
+	ARR_MIN: UINT := 0;
+	// Default upper bound of Resi4MPM arrays.
+	DEFAULT_ARR_MAX: UINT := 20;
+	// Max length of behaviors (separately length of Control Primitives and Module Sequences).
+	BEHAVIORS_ARR_MAX: UINT := 100;
+	// Max length of observed process variables.
+	STATE_ARR_MAX: UINT := 150;
+	// Max length of units observing the process state.
+	OBSERVERS_ARR_MAX: UINT := 100;
+	// Max length of UC-C strategies introduced at runtime.
+	COMPENSATIONS_ARR_MAX: UINT := 10;
+	// Max Control Primitive count of Module Sequences.
+	MODULE_SEQ_ARR_MAX: UINT := 10;
+	// Max number of parameters for a Behavior.
+	PARAMS_ARR_MAX: UINT := 10;
+	// Max number of Products 
+	PRODUCTS_ARR_MAX: UINT := 20;
+	// Max number of parallel steps in a runtime-defined strategy.
+	STRAT_PARALLEL_MAX: UINT := 5;
+	// Max length (number of steps/transitions) of a runtime-defined strategy.
+	STRAT_LEN_MAX: UINT := 24;
+	// Max length of runtime-changeable expressions.
+	RT_EXPRS_MAX: UINT := 24;
+	// Maximum number of synchronized foreign PLCs.
+	MAX_SYNC_PARTNERS: UINT := 5;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

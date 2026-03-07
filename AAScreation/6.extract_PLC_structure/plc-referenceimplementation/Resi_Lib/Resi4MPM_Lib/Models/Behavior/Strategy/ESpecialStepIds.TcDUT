@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ESpecialStepIds" Id="{5c322e40-6a4f-4dc3-8d8d-818af58c1425}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE ESpecialStepIds :
+(
+	unset := -1,
+	start := 0,
+	end := 1
+) INT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

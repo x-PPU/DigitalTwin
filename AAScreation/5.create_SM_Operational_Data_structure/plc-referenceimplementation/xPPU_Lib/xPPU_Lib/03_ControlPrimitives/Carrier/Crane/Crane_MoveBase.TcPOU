@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Crane_MoveBase" Id="{3b3ba2fc-ae22-4a3d-905d-30807d575792}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT Crane_MoveBase EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrCrane: POINTER TO Crane;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{24c43fc6-d168-4705-bfa5-21f2596b0748}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrCrane^.METH_CarrierStop();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{bfdf9edb-03a9-4ef3-8996-8c703a876873}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED  ExecuteInternal : BOOL
+VAR CONSTANT
+	// only needed once we can actually measure the angle
+	tolerance: LREAL := 1.0;
+END_VAR
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+VAR
+	angle: LREAL;
+	diff: LREAL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[angle := m_st^.GetNumeric(EProcessVariables.Crane_Angle);
+diff := TargetAngle - angle;
+
+IF ABS(diff) < tolerance THEN
+	m_ptrCrane^.METH_CarrierStop();
+	ExecuteInternal := TRUE;
+ELSIF diff < 0 THEN
+	m_ptrCrane^.METH_CarrierTurnClockwise();
+ELSE
+	m_ptrCrane^.METH_CarrierTurnCounterClockwise();
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetAngle" Id="{c39d77f4-a728-45f6-bf29-f72c6181dc14}">
+      <Declaration><![CDATA[PROPERTY TargetAngle : UINT]]></Declaration>
+      <Get Name="Get" Id="{16fd91db-7002-4ae9-85a7-017d501b8296}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="Crane_MoveBase">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Crane_MoveBase.Abort">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="Crane_MoveBase.ExecuteInternal">
+      <LineId Id="1" Count="11" />
+    </LineIds>
+    <LineIds Name="Crane_MoveBase.TargetAngle.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

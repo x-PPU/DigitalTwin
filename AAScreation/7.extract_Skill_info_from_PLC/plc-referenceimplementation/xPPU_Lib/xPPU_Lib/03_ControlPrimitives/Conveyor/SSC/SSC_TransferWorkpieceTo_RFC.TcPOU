@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="SSC_TransferWorkpieceTo_RFC" Id="{59e027bf-a43c-4ba6-a46a-41f7d428b2a3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SSC_TransferWorkpieceTo_RFC EXTENDS SSC_MoveWorkpiece_Base
+VAR_INPUT
+	i_ptrSSC : POINTER TO SmallSortingConveyor;
+	i_ptrRFC : POINTER TO RefeedingConveyor;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrRFC : POINTER TO RefeedingConveyor;
+	m_precondition:ComparisonExpression(EProcessVariables.SSC_WPAtEnd, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_postcondition:ComparisonExpression(EProcessVariables.RFC_WPAtEnd, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_passby : BOOL;
+	m_timer : TON;
+	m_switchExtended: BOOL;
+	m_timerEject: TON;
+
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{6735a67c-01ff-4ac2-9f19-d64cedb76f61}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+m_ptrSSC^.METH_Switch_Extend();
+
+IF m_ptrRFC^.WPAtStart THEN	
+	m_passby := TRUE;
+END_IF
+
+IF m_passby THEN
+	m_timer(IN := TRUE, PT := T#2000MS);
+	IF m_timer.Q THEN
+		m_ptrSSC^.METH_Switch_Retract();
+		m_timer(IN := FALSE, PT := T#0MS);
+		m_passby := FALSE;
+		AtTarget := TRUE;
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{c2d9b5a9-8536-4276-9381-e7be946e8c07}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{1cbc5fdf-41b8-4018-bb6f-4fac69d0cd22}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrSSC: POINTER TO SmallSortingConveyor;
+	i_ptrRFC: POINTER TO RefeedingConveyor;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrSSC := i_ptrSSC;
+m_ptrRFC := i_ptrRFC;
+
+m_id := EPrimitives.SSC_TransferWorkpieceTo_RFC;
+m_timeout := T#5S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+FB_init := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="SSC_TransferWorkpieceTo_RFC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_TransferWorkpieceTo_RFC.AtTarget">
+      <LineId Id="1" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="3" Count="4" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="11" Count="1" />
+    </LineIds>
+    <LineIds Name="SSC_TransferWorkpieceTo_RFC.EjectOperation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_TransferWorkpieceTo_RFC.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="2" Count="5" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

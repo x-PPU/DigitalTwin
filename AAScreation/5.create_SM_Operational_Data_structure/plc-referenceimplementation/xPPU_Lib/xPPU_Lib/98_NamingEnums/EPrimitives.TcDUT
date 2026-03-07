@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EPrimitives" Id="{56ce913f-7fa7-4fae-a853-0e90daff6a8e}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EPrimitives :
+(
+	empty := 0,
+	
+	Crane_MoveToStack := 01,
+	Crane_MoveToLSC := 02,
+	Crane_MoveToStamp := 03,
+	Crane_PickUpWP := 04,
+	Crane_PutDownWP := 05,
+	
+	Stamp_StampWorkpiece := 10,
+	
+	Stack_ProvideWorkpiece := 20,
+	
+	LSC_TransferWorkpieceTo_RampStart := 30,
+	LSC_TransferWorkpieceTo_RampMid := 31,
+	LSC_TransferWorkpieceTo_RampEnd := 32,
+	LSC_TransferWorkpieceTo_PAC := 33,
+	LSC_SearchWorkpiece := 35,
+	LSC_TransferWPAtStart:=36,
+	
+	PAC_TransferWorkpieceTo_PSStart := 40,
+	PAC_TransferFitsrWorkpieceTo_SSCStart := 41,
+	PAC_TransferWorkpieceTo_SSC := 42,
+	
+	PicAlpha_MoveToPos1 := 50,
+	PicAlpha_MoveToPos2 := 51,
+	PicAlpha_MoveToPos3 := 52,
+	PicAlpha_MoveToPos4 := 53,
+	PicAlpha_PickUpWP := 54,
+	PicAlpha_PutDownWp := 55,
+	
+	SSC_TransferWorkpieceTo_PSStart := 60,
+	SSC_TransferWorkpieceTo_RampEnd := 61,
+	SSC_TransferWorkpieceTo_RFC := 62,
+	SSC_MoveWorkpieceTo_PSEnd :=63,
+	
+	RFC_TransferWorkpieceTo_PSEnd := 70,
+	RFC_TransferWorkpieceTo_LSC := 71,
+	
+	Gen_Delay := 90,
+	Gen_IndicateActive_Crane := 91,
+	Gen_IndicateActive_Stack := 92,
+	Gen_IndicateActive_Stamp := 93,
+	Gen_IndicateActive_LSC := 94,
+	Gen_ForceVariable_Crane := 95,
+	Gen_ForceVariable_Stack := 96,
+	Gen_ForceVariable_Stamp := 97,
+	Gen_ForceVariable_LSC := 98
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,36 @@
+Initialize engine version: 5.6.3p2 (b3d7a6428558)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.1]
+    Renderer: NVIDIA GeForce RTX 3060 Laptop GPU (ID=0x2560)
+    Vendor:   NVIDIA
+    VRAM:     5996 MB
+    Driver:   32.0.15.6641
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+- Completed reload, in  0.081 seconds
+Platform assembly: D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: D:\xPPU_DT-main\AAScreation\4.simulation_info_2_csv\model\xPPU_EXE\xPPU_ohneVRNavigation_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 165Hz; virtual: 5760x2160 at 0,0
+<RI> Initializing input.
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 0.954500 ms
+Setting up 10 worker threads for Enlighten.
+  Thread -> id: 5508 -> priority: 1 
+  Thread -> id: 6254 -> priority: 1 
+  Thread -> id: 7a58 -> priority: 1 
+  Thread -> id: 553c -> priority: 1 
+  Thread -> id: 9c30 -> priority: 1 
+  Thread -> id: 7fcc -> priority: 1 
+  Thread -> id: 6e90 -> priority: 1 
+  Thread -> id: 8438 -> priority: 1 
+  Thread -> id: 5fb8 -> priority: 1 
+  Thread -> id: 480c -> priority: 1 

@@ -1,0 +1,31 @@
+typeName,idShort,value,valueType,category,descriptionEN,descriptionDE,semanticId
+SubmodelElementCollection,Magazine,,,,,,0173-1#01-AFT096#005
+Capability,Store_Workpieces,,,,Functions as an input storage system for workpieces.,,
+Capability,Provide_Workpieces,,,,Uses pneumatic cylinders and sensors to separate and make workpieces available at the pickup position.,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Crane,,,,,,0173-1#01-AKL475#007
+Capability,Transport_Workpieces_1,,,,"Picks and places workpieces between the stack, stamp, and sorting conveyor.",,
+Capability,Dynamic_Handling,,,,"Adjusts the crane's behavior based on the workpiece's weight, color, and material type. ",,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Stamping_Device,,,,,,0173-1#01-AKF780#016
+Capability,Stamp_Workpieces,,,,"Applies variable pressure based on the weight category of the workpiece (light, medium, or heavy).",,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Sorting_Conveyor,,,,,,0173-1#01-AKH782#015
+Capability,Sort_Workpieces,,,,Organizes and stores workpieces into different ramps based on sorting rules.,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,PicAlpha_Conveyor,,,,,,0173-1#01-AKH782#015
+Capability,Transport_Workpieces_2,,,,Feeds WPs one-by-one to the SSC for further sorting,,
+Capability,Buffer_Workpieces_1,,,,Stops incoming WPs until three are buffered,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Small_Sorting_Conveyor,,,,,,0173-1#01-AKH782#015
+Capability,Sort_Workpieces,,,,Organizes and stores workpieces into different ramps based on sorting rules.,,
+Capability,Transport_Workpieces_3,,,,Transports workpieces either to the ramp or to the RC,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,Refill_Conveyor,,,,,,0173-1#01-AKH782#015
+Capability,Refills_Workpieces,,,,Re-feeds workpieces back to the Large Sorting Conveyor,,
+Capability,Buffer_Workpieces_2,,,,Buffers at the switch,,
+End-SubmodelElementCollection,,,,,,,
+SubmodelElementCollection,PicAlpha,,,,,,0173-1#01-AKL511#008
+Capability,Ordering_Workpiece ,,,,Manipulates the sequence of workpieces,,
+Capability,Transport_Workpieces_4,,,,Handles workpieces over the conveyor system with linear movement,,
+End-SubmodelElementCollection,,,,,,,

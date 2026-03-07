@@ -1,0 +1,11 @@
+Name,Port,DataType,Scope
+CraneDown,1,boolean,Input
+WorkpieceReady,2,boolean,Input
+CraneLower,1,boolean,Output
+MagazinVacuumOn,2,boolean,Output
+CraneUp,3,boolean,Input
+CraneSucked,4,boolean,Input
+CraneOnMagazin,5,boolean,Input
+CraneTurnClockwise,3,boolean,Output
+CraneTurnCounterclockwise,4,boolean,Output
+CraneOnConveyor,6,boolean,Input
