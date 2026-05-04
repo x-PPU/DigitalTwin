@@ -109,7 +109,7 @@ Tip: Place the generated .aasx files in the local ./aasxs directory, and they wi
 
 
 ## Contact
-Jiayang Li, Email: li.jiayang@myyahoo.com
+Jiayang Li, Email: jiayang_l1@163.com
 
 
 
