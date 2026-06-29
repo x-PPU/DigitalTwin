@@ -13,6 +13,8 @@ it into an Asset Administration Shell (AAS) format.
 import os
 import numpy as np
 import re
+import time
+import csv
 import glob
 
 from OCC.Core.BRepBndLib import brepbndlib
@@ -388,8 +390,6 @@ class STPParser:
         return min_xyz, max_xyz, range
 
 
-
-
 if __name__ == '__main__':
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
@@ -418,18 +418,37 @@ if __name__ == '__main__':
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    for stp_filename in stp_files:
-        if not os.path.isfile(stp_filename):
-            print(f"File not found: {stp_filename}")
-        else:
-            print(f"Processing: {stp_filename}")
-            stp = STPParser(stp_filename)
-            id_info = stp.extract_identification()
-            shape_info = stp.extract_shape_info()
+    # count the time for processing each STP file and save the AAS
+    csv_path = os.path.join(output_dir, "stp_processing_times.csv")
+    with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['name', 'time'])  
 
+        for stp_filename in stp_files:
+            start_time = time.time()        
             title = os.path.basename(stp_filename).replace('.stp', '')
+            success = False
 
-            output_file = os.path.join(output_dir, f"{title}.aasx")
+            try:
+                if not os.path.isfile(stp_filename):
+                    print(f"File not found: {stp_filename}")
+                    continue
 
-            aas_stp = aasFromSTP(stp_filename, id_info, shape_info, output_file)
-            aas_stp.create_aas_from_STP()
+                print(f"Processing: {stp_filename}")
+                stp = STPParser(stp_filename)
+                id_info = stp.extract_identification()
+                shape_info = stp.extract_shape_info()
+
+                output_file = os.path.join(output_dir, f"{title}.aasx")
+
+                aas_stp = aasFromSTP(stp_filename, id_info, shape_info, output_file)
+                aas_stp.create_aas_from_STP()
+                success = True
+            except Exception as e:
+                print(f"Warning: Failed on {stp_filename}: {e}")
+
+          
+            if success:
+                elapsed = time.time() - start_time
+                writer.writerow([title, f"{elapsed:.3f}"])
+                print(f"Processed {title} in {elapsed:.3f} seconds")
