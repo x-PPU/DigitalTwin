@@ -10,6 +10,8 @@ import sys
 import logging
 import re
 import glob
+import time
+import csv
 
 from basyx.aas import model
 from basyx.aas.adapter import aasx
@@ -193,7 +195,6 @@ class AasFromTable:
                 file_store=self.file_store
             )
 
-
 if __name__ == '__main__':
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
@@ -204,15 +205,26 @@ if __name__ == '__main__':
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    for filename in pdf_files:
-        datasheet = PDFExtractorSiemens(filename)
-        tables = datasheet.extract_tables_plumber()
-        data_table = datasheet.extract_stream()
+    csv_path = os.path.join(output_dir, "siemens_processing_times.csv")
+    with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['name', 'time'])   
 
-        title = os.path.basename(filename).replace('.pdf', '')
+        for filename in pdf_files:
+            start_time = time.time()        
 
-        aas_table = AasFromTable(data_table, title, filename)
-        aas_table.create_aas_from_table()
+            datasheet = PDFExtractorSiemens(filename)
+            tables = datasheet.extract_tables_plumber()
+            data_table = datasheet.extract_stream()
 
-        output_file = os.path.join(output_dir, f"{title}.aasx")
-        aas_table.aas_save(output_file)
+            title = os.path.basename(filename).replace('.pdf', '')
+
+            aas_table = AasFromTable(data_table, title, filename)
+            aas_table.create_aas_from_table()
+
+            output_file = os.path.join(output_dir, f"{title}.aasx")
+            aas_table.aas_save(output_file)
+
+            elapsed = time.time() - start_time
+            writer.writerow([title, f"{elapsed:.3f}"])
+            print(f"Processed {title} in {elapsed:.3f} seconds")
