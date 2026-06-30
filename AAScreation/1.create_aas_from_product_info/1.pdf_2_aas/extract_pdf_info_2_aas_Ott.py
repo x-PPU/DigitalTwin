@@ -10,6 +10,8 @@ import os
 import re
 import glob
 from typing import List, Dict
+import time
+import csv
 
 from basyx.aas import model
 from basyx.aas.adapter import aasx
@@ -210,22 +212,36 @@ def run_batch(ott_dir: str, out_dir: str):
         print(f"No PDFs found in {ott_dir}")
         return
 
-    for pdf in pdf_paths:
-        try:
-            extractor = OttPDFExtractor(pdf)
-            table = extractor.extract_table()
-            part_no = extractor.extract_part_number()
+    # neu added in 2023-6-29: create CSV for processing times
+    csv_path = os.path.join(out_dir, "ott_processing_times.csv")
+    with open(csv_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['name', 'time'])   
 
-            builder = OttAASBuilder(pdf)
-            builder.build(table, part_number=part_no)
-
+        for pdf in pdf_paths:
+            start_time = time.time()        # start timing for each file
             title = os.path.basename(pdf).replace(".pdf", "")
-            outfile = os.path.join(out_dir, f"{title}.aasx")
-            builder.save(outfile)
-        except Exception as e:
-            print(f"Warning Failed on {pdf}: {e}")
+            success = False
 
-# ---------- CLI ----------
+            try:
+                extractor = OttPDFExtractor(pdf)
+                table = extractor.extract_table()
+                part_no = extractor.extract_part_number()
+
+                builder = OttAASBuilder(pdf)
+                builder.build(table, part_number=part_no)
+
+                outfile = os.path.join(out_dir, f"{title}.aasx")
+                builder.save(outfile)
+                success = True
+            except Exception as e:
+                print(f"Warning Failed on {pdf}: {e}")
+
+            # only log time if successful
+            if success:
+                elapsed = time.time() - start_time
+                writer.writerow([title, f"{elapsed:.3f}"])
+                print(f"Processed {title} in {elapsed:.3f} seconds")
 
 if __name__ == "__main__":
     current_dir = os.path.dirname(os.path.abspath(__file__))
