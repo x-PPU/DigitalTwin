@@ -21,6 +21,7 @@ Priority by context:
 import os
 import re
 import csv
+import time
 from pathlib import Path
 
 from basyx.aas import model
@@ -577,6 +578,17 @@ class AASXSkillPLCUpdater:
         # Load existing AASX
         self.io.load()
 
+        times = {}  # For timing each submodel processing
+
+        # First pass: Build all elements and collect pending references
+        for subm_name, csv_path in self.submodel_to_csv.items():
+            submodel = self.io.find_submodel(subm_name)
+            if submodel is None:
+                print("Warn: Submodel '%s' not found. Skip CSV: %s" % (subm_name, csv_path))
+                continue
+            
+        times = {}  # store processing times for each submodel
+
         # First pass: Build all elements and collect pending references
         for subm_name, csv_path in self.submodel_to_csv.items():
             submodel = self.io.find_submodel(subm_name)
@@ -584,9 +596,14 @@ class AASXSkillPLCUpdater:
                 print("Warn: Submodel '%s' not found. Skip CSV: %s" % (subm_name, csv_path))
                 continue
 
+            start_time = time.time()  # start timing for this submodel
+
             elements, pend = self.builder.from_path(csv_path, subm_name)
             if not elements:
                 print("No elements created for Submodel '%s' from '%s'." % (subm_name, csv_path))
+                # maybe 0 here is not an error, but we still want to record the time
+                elapsed = time.time() - start_time
+                times[subm_name] = elapsed
                 continue
 
             # Add root level elements to submodel
@@ -594,8 +611,12 @@ class AASXSkillPLCUpdater:
                 submodel.submodel_element.add(el)
 
             self.pending_refs.extend(pend)
-            print(" Added %d elements to Submodel '%s' from '%s'." %
-                  (len(elements), subm_name, csv_path))
+
+            elapsed = time.time() - start_time
+            times[subm_name] = elapsed
+
+            print(" Added %d elements to Submodel '%s' from '%s' in %.3f seconds." %
+                  (len(elements), subm_name, csv_path, elapsed))
 
         # Second pass: Resolve pending references now that all elements are in store
         unresolved = self._resolve_pending_references()
@@ -613,6 +634,9 @@ class AASXSkillPLCUpdater:
                 print(f"- {csv_name}:{line_no}  idShort='{ref_id_short}'  value='{raw_target}'  (context={context})")
         else:
             print("All ReferenceElement targets resolved.")
+
+        return times 
+   
 
     def _resolve_pending_references(self):
         """Resolve all pending references in second pass."""
@@ -642,4 +666,12 @@ if __name__ == "__main__":
     }
 
     updater = AASXSkillPLCUpdater(aasx_in, aasx_out, csv_map)
-    updater.run()
+    times = updater.run()  
+
+    csv_output_path = os.path.join(current_dir, "output", "skill_plc_process_times.csv")
+    with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['name', 'time'])
+        for name, elapsed in times.items():
+            writer.writerow([name, f"{elapsed:.3f}"])
+    print(f"Processing times written to {csv_output_path}")
