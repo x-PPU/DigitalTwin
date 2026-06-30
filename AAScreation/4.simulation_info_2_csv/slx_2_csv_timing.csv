@@ -1,0 +1,8 @@
+name,time
+1.extract_template_aasx_info.py,0.222
+2.extract_model_metadata.py,62.302
+3.extract_stateflow_data.py,53.194
+4.extract_OPC_Item_IDs.py,61.956
+5.add_data_to_template.py,0.776
+6.merge_csv_to_simulation.py,0.640
+Total,179.095
