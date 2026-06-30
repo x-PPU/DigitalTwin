@@ -232,7 +232,7 @@ def main():
         elapsed = time.time() - start
         scenario_name = os.path.basename(sc["uml"]).replace("model_", "").replace(".uml", "")  
         results.append([scenario_name, f"{elapsed:.3f}"])
-        print(f"--- {scenario_name} done in {elapsed:.3f}s ---")
+        print(f" {scenario_name} done in {elapsed:.3f}s ")
 
     # write timing results to CSV
     with open(timing_csv, 'w', newline='', encoding='utf-8') as f:
