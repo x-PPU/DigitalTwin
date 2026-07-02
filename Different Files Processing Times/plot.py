@@ -34,7 +34,7 @@ for i, (auto, wh) in enumerate(zip(automatic, manual_display)):
                 color='black', fontsize=10, fontweight='bold')
     if wh > 0:
         y_pos = base + auto + wh / 2
-        ax.text(i, y_pos, '*', ha='center', va='center',
+        ax.text(i, y_pos, '', ha='center', va='center',
                 color='black', fontsize=14, fontweight='bold')
 
 ax.set_ylabel('time in s', fontsize=13)
@@ -43,10 +43,10 @@ ax.set_xticklabels(categories, fontsize=10)
 ax.legend(loc='upper left', fontsize=12)
 
 # footnote
-fig.text(0.02, 0.01, 'manual:', ha='left', va='bottom',
-         fontsize=9, fontweight='bold')
-fig.text(0.068, 0.01, 'The amount of manual time required depends on the level of knowledge and familiarity with the xPPU plant',
-         ha='left', va='bottom', fontsize=9, fontweight='normal')
+#fig.text(0.02, 0.01, 'manual:', ha='left', va='bottom',
+#         fontsize=9, fontweight='bold')
+#fig.text(0.068, 0.01, 'The amount of manual time required depends on the level of knowledge and familiarity with the xPPU plant',
+#         ha='left', va='bottom', fontsize=9, fontweight='normal')
 
 ax.grid(True, which='major', axis='y', linestyle='--', alpha=0.5)
 plt.tight_layout()
