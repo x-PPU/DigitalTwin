@@ -11,6 +11,7 @@ and appends them into existing submodels, then writes an updated AASX.
 import os
 import csv
 import re
+import time
 from basyx.aas import model
 from basyx.aas.adapter.aasx import AASXReader, AASXWriter, DictSupplementaryFileContainer
 from basyx.aas.model import (
@@ -404,11 +405,15 @@ class BehaviorUpdater:
         behavior_sm = self.io.find_submodel(self.behavior_submodel_name)
         if behavior_sm is None:
             raise ValueError("Submodel '%s' not found in the object store." % self.behavior_submodel_name)
+        
+        times = {}  # Dictionary to store processing times for each scenario
 
         for sc in self.scenarios:
             sc_name = sc["name"]               
             cd_csv = sc.get("cd")
             csv_list = sc.get("csvs", [])
+            
+            start_time = time.time() 
 
             print("\n Updating %s :" % sc_name)
 
@@ -433,9 +438,12 @@ class BehaviorUpdater:
                     self._add_unique_to_smc(scenario_smc, el)
                 total += len(elems)
 
-            print("INFO: Added %d element(s) into SMC '%s'." % (total, sc_name))
+            elapsed = time.time() - start_time  # calculate elapsed time for processing this scenario
+            times[sc_name] = elapsed          
+            print("INFO: Added %d element(s) into SMC '%s' in %.3f seconds." % (total, sc_name, elapsed))
 
         self.io.save()
+        return times 
 
 
 
@@ -481,5 +489,14 @@ if __name__ == '__main__':
         aasx_out=output_aasx,
         behavior_submodel_id=BEHAVIOR_SUBMODEL_ID
     )
-    updater.run()
+    
 
+    times = updater.run()
+
+    csv_output_path = os.path.join(current_dir, "output", "behavior_processing_times.csv")
+    with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['name', 'time'])
+        for name, elapsed in times.items():
+            writer.writerow([name, f"{elapsed:.3f}"])
+    print(f"Processing times written to {csv_output_path}")

@@ -25,6 +25,7 @@ import os
 import xml.etree.ElementTree as ET
 import csv
 import re
+import time
 
 # Get the current directory, UML file path, and output CSV file path.
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -221,9 +222,25 @@ def main():
         },
     ]
 
+    timing_csv = os.path.join(current_dir, "output", "concept_description_timing.csv")
+    results = []
+
     for sc in scenarios:
+        start = time.time()
         print("\n=== Running ConceptDescription for:", sc["uml"], "===")
         run_once(sc["uml"], sc["out"], sc["b1"], sc["b2"])
+        elapsed = time.time() - start
+        scenario_name = os.path.basename(sc["uml"]).replace("model_", "").replace(".uml", "")  
+        results.append([scenario_name, f"{elapsed:.3f}"])
+        print(f" {scenario_name} done in {elapsed:.3f}s ")
+
+    # write timing results to CSV
+    with open(timing_csv, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(["name", "time"])
+        writer.writerows(results)
+    print(f"Timing saved to {timing_csv}")
+
 
 if __name__ == "__main__":
     main()

@@ -18,13 +18,13 @@ StateMachine,PPUACTAutomaticExecute,_MqflwBHREeaen93uATCTQQ,PPU_ACT_AutomaticExe
 Transition,notstackDIWPAvailable,_mdtwEBzxEeaHnYHMiM-I7Q,[not stack.DI_WPAvailable]
 Transition,stackseperatorDIRetracted,_B8KMwBzzEeaHnYHMiM-I7Q,[stack.seperator.DI_Retracted]
 Transition,NotAutomaticExecuteCompleted,_91Ek4EmPEea0ovNLUKsTWw,[Not AutomaticExecuteCompleted]
-Transition,TRUE,_JaJKkEmQEea0ovNLUKsTWw,[true]
+Transition,true,_JaJKkEmQEea0ovNLUKsTWw,[true]
 Transition,AutomaticExecuteCompleted,_e7t-IGVGEeaSMugellPalg,[AutomaticExecuteCompleted]
 Pseudostate,Pseudostate3wABzwEeaHnYHMiMI7Q,__3w-ABzwEeaHnYHMiM-I7Q,
 State,CallAll,_HmjigEmPEea0ovNLUKsTWw,Call_All
 OpaqueBehavior,OpaqueBehaviorOfCallAll,_g2uxcLcYEeaSbZaN2J4zjw,EmergencyStop := stack.EmergencyStop OR largeSortingConveyor.EmergencyStop OR stamp.EmergencyStop OR crane.SoftwareEmergency OR stamp.SoftwareEmergency; StartButton := stack.StartButton OR largeSortingConveyor.StartButton OR stamp.StartButton; crane.ACT_AutomaticExecute() AND largeSortingConveyor.ACT_AutomaticExecute()  AND stack.ACT_AutomaticExecute() AND stamp.ACT_AutomaticExecute() AND picAlphaConveyor.ACT_AutomaticExecute() AND smallSortingConveyor.ACT_AutomaticExecute() AND refillConveyor.ACT_AutomaticExecute()
 StateMachine,PPUACTInit,_TZ6bsCZ4EeagIsaxH253Xw,PPU_ACT_Init
-Transition,TRUE,_WKieUCZ6EeagIsaxH253Xw,[true]
+Transition,true,_WKieUCZ6EeagIsaxH253Xw,[true]
 Transition,conveyorPicAlphaInitialized,_tnEaMCZ6EeagIsaxH253Xw,[conveyorPicAlpha.Initialized]
 Transition,refillConveyorInitialized,_yI_tQCZ6EeagIsaxH253Xw,[refillConveyor.Initialized]
 Transition,largeSortingConveyorInitCompleted,_5WGNICZ6EeagIsaxH253Xw,[largeSortingConveyor.InitCompleted]
@@ -74,7 +74,7 @@ Pseudostate,PseudostateYQ3c0OcFEeayP7zJxSzVpQ,_YQ3c0OcFEeayP7zJxSzVpQ,
 Pseudostate,Pseudostate4Y03wOcFEeayP7zJxSzVpQ,_4Y03wOcFEeayP7zJxSzVpQ,
 StateMachine,PPUACTEmergencyStop,_5kHGoCcMEeaCDM79dIZItg,PPU_ACT_EmergencyStop
 Transition,refillConveyorswitchStopperDIRetracted,_-jblsCcfEea2HoRD4bUt5w,[refillConveyor.switchStopper.DI_Retracted]
-Transition,TRUE,_VYO-IEmZEeaPbYa44WUTPg,[true]
+Transition,true,_VYO-IEmZEeaPbYa44WUTPg,[true]
 Transition,TransitionYUIHgEmZEeaPbYa44WUTPg,_YUIHgEmZEeaPbYa44WUTPg,
 Transition,TransitioncMCNMEmZEeaPbYa44WUTPg,_cMCNMEmZEeaPbYa44WUTPg,
 Transition,TransitionfEb9sEmZEeaPbYa44WUTPg,_fEb9sEmZEeaPbYa44WUTPg,
@@ -111,11 +111,11 @@ OpaqueBehavior,OpaqueBehaviorOfSmallSortingConveyorEmergencyStop,_uKTKEOcMEeayP7
 State,RefillConveyorEmergencyStop,_qxOVcOcMEeayP7zJxSzVpQ,RefillConveyor_EmergencyStop
 OpaqueBehavior,OpaqueBehaviorOfRefillConveyorEmergencyStop,_vqbgEOcMEeayP7zJxSzVpQ,refillConveyor.ACT_EmergencyStop()
 StateMachine,PPUStateMachine,_CmulYLcSEeaSbZaN2J4zjw,PPU_StateMachine
-Transition,TRUE,_FsOhQLcTEeaSbZaN2J4zjw,[true]
+Transition,true,_FsOhQLcTEeaSbZaN2J4zjw,[true]
 Transition,StartButton,_QzxdcLcTEeaSbZaN2J4zjw,[StartButton]
-Transition,TRUE,_-g-mELcTEeaSbZaN2J4zjw,[true]
+Transition,true,_-g-mELcTEeaSbZaN2J4zjw,[true]
 Transition,InitCompleted,__3UG4LcTEeaSbZaN2J4zjw,[InitCompleted]
-Transition,TRUE,_rL4HsLcVEeaSbZaN2J4zjw,[true]
+Transition,true,_rL4HsLcVEeaSbZaN2J4zjw,[true]
 Transition,EmergencyStop,_sem64LcVEeaSbZaN2J4zjw,[EmergencyStop]
 Transition,EmergencyHandled,_y5T4ALcWEeaSbZaN2J4zjw,[EmergencyHandled]
 Transition,NOTEmergencyStop,_RWkrsLcXEeaSbZaN2J4zjw,[NOT EmergencyStop]
@@ -166,11 +166,11 @@ Transition,WPTypeMetallic,_vKIFkBz8Eeagv-kRpDakmQ,[WPType=Metallic]
 Transition,AIWeight12000,_0uf3oBz9Eeagv-kRpDakmQ,[AI_Weight < 12000]
 Transition,WPTypeWhite,_7KiG8Bz9Eeagv-kRpDakmQ,[WPType=White]
 Transition,WPTypeBlack,_9G-lgBz9Eeagv-kRpDakmQ,[WPType=Black]
-Transition,TRUE,_LFB0wBz-Eeagv-kRpDakmQ,[true]
+Transition,true,_LFB0wBz-Eeagv-kRpDakmQ,[true]
 Transition,WPProvided,_7asd0DkgEea8uOUb4gQg2Q,[WPProvided]
-Transition,TRUE,_iNSyQD6nEea_loQFEJgOAg,[true]
+Transition,true,_iNSyQD6nEea_loQFEJgOAg,[true]
 Transition,TransitiondzagD6nEealoQFEJgOAg,_-dzagD6nEea_loQFEJgOAg,
-Transition,TRUE,_yPXw4LcbEeaSbZaN2J4zjw,[true]
+Transition,true,_yPXw4LcbEeaSbZaN2J4zjw,[true]
 Transition,weightModuleAIWPWeight12000,__zA10NybEea2-snvt7IG-A,[weightModule.AI_WPWeight<12000]
 Transition,12000weightModuleAIWPWeightANDweightModuleAIWPWeight24000,_J2QcYNycEea2-snvt7IG-A,[12000<=weightModule.AI_WPWeight AND weightModule.AI_WPWeight<24000]
 Transition,24000weightModuleAIWPWeight,_S1qnYNycEea2-snvt7IG-A,[24000<=weightModule.AI_WPWeight]
@@ -203,7 +203,7 @@ StateMachine,StackACTInit,_6FozgCZVEeaJisLddm0vsw,Stack_ACT_Init
 Transition,NOTInitCompletedANDNOTWPAvailableDISwitchTrue,_tHpdoCZWEeaJisLddm0vsw,[NOT InitCompleted AND NOT WPAvailable.DI_SwitchTrue)]
 Transition,seperatorRetracted,_vkHgECZWEeaJisLddm0vsw,[seperator.Retracted]
 Transition,NOTInitCompletedANDWPAvailableDISwitchTrue,_R7sQcDkfEea8uOUb4gQg2Q,[NOT InitCompleted AND WPAvailable.DI_SwitchTrue]
-Transition,TRUE,_etoR4DkfEea8uOUb4gQg2Q,[true]
+Transition,true,_etoR4DkfEea8uOUb4gQg2Q,[true]
 Transition,WPProvided,_ndBq8DkfEea8uOUb4gQg2Q,[WPProvided]
 Transition,InitCompleted,_4T-Z8DkfEea8uOUb4gQg2Q,[InitCompleted]
 Pseudostate,PseudostateafLGoCZWEeaJisLddm0vsw,_afLGoCZWEeaJisLddm0vsw,
@@ -284,7 +284,7 @@ Property,CheckStampWPAvailable,_ts8gUNgREeaLleG51tH3Eg,Check_Stamp_WPAvailable
 Property,CheckStampAutomaticExecuteCompleted,_xWZ6UNgREeaLleG51tH3Eg,Check_Stamp_AutomaticExecuteCompleted
 Property,CheckRefillConveyorIsSending,_nQuaYPj4EeaSrLT0QwxuoQ,Check_RefillConveyor_IsSending
 StateMachine,CraneACTPickUpWP,_qXFm0B0cEeadAbUBHmmxrA,Crane_ACT_PickUpWP
-Transition,TRUE,_XPX5oB0dEeaqTamzC3sbDA,[true]
+Transition,true,_XPX5oB0dEeaqTamzC3sbDA,[true]
 Transition,liftingCylinderExtended,_uM-d0B0dEeaqTamzC3sbDA,[liftingCylinder.Extended]
 Transition,aftert2s,_-3xAIB0dEeaqTamzC3sbDA,[after(t#2s)]
 Transition,gripperIntaken,_ji32IB0eEeaqTamzC3sbDA,[gripper.Intaken]
@@ -314,7 +314,7 @@ Pseudostate,PseudostateQlHjoNgTEeaLleG51tH3Eg,_QlHjoNgTEeaLleG51tH3Eg,
 State,WPTypeIsWPTypeStamp,_cOL4gNgTEeaLleG51tH3Eg,WPType_Is_WPTypeStamp
 OpaqueBehavior,OpaqueBehaviorOfWPTypeIsWPTypeStamp,_lQm7QNgTEeaLleG51tH3Eg,WPType:=Main.Stamp_WPType; WPWeight:=Main.Stamp_WPWeight;
 StateMachine,CraneACTPutDownWP,_My8sIB0fEeaqTamzC3sbDA,Crane_ACT_PutDownWP
-Transition,TRUE,_hponIB0fEeaqTamzC3sbDA,[true]
+Transition,true,_hponIB0fEeaqTamzC3sbDA,[true]
 Transition,liftingCylinderExtended,_pNMfMB0fEeaqTamzC3sbDA,[liftingCylinder.Extended]
 Transition,gripperReleased,_5h6D0B0fEeaqTamzC3sbDA,[gripper.Released]
 Transition,liftingCylinderRetracted,_CisH0B0gEeaqTamzC3sbDA,[liftingCylinder.Retracted]
@@ -343,21 +343,21 @@ State,WPLight,_Csy_ANyfEea2-snvt7IG-A,WPLight
 State,WPMedium,_DvP6gNyfEea2-snvt7IG-A,WPMedium
 State,WPHeavy,_FU8F8NyfEea2-snvt7IG-A,WPHeavy
 StateMachine,CraneACTMoveToConveyor,_0U5-AB0gEeaBEZ7zCEzc9Q,Crane_ACT_MoveToConveyor
-Transition,TRUE,_bZjeQB0hEeaBEZ7zCEzc9Q,[true]
-Transition,TRUE,_fb-8cB0iEeaBEZ7zCEzc9Q,[true]
+Transition,true,_bZjeQB0hEeaBEZ7zCEzc9Q,[true]
+Transition,true,_fb-8cB0iEeaBEZ7zCEzc9Q,[true]
 Transition,ReachedConveyor,_RegqEB0kEeaBEZ7zCEzc9Q,[ReachedConveyor]
-Transition,TRUE,_IuYbwB0lEeaBEZ7zCEzc9Q,[true]
+Transition,true,_IuYbwB0lEeaBEZ7zCEzc9Q,[true]
 Transition,nottableAtConveyorDISwitchTrueANDnotPPUEmergency,_0BeGQDebEeaEJ7sHqHqVdA,[not table.AtConveyor.DI_SwitchTrue AND not PPU.Emergency]
 Transition,tableAtStackDISwitchTrue,_gjnt0H5lEeaf0bAzsfqfCg,[table.AtStack.DI_SwitchTrue]
 Transition,tableAtStampDISwitchTrue,_k0GEgH5lEeaf0bAzsfqfCg,[ table.AtStamp.DI_SwitchTrue]
 Transition,NOTtableAtStackDISwitchTrueANDNOTtableAtStampDISwitchTrue,_0AMbQH5lEeaf0bAzsfqfCg,[NOT table.AtStack.DI_SwitchTrue AND NOT table.AtStamp.DI_SwitchTrue]
-Transition,TRUE,_8knTYH5lEeaf0bAzsfqfCg,[true]
+Transition,true,_8knTYH5lEeaf0bAzsfqfCg,[true]
 Transition,aftert5sANDNOTtableAtConveyorDISwitchTrue,_IXPM4H5mEeaf0bAzsfqfCg,[after(t#5s) AND NOT table.AtConveyor.DI_SwitchTrue]
 Transition,tableAtConveyorDISwitchTrue,_OYztwH5mEeaf0bAzsfqfCg,[table.AtConveyor.DI_SwitchTrue]
 Transition,tableAtConveyorDISwitchTrue,_Qrx18H5mEeaf0bAzsfqfCg,[table.AtConveyor.DI_SwitchTrue]
 Transition,tableAtConveyorDISwitchTrue,_VNKWcH5mEeaf0bAzsfqfCg,[table.AtConveyor.DI_SwitchTrue]
 Transition,tableAtConveyorDISwitchTrue,_XqoecH5mEeaf0bAzsfqfCg,[table.AtConveyor.DI_SwitchTrue]
-Transition,TRUE,_bynegKXZEeaaifhFzThDQw,[true]
+Transition,true,_bynegKXZEeaaifhFzThDQw,[true]
 Transition,tablemotorStopped,_v1HJ4NgVEeaLleG51tH3Eg,[table.motor.Stopped]
 Pseudostate,PseudostateGQuqYB0hEeaBEZ7zCEzc9Q,_GQuqYB0hEeaBEZ7zCEzc9Q,
 Pseudostate,PseudostatedQBbMB0iEeaBEZ7zCEzc9Q,_dQBbMB0iEeaBEZ7zCEzc9Q,
@@ -380,12 +380,12 @@ Transition,DestinationConveyor,_RrMVYCJtEeam_MaPu_s0xQ,[Destination=Conveyor]
 Transition,tableAIAngletableDestinationAngletableDelta,_hgVpICJtEeam_MaPu_s0xQ,[table.AI_Angle>table.DestinationAngle+table.Delta]
 Transition,Transitionni2lMCJtEeamMaPus0xQ,_ni2lMCJtEeam_MaPu_s0xQ,
 Transition,tableDestinationAngletableDeltatableAIAngletableDestinationAngletableDelta,_vYQbMCJtEeam_MaPu_s0xQ,[(table.DestinationAngle-table.Delta)<table.AI_Angle<(table.DestinationAngle+table.Delta)]
-Transition,TRUE,_HTeeMCJuEeam_MaPu_s0xQ,[true]
-Transition,TRUE,_e_qxQCJvEeam_MaPu_s0xQ,[true]
+Transition,true,_HTeeMCJuEeam_MaPu_s0xQ,[true]
+Transition,true,_e_qxQCJvEeam_MaPu_s0xQ,[true]
 Transition,ReachedStack,_cebdQDecEeaEJ7sHqHqVdA,[ReachedStack]
-Transition,TRUE,_gnT-MDecEeaEJ7sHqHqVdA,[true]
+Transition,true,_gnT-MDecEeaEJ7sHqHqVdA,[true]
 Transition,tableAtStackDISwitchTrue,_sJehMH5mEeaf0bAzsfqfCg,[table.AtStack.DI_SwitchTrue]
-Transition,TRUE,_dISwQKp0EeavAeyl8MSWPw,[true]
+Transition,true,_dISwQKp0EeavAeyl8MSWPw,[true]
 Transition,afterT8000ms,_e5qAMKp0EeavAeyl8MSWPw,[after(T#8000ms)]
 Transition,tableAtStackDISwitchTrue,_v9t-IKp0EeavAeyl8MSWPw,[table.AtStack.DI_SwitchTrue]
 Transition,tablemotorStopped,_BKXJANgXEeaLleG51tH3Eg,[table.motor.Stopped]
@@ -405,11 +405,11 @@ Transition,DestinationConveyor,_jUoP8CPbEeai14JfVfaFXw,[Destination=Conveyor]
 Transition,tableAIAngletableDestinationAngletableDelta,_XDEiQCPcEeai14JfVfaFXw,[table.AI_Angle>table.DestinationAngle-table.Delta]
 Transition,TransitionYlk20CPcEeai14JfVfaFXw,_Ylk20CPcEeai14JfVfaFXw,
 Transition,tableDestinationAngletableDeltatableAIAngletableDestinationAngletableDelta,_bRm_QCPcEeai14JfVfaFXw,[(table.DestinationAngle-table.Delta)<table.AI_Angle<(table.DestinationAngle+table.Delta)]
-Transition,TRUE,_0dGXUCPcEeai14JfVfaFXw,[true]
+Transition,true,_0dGXUCPcEeai14JfVfaFXw,[true]
 Transition,ReachedStamp,_iuShUCPeEeai14JfVfaFXw,[ReachedStamp]
-Transition,TRUE,_rwYkYDecEeaEJ7sHqHqVdA,[true]
+Transition,true,_rwYkYDecEeaEJ7sHqHqVdA,[true]
 Transition,tableAtStampDISwitchTrue,_6RJmgH5mEeaf0bAzsfqfCg,[table.AtStamp.DI_SwitchTrue]
-Transition,TRUE,_QzeTMKp1EeavAeyl8MSWPw,[true]
+Transition,true,_QzeTMKp1EeavAeyl8MSWPw,[true]
 Transition,afterT8000ms,_aD-1QKp1EeavAeyl8MSWPw,[after(T#8000ms)]
 Transition,tableAtStampDISwitchTrue,_ebTa0Kp1EeavAeyl8MSWPw,[table.AtStamp.DI_SwitchTrue]
 Transition,tablemotorStopped,_jnlLINgXEeaLleG51tH3Eg,[table.motor.Stopped]
@@ -476,7 +476,7 @@ Transition,WPPickedUp,_gVaLkEgTEeavyPrpKniqtA,[WPPickedUp]
 Transition,ReachedStack,_ifQM8EgTEeavyPrpKniqtA,[ReachedStack]
 Transition,NOTCheckStampIsStamping,_nfnvgEgTEeavyPrpKniqtA,[NOT Check_Stamp_IsStamping]
 Transition,CheckStampIsStamping,_rLrKgEgTEeavyPrpKniqtA,[Check_Stamp_IsStamping]
-Transition,TRUE,_AaF98KwKEea8dIIHPy7FTg,[true]
+Transition,true,_AaF98KwKEea8dIIHPy7FTg,[true]
 Transition,stampIsStamping,_EL3mcKwKEea8dIIHPy7FTg,[stamp.IsStamping]
 Transition,WPPutDown,_UbJ68LevEeaN5KNu953fkQ,[WPPutDown]
 Transition,CheckLargeSortingConveyorAutomaticExecuteCompleted,_DzLiEO0jEeaas4YgnJyohg,[Check_LargeSortingConveyor_AutomaticExecuteCompleted]
@@ -600,7 +600,7 @@ Transition,PriorityWhite1,_fexFEGR7EeaP7aiWefDRgg,[PriorityWhite=1]
 Transition,CurrentTargetRamp1,_EddlcGR8EeaP7aiWefDRgg,[CurrentTarget.Ramp1]
 Transition,CurrentTargetRamp1,_JUx5sGR8EeaP7aiWefDRgg,[CurrentTarget=Ramp1]
 Transition,TargetChanged,_q0ntkGR8EeaP7aiWefDRgg,[TargetChanged]
-Transition,TRUE,_W3Hn4GR9EeaP7aiWefDRgg,[true]
+Transition,true,_W3Hn4GR9EeaP7aiWefDRgg,[true]
 Transition,PriorityWhite3,_fj-DQGR9EeaP7aiWefDRgg,[PriorityWhite3]
 Transition,notramp3DIWPDetected,_rsIu8GR9EeaP7aiWefDRgg,[not ramp3.DI_WPDetected]
 Transition,notramp2DIWPDetected,_wYwPEGR9EeaP7aiWefDRgg,[not ramp2.DI_WPDetected]
@@ -652,7 +652,7 @@ Pseudostate,Pseudostateuvp9EOcQEeayP7zJxSzVpQ,_uvp9EOcQEeayP7zJxSzVpQ,
 StateMachine,LargeSortingConveyorACTCheckWPType,_Qv6yYGR4EeaP7aiWefDRgg,LargeSortingConveyor_ACT_CheckWPType
 Transition,NOTWPTypeChecked,_DUNXAGR_EeaP7aiWefDRgg,[NOT WPTypeChecked]
 Transition,TransitionFpsnsGREeaP7aiWefDRgg,_FpsnsGR_EeaP7aiWefDRgg,
-Transition,TransitionPBFN0GREeaP7aiWefDRgg,_PBFN0GR_EeaP7aiWefDRgg,[]
+Transition,,_PBFN0GR_EeaP7aiWefDRgg,[]
 Transition,NOTindRamp1DIWPMetallicANDNOToptRamp1DIWPLight,_PnEPwGR_EeaP7aiWefDRgg,[NOT indRamp1.DI_WPMetallic AND NOT optRamp1.DI_WPLight]
 Transition,optRamp1DIWPLightANDNOTindRamp1DIWPMetallic,_AQqRAGSAEeaP7aiWefDRgg,[optRamp1.DI_WPLight AND NOT indRamp1.DI_WPMetallic]
 Transition,optRamp1DIWPLightANDindRamp1DIWPMetallic,_BGd3oGSAEeaP7aiWefDRgg,[optRamp1.DI_WPLight AND indRamp1.DI_WPMetallic]
@@ -783,11 +783,11 @@ OpaqueBehavior,OpaqueBehaviorOfTwoWP,_rMZqAOcWEeayP7zJxSzVpQ,NumberOfWPsAtConvey
 State,ThreeWP,_5PDFYOcWEeayP7zJxSzVpQ,Three_WP
 OpaqueBehavior,OpaqueBehaviorOfThreeWP,_79YT4OcWEeayP7zJxSzVpQ,NumberOfWPsAtConveyor:=3
 StateMachine,LargeSortingConveyorACTInit,_ZzNu0CZyEeagIsaxH253Xw,LargeSortingConveyor_ACT_Init
-Transition,TRUE,_5xNVcCZyEeagIsaxH253Xw,[true]
+Transition,true,_5xNVcCZyEeagIsaxH253Xw,[true]
 Transition,switchPicAlphaDIExtended,_PLfswCZzEeagIsaxH253Xw,[switchPicAlpha.DI_Extended]
-Transition,TRUE,_ke0gcCZzEeagIsaxH253Xw,[true]
-Transition,TRUE,_24z6ECZ0EeagIsaxH253Xw,[true]
-Transition,TRUE,_JZBF4CZ1EeagIsaxH253Xw,[true]
+Transition,true,_ke0gcCZzEeagIsaxH253Xw,[true]
+Transition,true,_24z6ECZ0EeagIsaxH253Xw,[true]
+Transition,true,_JZBF4CZ1EeagIsaxH253Xw,[true]
 Transition,switchPicAlphaDIRetracted,_nCG_wCZ3EeagIsaxH253Xw,[switchPicAlpha.DI_Retracted]
 Transition,InitCompleted,_UxpKADeXEeaEJ7sHqHqVdA,[InitCompleted]
 Transition,FollowConveyorAllowedToInitANDafterT3s,_GI2hgGSCEeaP7aiWefDRgg,[FollowConveyor_AllowedToInit AND after(T#3s)]
@@ -834,7 +834,7 @@ Transition,TransitionCTxcEmWEeaPbYa44WUTPg,_CT-xcEmWEeaPbYa44WUTPg,
 Transition,seperator2Retracted,_Gg42wEmWEeaPbYa44WUTPg,[seperator2.Retracted]
 Transition,seperator1Retracted,_NGbnYEmWEeaPbYa44WUTPg,[seperator1.Retracted]
 Transition,EmergencyHandled,_qEfe4GSBEeaP7aiWefDRgg,[EmergencyHandled]
-Transition,TRUE,_9xKgMLe3EeaN5KNu953fkQ,[true]
+Transition,true,_9xKgMLe3EeaN5KNu953fkQ,[true]
 Transition,motorStopped,_OaceANgiEeaLleG51tH3Eg,[motor.Stopped]
 Transition,switchRetracted,_QtCAEOeWEealgdEhVOTJ7w,[switch.Retracted]
 State,ResetVariables,_FdmqQEmVEeaPbYa44WUTPg,ResetVariables
@@ -898,7 +898,7 @@ Transition,WPWeightHeavy,_MbnWQDkjEea8uOUb4gQg2Q,[WPWeight=Heavy}
 Transition,TransitionYybh8DkjEea8uOUb4gQg2Q,_Yybh8DkjEea8uOUb4gQg2Q,
 Transition,aftert1500ms,_jb13ADkrEeaKtZr8UL9QRw,[after(t#1500ms)]
 Transition,SoftwareEmergency,_oeAwYDkrEeaKtZr8UL9QRw,[SoftwareEmergency]
-Transition,TRUE,_EFuXoDlKEeaLOdRX3Qj_WA,[true]
+Transition,true,_EFuXoDlKEeaLOdRX3Qj_WA,[true]
 Transition,WPStamped,_N1dnAKdhEeaW3-nj19_RIA,[WPStamped]
 Transition,WPTypeCheckWPType,_TcRuQNgkEeaLleG51tH3Eg,[WPType=Check_WPType]
 Transition,propValveAOSetPressure6000,_8x6ZsNgkEeaLleG51tH3Eg,[propValve.AO_SetPressure=6000]
@@ -951,7 +951,7 @@ StateMachine,StampACTAutomaticExecute,_kAhmsGVEEeaSMugellPalg,Stamp_ACT_Automati
 Transition,CheckAllowedToOperateANDWPAvailableDISwitchTrue,_xweIgGVEEeaSMugellPalg,[Check_Allowed_To_Operate AND WPAvailable.DI_SwitchTrue]
 Transition,AutomaticExecuteCompleted,_IZNP8GVFEeaSMugellPalg,[AutomaticExecuteCompleted]
 Transition,WPStamped,_JxLIcGVFEeaSMugellPalg,[WPStamped]
-Transition,TRUE,_x6CnkLe_EeaN5KNu953fkQ,[true]
+Transition,true,_x6CnkLe_EeaN5KNu953fkQ,[true]
 Transition,IsStampingANDNOTWPStamped,_vL7k0NgnEeaLleG51tH3Eg,[IsStamping AND NOT WPStamped]
 Transition,CheckAllowedToOperateNADafterT500ms,_CAMVENgoEeaLleG51tH3Eg,[Check_Allowed_To_Operate NAD after(T#500ms)]
 Transition,NOTWPAvailableDISwitchTrue,_jFOkgO0qEeaas4YgnJyohg,[NOT WPAvailable.DI_SwitchTrue]
@@ -1516,7 +1516,7 @@ FinalState,FinalStateZ7OpQCacEeaCBchfDALz2Q,_Z7OpQCacEeaCBchfDALz2Q,
 State,SetRetracted,_RBnXgNjFEearF4L_ZOOfww,SetRetracted
 OpaqueBehavior,OpaqueBehaviorOfSetRetracted,_TT90oNjFEearF4L_ZOOfww,Now(Retracted)
 StateMachine,MonostableCylinderACTExtend,__gCucCacEeaCBchfDALz2Q,MonostableCylinder_ACT_Extend
-Transition,TRUE,_hi5v0CadEeaCBchfDALz2Q,[true]
+Transition,true,_hi5v0CadEeaCBchfDALz2Q,[true]
 Transition,DIExtended,_i-07QCadEeaCBchfDALz2Q,[DI_Extended]
 Transition,Extended,_nGarcNjFEearF4L_ZOOfww,[Extended]
 Pseudostate,PseudostateFjqdwCadEeaCBchfDALz2Q,_FjqdwCadEeaCBchfDALz2Q,
@@ -1602,14 +1602,14 @@ Property,Stopped,_-BRP4NjAEeaI3IcGROryBQ,Stopped
 Property,TurningClockwise,_C8TmgNjBEeaI3IcGROryBQ,TurningClockwise
 Property,TurningCounterclockwise,_FtTugNjBEeaI3IcGROryBQ,TurningCounterclockwise
 StateMachine,MotorACTStop,_8vCfECafEeaCBchfDALz2Q,Motor_ACT_Stop
-Transition,TRUE,_UjkEMCagEeaCBchfDALz2Q,[true]
+Transition,true,_UjkEMCagEeaCBchfDALz2Q,[true]
 Transition,Stopped,_V4t5QCagEeaCBchfDALz2Q,[Stopped]
 Pseudostate,PseudostateAeMRYCagEeaCBchfDALz2Q,_AeMRYCagEeaCBchfDALz2Q,
 State,Stopping,_BInHYCagEeaCBchfDALz2Q,Stopping
 OpaqueBehavior,OpaqueBehaviorOfStopping,_TIks4CagEeaCBchfDALz2Q,DO_TrunClockwise:=FALSE; DO_TrunCounterclockwise:=FALSE; Stopped:=TRUE; TurningClockwise:=FALSE; TurningCounterclockwise:=FALSE;
 FinalState,FinalStateT2oswCagEeaCBchfDALz2Q,_T2oswCagEeaCBchfDALz2Q,
 StateMachine,MotorACTTurnClockwise,_eTXKUCagEeaCBchfDALz2Q,Motor_ACT_TurnClockwise
-Transition,TRUE,_rG5HMCagEeaCBchfDALz2Q,[true]
+Transition,true,_rG5HMCagEeaCBchfDALz2Q,[true]
 Transition,TurningClockwise,_zwfaQCagEeaCBchfDALz2Q,[TurningClockwise]
 Pseudostate,PseudostateiFuosCagEeaCBchfDALz2Q,_iFuosCagEeaCBchfDALz2Q,
 State,TruningBackwards,_i-vUUCagEeaCBchfDALz2Q,TruningBackwards
@@ -1617,7 +1617,7 @@ OpaqueBehavior,OpaqueBehaviorOfTruningBackwards,_pTB84CagEeaCBchfDALz2Q,DO_TrunC
 FinalState,FinalStateqCsfQCagEeaCBchfDALz2Q,_qCsfQCagEeaCBchfDALz2Q,
 StateMachine,MotorACTTurnCounterclockwise,_3D8vECagEeaCBchfDALz2Q,Motor_ACT_TurnCounterclockwise
 Transition,TurningCounterclockwise,_DleV8CahEeaCBchfDALz2Q,[TurningCounterclockwise]
-Transition,TRUE,_FWg1wCahEeaCBchfDALz2Q,[true]
+Transition,true,_FWg1wCahEeaCBchfDALz2Q,[true]
 Pseudostate,Pseudostate7MBwCagEeaCBchfDALz2Q,_7MB-wCagEeaCBchfDALz2Q,
 State,TruningForwards,_7rdswCagEeaCBchfDALz2Q,TruningForwards
 OpaqueBehavior,OpaqueBehaviorOfTruningForwards,_Bit0ACahEeaCBchfDALz2Q,DO_TrunClockwise:=FALSE; DO_TrunCounterclockwise:=TRUE; Stopped:=FALSE; TurningClockwise:=FALSE; TurningCounterclockwise:=TRUE;

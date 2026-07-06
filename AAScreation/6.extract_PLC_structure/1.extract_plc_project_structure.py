@@ -33,7 +33,8 @@ import re
 import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Dict, List, Tuple, Iterable
-
+import time
+import csv
 
 
 def natsort_key(text):

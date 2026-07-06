@@ -20,6 +20,8 @@ Submodel "ECAD" of an AASX package.:
 
 import os
 import re
+import time
+import csv
 from pathlib import Path
 
 from basyx.aas.adapter.aasx import AASXReader, AASXWriter, DictSupplementaryFileContainer
@@ -182,6 +184,8 @@ class EcadImporter:
 
 
 if __name__ == "__main__":
+    start_time = time.time()  # start
+
     base_dir = Path(os.path.dirname(os.path.abspath(__file__)))
     input_aasx = base_dir / "output" / "xPPU_3.aasx"
     ecad_dir = base_dir / "ECAD"
@@ -192,3 +196,13 @@ if __name__ == "__main__":
     helper = AASXLoader(input_aasx)
     importer = EcadImporter(helper, ecad_dir, submodel_id_short)
     importer.run(output_aasx)
+
+    elapsed = time.time() - start_time
+
+    csv_output = base_dir / "output" / "ecad_import_time.csv"
+    with open(csv_output, 'w', newline='', encoding='utf-8') as f:
+        writer = csv.writer(f)
+        writer.writerow(['name', 'time'])
+        writer.writerow([output_aasx.stem, f"{elapsed:.3f}"])
+    print(f"Processing time written to {csv_output}")
+

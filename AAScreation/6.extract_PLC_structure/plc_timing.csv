@@ -1,0 +1,9 @@
+name,time
+1.extract_plc_project_structure.py,0.209
+2.extract_action_add_in_csv.py,0.133
+3.extract_plc_task_add_in_csv.py,0.186
+4.extract_plc_IO.py,0.145
+5.merge_csv_to_PLC.py,0.096
+6.add_reference_in_plcTask.py,0.107
+7.extract_VAR_of_ControlModules.py,0.170
+Total,1.047

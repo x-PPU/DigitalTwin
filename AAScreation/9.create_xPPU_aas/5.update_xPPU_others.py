@@ -10,6 +10,7 @@ It uses the 'basyx' library for handling AASX files and the 'ent' class to creat
 import os
 import csv
 import re
+import time
 from basyx.aas.adapter.aasx import AASXReader, AASXWriter, DictSupplementaryFileContainer
 from basyx.aas.model import DictObjectStore, Submodel, Key, KeyTypes, ModelReference, AssetAdministrationShell, EntityType
 from base.create_ent import ent
@@ -288,6 +289,9 @@ def update_aasx_with_multiple_submodels(aasx_path, csv_file_paths, submodel_name
     with AASXReader(aasx_path) as reader:
         reader.read_into(object_store, file_store)
     
+    # neu added 2026-6-30: Initialize a dictionary to store processing times for each submodel.
+    times = {}
+
     # Process each submodel specified.
     for submodel_name, csv_file_path in zip(submodel_names, csv_file_paths):
         # Find the submodel by its id_short.
@@ -298,11 +302,19 @@ def update_aasx_with_multiple_submodels(aasx_path, csv_file_paths, submodel_name
                 break
         if submodel is None:
             raise ValueError(f"{submodel_name} submodel not found in the AASX file.")
+
+        # start timing the processing of this submodel.
+        start_time = time.time()
         
         # Create new submodel elements from the CSV and add them to the submodel.
         new_elements = create_submodel_elements_from_csv(csv_file_path, object_store, file_store)
         for element in new_elements:
             submodel.submodel_element.add(element)
+        
+        # end timing and print
+        elapsed = time.time() - start_time
+        times[submodel_name] = elapsed
+        print(f"Processed submodel '{submodel_name}' in {elapsed:.3f} seconds")
     
     # Gather the identifiers for all AssetAdministrationShell objects.
     aas_ids = [aas.id for aas in object_store if isinstance(aas, AssetAdministrationShell)]
@@ -314,6 +326,7 @@ def update_aasx_with_multiple_submodels(aasx_path, csv_file_paths, submodel_name
             object_store=object_store,
             file_store=file_store
         )
+    return times 
 
 if __name__ == '__main__':
     # Define the current directory.
@@ -331,9 +344,18 @@ if __name__ == '__main__':
     output_aasx = os.path.join(current_dir, "output", "xPPU_5.aasx")
     
     # Update the AASX file with new submodel elements.
-    update_aasx_with_multiple_submodels(
+    times = update_aasx_with_multiple_submodels(
         aasx_path=base_aasx,
         csv_file_paths=[mechanical_breakdown_csv, simulation_csv, capability_csv, operational_data_csv],
         submodel_names=["Mechanical_breakdown", "Simulation", "Capability", "Operational_Data"],
         output_aasx_path=output_aasx
     )
+
+    # write processing times to a CSV file
+    csv_output_path = os.path.join(current_dir, "output", "otherSM_processing_times.csv")
+    with open(csv_output_path, 'w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(['name', 'time'])
+        for name, elapsed in times.items():
+            writer.writerow([name, f"{elapsed:.3f}"])
+    print(f"Processing times written to {csv_output_path}")
