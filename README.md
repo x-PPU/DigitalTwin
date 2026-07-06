@@ -12,7 +12,6 @@ For a quick overview of the methods and examples, see the [images](/Detailed%20I
 ## Live Demo
 [![Watch the video](https://img.youtube.com/watch?v=n8ZcaF7NLK8/maxresdefault.jpg)](https://www.youtube.com/watch?v=n8ZcaF7NLK8)
 
-Detailed Images/System Architecture.png
 
 # How to Start
 ## Prerequisites
