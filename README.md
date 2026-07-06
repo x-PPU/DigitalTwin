@@ -11,7 +11,7 @@ Click [here](/Detailed%20Introduction.pptx) to see the detailed introduction.
 For a quick overview of the methods and examples, see the [images](/Detailed%20Images).
 
 ## Live Demo
-https://github.com/user-attachments/assets/2f8956ff-1f03-4d0b-8a62-20e0b19cea47
+[![Watch the video](https://img.youtube.com/vi/ZboGz76JaE0/maxresdefault.jpg)](https://www.youtube.com/watch?v=ZboGz76JaE0)
 
 
 
