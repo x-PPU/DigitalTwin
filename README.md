@@ -3,9 +3,9 @@ To implement and evaluate the proposed DT-architecture, we utilize the xPPU, a l
 
 
 ## System Architecture
-The comprehensive ![system architecture](/Detailed%20Images/System%20Architecture.png) follows a modular design centered on the AAS as the primary semantic orchestrator. This architecture is operationalized through three integrated modules: first, the systematic creation of AAS instances to semantically normalize heterogeneous engineering artifacts and operational telemetry; second, the deployment of an AASX server coupled with a high-fidelity 3D visualization in Unity for immersive real-time monitoring; and third, the implementation of a tiered communication framework designed to ensure deterministic synchronization between the physical asset, its AAS representation within the server, and the virtual 3D counterpart. The overall architecture is illustrated below.
+The comprehensive system architecture follows a modular design centered on the AAS as the primary semantic orchestrator. This architecture is operationalized through three integrated modules: first, the systematic creation of AAS instances to semantically normalize heterogeneous engineering artifacts and operational telemetry; second, the deployment of an AASX server coupled with a high-fidelity 3D visualization in Unity for immersive real-time monitoring; and third, the implementation of a tiered communication framework designed to ensure deterministic synchronization between the physical asset, its AAS representation within the server, and the virtual 3D counterpart. The overall architecture is illustrated below.
 
-
+(/Detailed%20Images/System%20Architecture.png)
 
 Click [here](/Detailed%20Introduction.pptx) to see the detailed introduction. 
 For a quick overview of the methods and examples, see the [images](/Detailed%20Images).
