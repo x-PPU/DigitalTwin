@@ -32,6 +32,7 @@ TwinCAT Data Bridge (Workstation TwinCAT/):
 
 1. Runs on an Workstation. It reads real-time data from a TwinCAT PLC via device notifications using the pyads library. Install the required Python library on the Workstation:
 ```bash
+# pip install pyads if version 1.3.0 doesn't work
 pip install pyads==1.3.0
 ```
 
@@ -101,9 +102,18 @@ The server UI and API will be available at http://localhost:5001.
 
 Tip: Place the generated .aasx files in the local ./aasxs directory, and they will be automatically loaded by the server.
 
-
-
-
+## Citation
+```
+@INPROCEEDINGS{Li2026,
+  author={Li, Jiayang and Zhao, Jingyun and Hujo-Lauer, Dominik and Vogel-Heuser, Birgit}
+  booktitle={IECON 2026- 52nd Annual Conference of the IEEE Industrial Electronics Society}, 
+  title={Asset Administration Shell Enabled Real-Time Digital Twin for Automated Production Systems}, 
+  year={2026},
+  volume={},
+  number={},
+  pages={1-8},
+}
+```
 
 ## Contact
 Jiayang Li, Email: jiayang_l1@163.com
