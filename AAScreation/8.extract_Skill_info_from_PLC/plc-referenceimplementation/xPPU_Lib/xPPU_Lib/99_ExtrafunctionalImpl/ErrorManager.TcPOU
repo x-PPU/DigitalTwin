@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ErrorManager" Id="{34e72220-bf00-442c-8324-515ff22e8da3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ErrorManager EXTENDS ErrorManagerBase
+VAR CONSTANT
+	ALARMS_ARR_MIN: UINT := 0;
+	ALARMS_ARR_MAX: UINT := 9;
+END_VAR
+VAR
+	{attribute 'OPC.UA.DA' := '1'}
+	{attribute 'OPC.UA.DA.Access' := '1'}
+	alarms: ARRAY [ALARMS_ARR_MIN..ALARMS_ARR_MAX] OF SAlarm;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="AddMessage" Id="{c2af993c-63b9-490b-8d2a-d173d890024e}">
+      <Declaration><![CDATA[METHOD AddMessage : BOOL
+VAR_INPUT
+	i_alarmId	: UINT;
+	i_active	: BOOL;
+	//i_acknowledged	: BOOL;
+	//i_confirmed	: BOOL;
+	i_severity	: ESeverity;
+	//i_retain	: BOOL;
+	i_instanceName: STRING;
+END_VAR
+VAR
+	i: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// move all errors to next index
+FOR i := ALARMS_ARR_MAX TO ALARMS_ARR_MIN + 1 BY -1  DO
+	alarms[i] := alarms[i - 1];
+END_FOR
+
+// add new error at index 0
+alarms[0].TimeTicks := F_GetSystemTime();
+alarms[0].AlarmId := i_alarmId;
+alarms[0].Active := i_active;
+//alarms[0].Acknowledged := i_acknowledged;
+//alarms[0].Confirmed := i_confirmed;
+alarms[0].Severity := i_severity;
+//alarms[0].RetainAlarm := i_retain;
+alarms[0].Message := HMI_Texts.AlarmTexts[i_alarmId];
+alarms[0].InstanceName := i_instanceName;
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ErrorManager">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ErrorManager.AddMessage">
+      <LineId Id="1" Count="15" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

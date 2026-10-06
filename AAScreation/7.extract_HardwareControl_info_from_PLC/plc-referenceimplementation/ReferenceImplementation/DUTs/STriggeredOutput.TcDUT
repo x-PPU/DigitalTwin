@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
+  <DUT Name="STriggeredOutput" Id="{1728715d-7add-4733-b647-77ca6f61d531}">
+    <Declaration><![CDATA[TYPE STriggeredOutput :
+STRUCT
+	ChangeTrigger: USINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PicAlpha_PutDownWP" Id="{00c0df53-eebf-4619-b893-7c8cea6b416e}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PicAlpha_PutDownWP EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrPicAlpha: POINTER TO PicAlpha;
+	m_ptrPAC: POINTER TO PicAlphaConveyor;
+	
+	m_step: INT := 0;
+	m_timer: TON;
+	
+	// (EProcessVariables.PicAlpha_CylinderRetracted = TRUE) AND (EProcessVariables.PicAlpha_HoldingWorkpiece = TRUE)
+	m_compExpr199: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr201: ComparisonExpression(EProcessVariables.PicAlpha_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_precondition: BoolExpression(m_compExpr199, EBoolOperation.and_op, m_compExpr201);
+	
+	// (EProcessVariables.PicAlpha_CylinderRetracted = TRUE) AND (EProcessVariables.PicAlpha_HoldingWorkpiece = FALSE)
+	m_compExpr204: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr206: ComparisonExpression(EProcessVariables.PicAlpha_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_postcondition: BoolExpression(m_compExpr204, EBoolOperation.and_op, m_compExpr206);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{6eb9dab5-d0cc-454b-b1e4-fefdcc26c649}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+IF m_ptrPicAlpha^.o_VacuumGripper.WPTaken THEN
+	m_ptrPicAlpha^.o_VacuumGripper.METH_Intake();
+ELSE
+	m_ptrPicAlpha^.o_VacuumGripper.METH_Release();
+END_IF
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{a244598f-1791-4887-b9e2-f73cfbafb7f8}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED  ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+
+	0:	// extend
+		m_ptrPicAlpha^.o_MonostableCylinder.METH_Extend();
+		IF m_ptrPicAlpha^.o_MonostableCylinder.Extended THEN
+			m_step := 1;
+		END_IF
+	
+	1:	// grip
+		m_ptrPicAlpha^.o_VacuumGripper.METH_Release();
+		m_ptrPicAlpha^.o_VacuumGripper.METH_VacuumHitOn();
+		m_timer(IN := TRUE, PT := T#200MS);
+		IF m_timer.Q THEN
+			m_ptrPicAlpha^.o_VacuumGripper.METH_VacuumHitOff();
+			m_timer(IN := FALSE);
+			m_step := 2;
+			IF m_ptrPicAlpha^.PresenceSensorPosition4Value THEN
+				m_ptrPAC^.METH_ReduceWPNumberAtPAC();
+			END_IF
+		END_IF
+	
+	2:	// retract
+		m_ptrPicAlpha^.o_MonostableCylinder.METH_Retract();
+		IF m_ptrPicAlpha^.o_MonostableCylinder.Retracted THEN
+			m_step := 0;
+			ExecuteInternal := TRUE;
+		END_IF	
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{b153b355-aaa6-4667-a8f5-8bd5f0cabd08}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPicAlpha : POINTER TO PicAlpha;
+	i_ptrPAC : POINTER TO PicAlphaConveyor;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha := i_ptrPicAlpha;
+m_ptrPAC := i_ptrPAC;
+
+m_id := EPrimitives.PicAlpha_PutDownWp;
+m_timeout := T#20S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PicAlpha_PutDownWP">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_PutDownWP.Abort">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="PicAlpha_PutDownWP.ExecuteInternal">
+      <LineId Id="1" Count="27" />
+    </LineIds>
+    <LineIds Name="PicAlpha_PutDownWP.FB_init">
+      <LineId Id="1" Count="7" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

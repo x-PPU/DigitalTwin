@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EStrategyStates" Id="{0fed0be0-7395-419a-9b57-41fdfb27e845}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+{attribute 'to_string'}
+TYPE EStrategyStates :
+(
+	none := 0,
+	ready := 1,
+	running := 2,
+	halting := 3,
+	halted := 4,
+	done := 5
+) USINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="RefeedingConveyor" Id="{f41b28dd-09bf-4ed8-8981-8099f0126724}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK RefeedingConveyor EXTENDS Conveyor
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Sensors
+	m_PresencesensorStart : PresenceSensor;
+	m_PresencesensorEnd : PresenceSensor;
+	
+	//Pusher
+	m_Switch : Switch;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Folder Name="Methods" Id="{20dc8d37-440a-4538-af0b-c58f24985255}" />
+    <Folder Name="Properties" Id="{08741579-5da2-431c-99b0-57c0dcb55c09}" />
+    <Method Name="METH_Switch_Extend" Id="{49aff4b8-42d1-46cd-8d19-e98540bd4035}" FolderPath="Methods\">
+      <Declaration><![CDATA[METHOD METH_Switch_Extend : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_Switch.METH_Extend();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Switch_Retract" Id="{12b3bddf-7376-43d1-b82f-66513aaf06ee}" FolderPath="Methods\">
+      <Declaration><![CDATA[METHOD METH_Switch_Retract : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_Switch.METH_Retract();]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="WPAtEnd" Id="{405b0475-9370-4864-a42e-f714bdbbebdf}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY WPAtEnd : BOOL]]></Declaration>
+      <Get Name="Get" Id="{bd1eac21-9f42-4327-8a22-809463bbf012}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[WPAtEnd := m_PresencesensorEnd.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="WPAtStart" Id="{a0f1eb6a-5ede-4b93-96d6-b1b7a587b255}" FolderPath="Properties\">
+      <Declaration><![CDATA[PROPERTY WPAtStart : BOOL]]></Declaration>
+      <Get Name="Get" Id="{882960c9-946e-430f-bf9d-016dbd15efd7}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[WPAtStart := m_PresencesensorStart.Value;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="RefeedingConveyor">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="RefeedingConveyor.METH_Switch_Extend">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="RefeedingConveyor.METH_Switch_Retract">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="RefeedingConveyor.WPAtEnd.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="RefeedingConveyor.WPAtStart.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,1131 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ProcessManager" Id="{88424745-934b-4596-b9b2-a80ce6e6de1c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ProcessManager IMPLEMENTS IService
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// ***** INPUT FROM RA *****
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_compensations: ARRAY [ResiConst.ARR_MIN..ResiConst.COMPENSATIONS_ARR_MAX] OF SCompensation;
+	
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_recoveryAvailable: BOOL;
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_recovery: SRecovery;
+	
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_valueExpressions: ARRAY [ResiConst.ARR_MIN..ResiConst.RT_EXPRS_MAX] OF ValueExpression(EDataType.none, FALSE, 0, '', FALSE);
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_compExpressions: ARRAY [ResiConst.ARR_MIN..ResiConst.RT_EXPRS_MAX] OF ComparisonExpression(0, EComparisonType.none, EDataType.none, FALSE, 0, '', FALSE);
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_boolExprSpecs: ARRAY [ResiConst.ARR_MIN..ResiConst.RT_EXPRS_MAX] OF SBoolExpressionSpec;
+	
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_runtimeConditions: ARRAY [ResiConst.ARR_MIN..ResiConst.COMPENSATIONS_ARR_MAX] OF SPrimitiveCondition;
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_runtimeInterlocks: ARRAY [ResiConst.ARR_MIN..ResiConst.COMPENSATIONS_ARR_MAX] OF SInterlock;
+	
+	{attribute 'OPC.UA.DA' := '1'}
+	raIn_customStrategy: SStrategy;	
+	// *************************
+	
+	// ***** OUTPUT TO RA (read-only) ******
+	{attribute 'OPC.UA.DA' := '1'}
+	{attribute 'OPC.UA.DA.Access' := '1'}
+	raOut_recoveryRequest: SRecoveryRequestOutput;
+	// *************************
+	
+	m_ptrStateTracker: POINTER TO StateTracker;
+	m_ptrErrorMgr: POINTER TO ErrorManagerBase;
+	
+	m_trueValue: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	m_ptrPrimitives: ARRAY [ResiConst.ARR_MIN..ResiConst.BEHAVIORS_ARR_MAX] OF POINTER TO ControlPrimitiveBase;
+	
+	(* Half of the array is reserved for user-defined sequences, the other for runtime-defined compensations. *)
+	m_ptrSequences: ARRAY [ResiConst.ARR_MIN..2 * ResiConst.BEHAVIORS_ARR_MAX] OF POINTER TO ModuleSequenceBase;
+	
+	(* COMPENSATION
+	   Array index: ID of the sick Control Primitive.
+	   Array entry: specification of the primitive/sequence that should be executed instead. *)
+	m_retargets: ARRAY [ResiConst.ARR_MIN..ResiConst.BEHAVIORS_ARR_MAX] OF SRetargeting;
+	
+	// compensation sequences that can be defined at runtime
+	m_compSeqs: ARRAY [ResiConst.BEHAVIORS_ARR_MAX + 1..ResiConst.BEHAVIORS_ARR_MAX + ResiConst.COMPENSATIONS_ARR_MAX] OF LinearSequence;
+	m_compSeqsIdx: UINT := ResiConst.BEHAVIORS_ARR_MAX + 1;
+	m_activeCompensationState: ECompSeqState;
+	m_activeCompensationIdx: UINT;
+	
+	(* RECOVERY / DEFINITION *)
+	m_conditionToRecover: IExpression;
+	m_recoveryRequester: STRING;
+	m_recoveryState: ERecoveryState;
+	m_recoverySequence: LinearSequence;
+	m_tonStrategyReceivedTimeout: TON;
+	m_alarmId: UINT := 0;
+	
+	m_finishedAutonomously: ARRAY [ResiConst.ARR_MIN..ResiConst.BEHAVIORS_ARR_MAX] OF BOOL;
+	m_finishedAutoBuffer: ARRAY [ResiConst.ARR_MIN..ResiConst.BEHAVIORS_ARR_MAX] OF BOOL;
+	
+	(* ABORT *)
+	m_abortState: EAbortState;
+	
+	(* RUNTIME EXPRESSIONS, CONDITIONS *)
+	m_boolExpressions: ARRAY [ResiConst.ARR_MIN..ResiConst.RT_EXPRS_MAX] OF BoolExpression(0, EBoolOperation.none, 0);
+	
+	// CUSTOM STRATEGY
+	m_stepReaders: 	ARRAY [ResiConst.ARR_MIN..ResiConst.MAX_SYNC_PARTNERS] OF 
+					ARRAY [ResiConst.ARR_MIN..ResiConst.STRAT_LEN_MAX] OF ADSREADEX;
+	m_stepWriters: 	ARRAY [ResiConst.ARR_MIN..ResiConst.MAX_SYNC_PARTNERS] OF 
+					ARRAY [ResiConst.ARR_MIN..ResiConst.STRAT_LEN_MAX] OF ADSWRITE;
+	m_stepStates: 	ARRAY [ResiConst.ARR_MIN..ResiConst.MAX_SYNC_PARTNERS] OF 
+					ARRAY [ResiConst.ARR_MIN..ResiConst.STRAT_LEN_MAX] OF EOperationResult;
+	m_busyState:	EOperationResult := EOperationResult.busy;
+	m_anyBusy: 		BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="AbortActive" Id="{091067ab-816d-4df9-88be-a437d00dfe76}">
+      <Declaration><![CDATA[PROPERTY AbortActive : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ab425b79-3b0b-4f59-937a-801aa2d1b517}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[AbortActive := m_abortState = EAbortState.requested OR m_abortState = EAbortState.aborting;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="AddPrimitive" Id="{b14f604f-1cce-4037-b1c8-553e2aeac09f}">
+      <Declaration><![CDATA[METHOD AddPrimitive : BOOL
+VAR_INPUT
+	i_ptrPrimitive: POINTER TO ControlPrimitiveBase;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF m_ptrPrimitives[i_ptrPrimitive^.Id] <> 0 THEN
+	// already initialized a primitive with that ID
+	AddPrimitive := FALSE;
+	RETURN;
+END_IF
+
+m_ptrPrimitives[i_ptrPrimitive^.Id] := i_ptrPrimitive;
+AddPrimitive := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AddSequence" Id="{ac1050a6-9e9b-4384-96da-1b0be6cbcb2d}">
+      <Declaration><![CDATA[METHOD AddSequence : BOOL
+VAR_INPUT
+	i_ptrSequence: POINTER TO ModuleSequenceBase;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF m_ptrSequences[i_ptrSequence^.Id] <> 0 THEN
+	// already initialized a sequence with that ID
+	AddSequence := FALSE;
+	RETURN;
+END_IF
+
+m_ptrSequences[i_ptrSequence^.Id] := i_ptrSequence;
+AddSequence := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Compensate" Id="{f3e01402-f49a-42fb-b64d-f89bf090f403}">
+      <Declaration><![CDATA[(* Applies a new compensation, i.e., the replacement of a "sick" primitive with another primitive or  a module sequence. *)
+METHOD Compensate : BOOL
+VAR_INPUT
+	i_ptrCompensation: POINTER TO SCompensation;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_ptrCompensation^.NewType = EBehaviorType.none THEN
+	Compensate := FALSE;
+	RETURN;
+END_IF
+
+CASE i_ptrCompensation^.NewType OF
+	EBehaviorType.control_primitive:
+		// check if the specified replacement exists
+		IF m_ptrPrimitives[i_ptrCompensation^.NewId] = 0 THEN
+			Compensate := FALSE;
+			RETURN;
+		END_IF
+		
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].RetargetType := ERetargetType.primitive_target;
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].TargetId := i_ptrCompensation^.NewId;
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].OverwriteParams := i_ptrCompensation^.ParameterSets[0];
+
+	EBehaviorType.user_sequence:
+		// check if the specified replacement exists
+		IF m_ptrSequences[i_ptrCompensation^.NewId] = 0 THEN
+			Compensate := FALSE;
+			RETURN;
+		END_IF
+		
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].RetargetType := ERetargetType.sequence_target;
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].TargetId := i_ptrCompensation^.NewId;
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].OverwriteParams := i_ptrCompensation^.ParameterSets[0];
+
+	EBehaviorType.generated_sequence:
+		m_compSeqs[m_compSeqsIdx].ProvideServices(THIS, THIS^.m_ptrStateTracker);
+		m_compSeqs[m_compSeqsIdx].i_primitiveParams := i_ptrCompensation^.ParameterSets;
+		m_compSeqs[m_compSeqsIdx].i_primitiveIds := i_ptrCompensation^.PrimitiveIds;
+		
+		m_ptrSequences[m_compSeqsIdx] := ADR(m_compSeqs[m_compSeqsIdx]);
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].RetargetType := ERetargetType.sequence_target;
+		m_retargets[i_ptrCompensation^.SickPrimitiveId].TargetId := m_compSeqsIdx;
+		
+		m_compSeqsIdx := m_compSeqsIdx + 1;
+END_CASE
+
+Compensate := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="CustomStrategyReady" Id="{9f7c67e5-9098-4d0c-9806-60ae214e6ffd}">
+      <Declaration><![CDATA[PROPERTY CustomStrategyReady : BOOL]]></Declaration>
+      <Get Name="Get" Id="{c72af4e3-27f1-4c2f-af27-6fa84b719990}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[CustomStrategyReady := THIS^.raIn_customStrategy.State = EStrategyStates.ready;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="CyclicManageBehavior" Id="{3d15eeb1-2197-4acd-ba34-f12f481c1288}">
+      <Declaration><![CDATA[METHOD CyclicManageBehavior : BOOL
+VAR CONSTANT
+	TIMEOUT: TIME := T#10S;
+END_VAR
+VAR
+	i: UINT;
+	p_id: UINT;
+	
+	m_sequenceStatus: EOperationResult;
+	m_allAborted: BOOL;
+	
+	m_valExpr: IValExp;
+	m_recoveryRes: EOperationResult;
+	m_emptyRecovery: SRecovery;
+	m_emptyParams: ParameterSet;
+	
+	m_tmpExpr: IExpression;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// ABORT
+CASE m_abortState OF
+	EAbortState.none:
+		;
+		
+	EAbortState.requested:
+		m_abortState := EAbortState.aborting;
+		
+	EAbortState.aborting:
+		m_allAborted := TRUE;
+		FOR i := ResiConst.ARR_MIN TO ResiConst.BEHAVIORS_ARR_MAX DO
+			IF m_ptrPrimitives[i] <> 0 THEN
+				IF NOT m_ptrPrimitives[i]^.Abort() THEN
+					m_allAborted := FALSE;
+				END_IF
+			END_IF	
+		END_FOR
+		
+		IF m_allAborted THEN
+			m_abortState := EAbortState.aborted;
+		END_IF
+		
+	EAbortState.aborted:
+		m_abortState := EAbortState.none;
+END_CASE
+
+// COMPENSATION
+FOR i := ResiConst.ARR_MIN TO ResiConst.COMPENSATIONS_ARR_MAX DO
+	IF raIn_compensations[i].IsActive THEN
+		CONTINUE;
+	END_IF
+	
+	raIn_compensations[i].IsActive := Compensate(ADR(raIn_compensations[i])); 
+END_FOR
+
+// while a compensation sequence is active, other primitives must be suspended to avoid interference (handled at MAIN level)
+CASE m_activeCompensationState OF
+	ECompSeqState.preparing:
+		// finish all running primitives
+		IF FinishPrimitives(i_abortRecoveries := TRUE) THEN
+			m_activeCompensationState := ECompSeqState.running;
+			
+			// Reset the "finished autonomously" flag for all primitives involved in this compensation. Otherwise, the Execute 
+			// method will return TRUE without doing anything.
+			m_finishedAutoBuffer := m_finishedAutonomously;
+			FOR i := ResiConst.ARR_MIN TO ResiConst.MODULE_SEQ_ARR_MAX DO
+				p_id := m_compSeqs[m_activeCompensationIdx].i_primitiveIds[i];
+				m_finishedAutonomously[p_id] := FALSE;
+			END_FOR
+		END_IF
+	
+	ECompSeqState.running:
+		m_ptrSequences[m_activeCompensationIdx]^(o_status => m_sequenceStatus);
+		IF m_sequenceStatus = EOperationResult.success THEN
+			m_activeCompensationState := ECompSeqState.finished;
+		END_IF
+		
+	ECompSeqState.finished:
+		// restore the "finished autonomously" flags again
+		m_finishedAutonomously := m_finishedAutoBuffer;	
+		m_activeCompensationState := ECompSeqState.none;
+END_CASE
+
+// RECOVERY, DEFINITION
+CASE m_recoveryState OF
+	ERecoveryState.requested:
+		m_tonStrategyReceivedTimeout(IN := FALSE);
+		
+		IF m_alarmId = 0 THEN
+			// if the requested state is a ValueExpression, it's a request for definition
+			IF __QUERYINTERFACE(m_conditionToRecover, m_valExpr) THEN
+				m_alarmId := ESpecialAlarmIds.definition_request;
+			ELSE
+				m_alarmId := ESpecialAlarmIds.recovery_request;
+			END_IF
+			
+			m_ptrErrorMgr^.AddMessage(
+				i_alarmId := m_alarmId,
+				i_active := TRUE,
+				i_severity := ESeverity.warning,
+				i_instanceName := m_recoveryRequester);
+		END_IF
+
+		// TODO - unify approaches!
+		// in the AT-Symp setup, recoveries are handled by modifying the custom strategy
+		m_recoveryState := ERecoveryState.none;
+		raOut_recoveryRequest.ChangeTrigger := raOut_recoveryRequest.ChangeTrigger + 1;
+		raOut_recoveryRequest.RequestedState := m_conditionToRecover.ToString();
+		m_alarmId := 0;
+			
+// 		// finish all running primitives safely before recovery
+// 		IF FinishPrimitives(i_abortRecoveries := FALSE) THEN
+// 			raOut_recoveryRequest.ChangeTrigger := raOut_recoveryRequest.ChangeTrigger + 1;
+// 			raOut_recoveryRequest.RequestedState := m_conditionToRecover.ToString();
+// 			m_alarmId := 0;
+// 			
+// 			m_recoveryState := ERecoveryState.awaiting;
+// 		END_IF
+		
+	ERecoveryState.awaiting:
+		m_tonStrategyReceivedTimeout(IN := TRUE, PT := TIMEOUT);
+		IF m_tonStrategyReceivedTimeout.Q THEN
+			m_recoveryState := ERecoveryState.failed; 
+		ELSIF raIn_recoveryAvailable THEN
+			m_recoveryState := ERecoveryState.running;
+		END_IF
+		
+	// the state is only "failed" if the CPA cannot deliver any viable strategy
+	ERecoveryState.failed:
+		m_recoveryState := ERecoveryState.none;
+		raOut_recoveryRequest.RequestedState := '';
+		
+	ERecoveryState.running:
+		m_recoverySequence(
+			i_params := raIn_Recovery.RecoveryParameters,
+			i_primitiveIds := raIn_Recovery.RecoveryStrategy,
+			o_status => m_recoveryRes);
+		
+		// if unsuccessful, the respective primitive has already requested a new recovery
+		IF m_recoveryRes = EOperationResult.success THEN
+			m_recoveryState := ERecoveryState.completed;
+		END_IF
+		
+	ERecoveryState.completed:
+		m_recoveryState := ERecoveryState.none;
+		
+		// reset
+		raIn_recovery := m_emptyRecovery;
+		raIn_recoveryAvailable := FALSE;
+END_CASE
+
+// EDITABLE CONDITIONS
+FOR i := ResiConst.ARR_MIN TO ResiConst.COMPENSATIONS_ARR_MAX DO
+	IF raIn_runtimeConditions[i].ExpressionType <> EExpressionType.none AND NOT raIn_runtimeConditions[i].IsActive THEN
+		m_tmpExpr := GetExpression(
+			raIn_runtimeConditions[i].ExpressionType, 
+			raIn_runtimeConditions[i].ExpressionIdx);
+		
+		SetPrimitiveCondition(
+			raIn_runtimeConditions[i].PrimitiveId, 
+			raIn_runtimeConditions[i].IsPre,
+			m_tmpExpr);
+		
+		raIn_runtimeConditions[i].IsActive := TRUE;
+	END_IF
+	IF raIn_runtimeInterlocks[i].ExpressionType <> EExpressionType.none AND NOT raIn_runtimeInterlocks[i].IsActive THEN
+		m_tmpExpr := GetExpression(
+			raIn_runtimeInterlocks[i].ExpressionType, 
+			raIn_runtimeInterlocks[i].ExpressionIdx);
+			
+		m_ptrStateTracker^.AddInterlock(m_tmpExpr, raIn_runtimeInterlocks[i].DefaultValue);
+		raIn_runtimeInterlocks[i].IsActive := TRUE;
+	END_IF
+END_FOR
+
+// CP STATUS: keep executing all "successful" primitives until their status returns to "none"
+FOR i := ResiConst.ARR_MIN TO ResiConst.BEHAVIORS_ARR_MAX DO
+	IF m_ptrPrimitives[i] <> 0 THEN
+		IF m_ptrPrimitives[i]^.o_status = EOperationResult.success THEN
+			Execute(EBehaviorType.control_primitive, i, m_emptyParams);
+		END_IF
+	END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Execute" Id="{92bad4a5-a564-4727-a158-9ea8eee35be7}">
+      <Declaration><![CDATA[(* Executes the requested Control Primitive or Module Sequence. 
+COMPENSATION: If a compensation was previously registered, the replacement is executed instead. *)
+METHOD Execute : EOperationResult
+VAR_INPUT
+	i_type: EBehaviorType;
+	i_id: UINT;
+	i_params: ParameterSet;
+END_VAR
+VAR
+	i: UINT;
+	m_actualId: UINT;
+	m_result: INT;
+	m_overwrites: ARRAY [ResiConst.ARR_MIN..ResiConst.PARAMS_ARR_MAX] OF SNamedValue;
+	m_prevStatus: EOperationResult;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// set/overwrite additional parameters specified by the retargeting
+IF m_retargets[i_id].RetargetType <> ERetargetType.not_retargeted THEN
+	i_params := i_params;
+	m_overwrites := m_retargets[i_id].OverwriteParams.Parameters;
+	FOR i := ResiConst.ARR_MIN TO ResiConst.PARAMS_ARR_MAX DO
+		IF m_overwrites[i].DataType = EDataType.binary THEN
+			i_params.SetParam_Binary(m_overwrites[i].Name, m_overwrites[i].Value.Binary);
+		ELSIF m_overwrites[i].DataType = EDataType.numeric THEN
+			i_params.SetParam_Numeric(m_overwrites[i].Name, m_overwrites[i].Value.Numeric);
+		ELSIF m_overwrites[i].DataType = EDataType.string_t THEN
+			i_params.SetParam_String(m_overwrites[i].Name, m_overwrites[i].Value.String_t);
+		END_IF
+	END_FOR	
+END_IF
+
+IF i_type = EBehaviorType.control_primitive THEN
+	// if the primitive was finished in the background before recovery (FinishPrimitives), return the success signal
+	IF m_finishedAutonomously[i_id] THEN
+		Execute := EOperationResult.success;
+		m_finishedAutonomously[i_id] := FALSE;
+		RETURN;
+	END_IF	
+
+	CASE m_retargets[i_id].RetargetType OF
+		// execute the requested Control Primitive
+		ERetargetType.not_retargeted:
+			IF m_ptrPrimitives[i_id] = 0 THEN
+				Execute := EOperationResult.failed;
+				RETURN;
+			END_IF
+			
+			m_prevStatus := m_ptrPrimitives[i_id]^.o_status;
+			m_ptrPrimitives[i_id]^(
+				i_params := i_params,
+				o_status => Execute);
+			
+			// CP-Base state machine always returns None on first call -> messes up the logic sometimes...
+			IF m_prevStatus = EOperationResult.none AND m_ptrPrimitives[i_id]^.o_status = EOperationResult.none THEN
+				Execute := EOperationResult.waiting;
+			END_IF
+			
+		// primitive compensated by other primitive
+		ERetargetType.primitive_target:
+			IF m_ptrPrimitives[m_retargets[i_id].TargetId] = 0 THEN
+				Execute := EOperationResult.failed;
+				RETURN;
+			END_IF
+			
+			m_ptrPrimitives[m_retargets[i_id].TargetId]^(
+				i_params := i_params,
+				o_status => Execute);
+			
+		// primitive compensated by sequence (i_primitiveParams were already parsed in ProcessManager.Compensate())
+		ERetargetType.sequence_target:
+			IF m_ptrSequences[m_retargets[i_id].TargetId] = 0 THEN
+				Execute := EOperationResult.failed;
+				RETURN;
+			END_IF
+			
+			// the rest is handled in CyclicManageBehavior
+			m_activeCompensationState := ECompSeqState.preparing;
+			m_activeCompensationIdx := m_retargets[i_id].TargetId;
+			Execute := EOperationResult.success;
+	END_CASE
+
+ELSIF i_type = EBehaviorType.user_sequence THEN
+	// execute the requested Module Sequence
+	IF m_ptrSequences[i_id] = 0 THEN
+		Execute := EOperationResult.failed;
+		RETURN;
+	END_IF
+	
+	m_ptrSequences[i_id]^(
+		i_params := i_params,
+		o_status => Execute);
+		
+ELSE 
+	// generated_sequence cannot be called directly
+	Execute := EOperationResult.failed;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteCustomStrategy" Id="{ec6a9a57-ec2f-435d-bf27-b6d66b5541ee}">
+      <Declaration><![CDATA[METHOD ExecuteCustomStrategy : EOperationResult
+VAR
+	startInit: BOOL;
+	allSucceeded: BOOL;
+	
+	i: INT;
+	ui: UINT;
+	
+	stepIdx: UINT;
+	transIdx: UINT;
+	
+	step: SStep;
+	cp_status: EOperationResult;
+	trans: STransition;
+	expr: IExpression;
+	
+	prevStepIdx: INT;
+	nextStepIdx: INT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// STRATEGY STATES
+CASE raIn_customStrategy.State OF
+	EStrategyStates.ready:
+		raIn_customStrategy.State := EStrategyStates.running;
+		m_ptrErrorMgr^.AddMessage(ESpecialAlarmIds.strategy_received, TRUE, ESeverity.info, 'ProcessManager');
+		RETURN;
+		
+	EStrategyStates.running:
+		ExecuteCustomStrategy := EOperationResult.busy;
+	
+	EStrategyStates.halting:
+		IF NOT m_anyBusy THEN
+			raIn_customStrategy.State := EStrategyStates.halted;
+		END_IF
+		RETURN;
+		
+	EStrategyStates.done:
+		ExecuteCustomStrategy := EOperationResult.success;
+		RETURN;
+		
+	ELSE
+		ExecuteCustomStrategy := EOperationResult.none;
+		RETURN;
+END_CASE
+
+
+// STEP EXECUTION
+FOR stepIdx := ResiConst.ARR_MIN TO ResiConst.STRAT_LEN_MAX DO
+	step := raIn_customStrategy.Steps[stepIdx];
+	IF m_ptrPrimitives[step.BehaviorId] = 0 THEN
+		CONTINUE;
+	END_IF
+	
+	IF step.State = EOperationResult.busy THEN
+		// NOTE: currently, only success/failure/busy/recovering are differentiated for steps
+		cp_status := Execute(step.BehaviorType, step.BehaviorId, step.Parameters);
+		IF cp_status = EOperationResult.busy OR cp_status = EOperationResult.waiting THEN
+			step.State := EOperationResult.busy;
+		ELSE
+			// success, revocering, failed
+			step.State := cp_status;
+		END_IF
+	ELSIF step.State = EOperationResult.recovering THEN
+		// keep executing until the status changes
+		step.State := Execute(step.BehaviorType, step.BehaviorId, step.Parameters);
+	END_IF
+	
+	raIn_customStrategy.Steps[stepIdx] := step;
+END_FOR
+
+IF NOT raIn_customStrategy.IsMaster THEN
+	RETURN;
+END_IF
+
+
+// ##### MASTER REGION: COORDINATE EXECUTION #####
+// ############ EXECUTE ACTIVE STEPS #############
+startInit := TRUE;
+m_anyBusy := FALSE;
+FOR stepIdx := ResiConst.ARR_MIN TO ResiConst.STRAT_LEN_MAX DO
+	step := raIn_customStrategy.Steps[stepIdx];
+	CASE step.State OF
+		EOperationResult.none:
+			;
+		
+		EOperationResult.waiting:
+			startInit := FALSE;
+			m_anyBusy := TRUE;
+			IF stepIdx = INT_TO_UINT(ESpecialStepIds.end) THEN
+				step.State := EOperationResult.none;
+				IF raIn_customStrategy.LoopStrategy THEN
+					startInit := TRUE;
+				ELSE
+					raIn_customStrategy.State := EStrategyStates.done;
+					RETURN;
+				END_IF
+			ELSIF step.BehaviorType = EBehaviorType.none THEN
+				// if no behavior is needed, the step is immediately considered as succeeded
+				step.State := EOperationResult.success;
+			ELSE
+				step.State := EOperationResult.busy;
+			END_IF
+			
+		EOperationResult.busy:
+			startInit := FALSE;
+			m_anyBusy := TRUE;
+			IF m_ptrPrimitives[step.BehaviorId] = 0 THEN
+				// instruct another PLC to execute
+				m_stepWriters[step.ExecutorIdx][stepIdx](
+					NETID := step.ExtSymbols[step.ExecutorIdx].NetId,
+					PORT := step.ExtSymbols[step.ExecutorIdx].Port,
+					IDXGRP := step.ExtSymbols[step.ExecutorIdx].IdxGrp,
+					IDXOFFS := step.ExtSymbols[step.ExecutorIdx].IdxOffs,
+					LEN := SIZEOF(m_busyState),
+					SRCADDR := ADR(m_busyState),
+					WRITE := TRUE);
+				
+				// flush a potentially buffered old "success" result
+				m_stepReaders[step.ExecutorIdx][stepIdx](READ := FALSE);
+				m_stepReaders[step.ExecutorIdx][stepIdx](
+					NETID := step.ExtSymbols[step.ExecutorIdx].NetId,
+					PORT := step.ExtSymbols[step.ExecutorIdx].Port,
+					IDXGRP := step.ExtSymbols[step.ExecutorIdx].IdxGrp,
+					IDXOFFS := step.ExtSymbols[step.ExecutorIdx].IdxOffs,
+					LEN := SIZEOF(m_stepStates[step.ExecutorIdx][stepIdx]),
+					DESTADDR := ADR(m_stepStates[step.ExecutorIdx][stepIdx]),
+					READ := TRUE);
+				
+				IF m_stepStates[step.ExecutorIdx][stepIdx] = m_busyState THEN
+					m_stepWriters[step.ExecutorIdx][stepIdx](WRITE := FALSE);
+					step.State := EOperationResult.success;
+				END_IF
+			END_IF
+			
+		EOperationResult.success:
+			startInit := FALSE;
+			IF step.BehaviorType <> EBehaviorType.none AND m_ptrPrimitives[step.BehaviorId] = 0 THEN
+				// wait until external state returns success
+				m_stepReaders[step.ExecutorIdx][stepIdx](READ := FALSE);
+				m_stepReaders[step.ExecutorIdx][stepIdx](
+					NETID := step.ExtSymbols[step.ExecutorIdx].NetId,
+					PORT := step.ExtSymbols[step.ExecutorIdx].Port,
+					IDXGRP := step.ExtSymbols[step.ExecutorIdx].IdxGrp,
+					IDXOFFS := step.ExtSymbols[step.ExecutorIdx].IdxOffs,
+					LEN := SIZEOF(m_stepStates[step.ExecutorIdx][stepIdx]),
+					DESTADDR := ADR(m_stepStates[step.ExecutorIdx][stepIdx]),
+					READ := TRUE);
+				IF m_stepStates[step.ExecutorIdx][stepIdx] = EOperationResult.success THEN
+					step.State := EOperationResult.synced_success;
+				ELSIF m_stepStates[step.ExecutorIdx][stepIdx] = EOperationResult.failed THEN
+					step.State := EOperationResult.failed;
+				ELSIF m_stepStates[step.ExecutorIdx][stepIdx] = EOperationResult.recovering THEN
+					step.State := EOperationResult.recovering;
+				ELSE
+					// don't store external state in the step struct because it will screw with this state machine
+					m_anyBusy := TRUE;
+				END_IF
+			ELSE
+				step.State := EOperationResult.synced_success;
+			END_IF
+		
+		EOperationResult.synced_success:
+			startInit := FALSE;
+			
+		EOperationResult.failed:
+			startInit := FALSE;
+			allSucceeded := FALSE;
+			ExecuteCustomStrategy := EOperationResult.failed;
+			RETURN;
+		
+		EOperationResult.recovering:
+			raIn_customStrategy.State := EStrategyStates.halting;
+			m_ptrErrorMgr^.AddMessage(ESpecialAlarmIds.recovery_request, TRUE, ESeverity.info, 'ProcessManager');
+	END_CASE
+	
+	raIn_customStrategy.Steps[stepIdx] := step;
+END_FOR
+
+IF raIn_customStrategy.State = EStrategyStates.halting THEN
+	// wait for all steps to finish; don't start new ones below
+	RETURN;
+END_IF
+
+IF startInit THEN
+	// start the initial step
+	step := raIn_customStrategy.Steps[ESpecialStepIds.start];
+	step.State := EOperationResult.waiting;
+	raIn_customStrategy.Steps[ESpecialStepIds.start] := step;
+END_IF
+
+
+// ###### AWAIT AND FIRE TRANSITIONS ######
+FOR transIdx := ResiConst.ARR_MIN TO ResiConst.STRAT_LEN_MAX DO
+	trans := raIn_customStrategy.Transitions[transIdx];
+	IF NOT trans.IsSet THEN
+		CONTINUE;
+	END_IF
+	
+	// 1) all previous steps must have succeeded (NOTE: this is different from the SFC language)
+	allSucceeded := TRUE;
+	FOR ui := ResiConst.ARR_MIN TO ResiConst.STRAT_PARALLEL_MAX DO
+		prevStepIdx := trans.PrevStepIds[ui];
+		IF prevStepIdx = ESpecialStepIds.unset THEN
+			CONTINUE;
+		END_IF
+		
+		step := raIn_customStrategy.Steps[prevStepIdx];
+		IF step.State <> EOperationResult.synced_success THEN
+			allSucceeded := FALSE;
+			EXIT;
+		END_IF
+	END_FOR
+	
+	IF NOT allSucceeded THEN
+		CONTINUE;
+	END_IF
+
+	// 2) wait for the transition's own condition to become TRUE
+	expr := GetExpression(trans.ExpressionType, trans.ExpressionIdx);
+	IF expr.IsTrue(m_ptrStateTracker^.PtrProcessState) THEN
+		// switch the previous steps to "none" and next ones to "waiting"
+		FOR ui := ResiConst.ARR_MIN TO ResiConst.STRAT_PARALLEL_MAX DO
+			prevStepIdx := trans.PrevStepIds[ui];
+			IF prevStepIdx <> ESpecialStepIds.unset THEN
+				step := raIn_customStrategy.Steps[prevStepIdx];
+				step.State := EOperationResult.none;
+				raIn_customStrategy.Steps[prevStepIdx] := step;
+			END_IF
+			
+			nextStepIdx := trans.NextStepIds[ui];
+			IF nextStepIdx <> ESpecialStepIds.unset THEN
+				step := raIn_customStrategy.Steps[nextStepIdx];
+				step.State := EOperationResult.waiting;
+				raIn_customStrategy.Steps[nextStepIdx] := step;
+			END_IF
+		END_FOR
+	END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="FaultHandlingActive" Id="{3033fae5-d13d-4252-81ea-1e9f1d34b19a}">
+      <Declaration><![CDATA[// When a compensation *sequence* is active, other primitive calls must be suspended to avoid interference.
+PROPERTY FaultHandlingActive : BOOL]]></Declaration>
+      <Get Name="Get" Id="{ba7d5991-c5ec-4267-8abe-ab393657ba50}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FaultHandlingActive := m_activeCompensationState = ECompSeqState.preparing 
+	OR m_activeCompensationState = ECompSeqState.running
+	OR m_recoveryState = ERecoveryState.requested
+	OR m_recoveryState = ERecoveryState.awaiting
+	OR m_recoveryState = ERecoveryState.running;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="FaultHandlingFailed" Id="{dfacff44-8d18-485c-8a11-c5553e396276}">
+      <Declaration><![CDATA[PROPERTY FaultHandlingFailed : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8695ccc3-2b77-444d-98e0-c5e5b8c672c4}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[FaultHandlingFailed := m_recoveryState = ERecoveryState.failed;
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="FB_init" Id="{63702b3d-dcc8-4172-9370-0e07e8ca1e34}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+END_VAR
+VAR
+	i: UINT;
+	j: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// reset the strategy transitions
+FOR i := ResiConst.ARR_MIN TO ResiConst.STRAT_LEN_MAX DO
+	FOR j := ResiConst.ARR_MIN TO ResiConst.STRAT_PARALLEL_MAX DO
+		raIn_customStrategy.Transitions[i].PrevStepIds[j] := -1;
+		raIn_customStrategy.Transitions[i].NextStepIds[j] := -1;
+	END_FOR
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FinishPrimitives" Id="{48861dd5-2574-49e1-8d82-949442b93987}">
+      <Declaration><![CDATA[METHOD FinishPrimitives : BOOL
+VAR_INPUT
+	i_abortRecoveries: BOOL;
+END_VAR
+VAR
+	i: UINT;
+	m_allFinished: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_allFinished := TRUE;
+FOR i := ResiConst.ARR_MIN TO ResiConst.BEHAVIORS_ARR_MAX DO
+	IF m_ptrPrimitives[i] <> 0 THEN
+		IF m_ptrPrimitives[i]^.o_status = EOperationResult.busy 
+			OR m_ptrPrimitives[i]^.o_status = EOperationResult.waiting 
+			OR (i_abortRecoveries AND m_ptrPrimitives[i]^.o_status = EOperationResult.recovering) THEN
+			
+			m_ptrPrimitives[i]^();
+			m_allFinished := FALSE;
+			
+			IF m_ptrPrimitives[i]^.o_status = EOperationResult.success THEN
+				// after finishing, the success must be communicated to the application code once the automatic operation resumes (after recovery)
+				m_finishedAutonomously[i] := TRUE;
+			END_IF
+		END_IF
+	END_IF	
+END_FOR
+
+FinishPrimitives := m_allFinished;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetBehaviorPtr" Id="{dee16ffd-c0b7-4624-82e3-9bb502d55520}">
+      <Declaration><![CDATA[METHOD GetBehaviorPtr : POINTER TO BehaviorBase
+VAR_INPUT
+	i_type: EBehaviorType;
+	i_id: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_type = EBehaviorType.control_primitive THEN
+	GetBehaviorPtr := m_ptrPrimitives[i_id];
+ELSIF i_type = EBehaviorType.user_sequence OR i_type = EBehaviorType.generated_sequence THEN
+	GetBehaviorPtr := m_ptrSequences[i_id];
+ELSE
+	GetBehaviorPtr := 0;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="GetExpression" Id="{fc5b866a-5908-46de-a448-9e26477ac9c5}">
+      <Declaration><![CDATA[METHOD GetExpression : IExpression
+VAR_INPUT
+	i_type: EExpressionType;
+	i_idx: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE i_type OF
+	EExpressionType.boolean:
+		THIS^.m_boolExpressions[i_idx].FB_init(
+			FALSE, FALSE,
+			i_left := THIS^.GetExpression(raIn_boolExprSpecs[i_idx].LeftType, raIn_boolExprSpecs[i_idx].LeftIdx),
+			i_sign := raIn_boolExprSpecs[i_idx].Operator,
+			i_right := THIS^.GetExpression(raIn_boolExprSpecs[i_idx].RightType, raIn_boolExprSpecs[i_idx].RightIdx));
+		GetExpression := THIS^.m_boolExpressions[i_idx];
+	
+	EExpressionType.comparison:
+		GetExpression := raIn_compExpressions[i_idx];
+	
+	EExpressionType.value:
+		GetExpression := raIn_valueExpressions[i_idx];
+	
+	ELSE
+		GetExpression := 0;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ProvideServices" Id="{cd686515-d84c-491a-8d5e-5c7f9f7394f7}">
+      <Declaration><![CDATA[METHOD ProvideServices : BOOL
+VAR_INPUT
+	i_ptrStateTracker: POINTER TO StateTracker;
+	i_ptrErrorMgr: POINTER TO ErrorManagerBase;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.m_ptrStateTracker := i_ptrStateTracker;
+THIS^.m_ptrErrorMgr := i_ptrErrorMgr;
+
+THIS^.m_recoverySequence.ProvideServices(THIS, i_ptrStateTracker);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RequestAbort" Id="{e8ace691-b160-473b-b0d6-4f8b0d0b3a1f}">
+      <Declaration><![CDATA[METHOD RequestAbort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF m_abortState = EAbortState.none THEN
+	m_abortState := EAbortState.requested;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RequestRecovery" Id="{9475440a-7249-4ece-966f-fc59909f084b}">
+      <Declaration><![CDATA[METHOD RequestRecovery : BOOL
+VAR_INPUT
+	i_desiredState: IExpression;
+	i_senderName: STRING;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// "recursive" recoveries are not supported
+IF m_recoveryState <> ERecoveryState.none THEN
+	RETURN;
+END_IF
+
+m_recoveryState := ERecoveryState.requested;
+m_conditionToRecover := i_desiredState;
+m_recoveryRequester := i_senderName;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetConfiguration" Id="{8e6d91d5-6492-4037-b48e-dba3b4ba9168}">
+      <Declaration><![CDATA[METHOD ResetConfiguration : BOOL
+VAR
+	i: UINT;
+	emptyVal: ValueExpression(EDataType.none, FALSE, 0, '', FALSE);
+	emptyCpr: ComparisonExpression(0, EComparisonType.none, EDataType.none, FALSE, 0, '', FALSE);
+	emptyBool: BoolExpression(0, EBoolOperation.none, 0);
+	emptyBoolS: SBoolExpressionSpec;
+	emptyNums: ARRAY [ResiConst.ARR_MIN..ResiConst.MODULE_SEQ_ARR_MAX] OF UINT;
+	emptyCond: SPrimitiveCondition;
+	emptyItl: SInterlock;
+	emptyStep: SStep;
+	emptyTrans: STransition;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := ResiConst.ARR_MIN TO ResiConst.COMPENSATIONS_ARR_MAX DO
+	raIn_compensations[i].IsActive := FALSE;
+	raIn_compensations[i].NewId := 0;
+	raIn_compensations[i].NewType := EBehaviorType.none;
+	raIn_compensations[i].SickPrimitiveId := 0;
+	// TODO - reset all the arrays too?
+END_FOR
+
+raOut_recoveryRequest.RequestedState := '';
+raIn_recoveryAvailable := FALSE;
+raIn_recovery.RecoveryParameters.Reset();
+raIn_recovery.RecoveryStrategy := emptyNums;
+
+FOR i := ResiConst.ARR_MIN TO ResiConst.RT_EXPRS_MAX DO
+	raIn_valueExpressions[i] := emptyVal;
+	raIn_compExpressions[i] := emptyCpr;
+	raIn_boolExprSpecs[i] := emptyBoolS;
+	m_boolExpressions[i] := emptyBool;
+END_FOR
+
+FOR i := ResiConst.ARR_MIN TO ResiConst.COMPENSATIONS_ARR_MAX DO
+	raIn_runtimeConditions[i] := emptyCond;
+	raIn_runtimeInterlocks[i] := emptyItl;
+END_FOR
+
+raIn_customStrategy.State := EStrategyStates.none;
+raIn_customStrategy.LoopStrategy := FALSE;
+raIn_customStrategy.IsMaster := FALSE;
+raIn_customStrategy.NumPartners := 0;
+FOR i := ResiConst.ARR_MIN TO ResiConst.STRAT_LEN_MAX DO
+	raIn_customStrategy.Steps[i] := emptyStep;
+	raIn_customStrategy.Transitions[i] := emptyTrans;
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetAllConditionsTrue" Id="{2178f9c4-bf7f-4ffa-a664-8fa0a4d8ac89}">
+      <Declaration><![CDATA[METHOD SetAllConditionsTrue : BOOL
+VAR
+	i: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[FOR i := ResiConst.ARR_MIN TO ResiConst.BEHAVIORS_ARR_MAX DO
+	IF m_ptrPrimitives[i] <> 0 THEN
+		m_ptrPrimitives[i]^.Precondition := m_trueValue;
+		m_ptrPrimitives[i]^.Postcondition := m_trueValue;
+	END_IF
+END_FOR
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetPrimitiveCondition" Id="{c161b473-14b6-4bc0-ae23-4f8d0e93f04b}">
+      <Declaration><![CDATA[METHOD SetPrimitiveCondition : BOOL
+VAR_INPUT
+	i_primitiveId: UINT;
+	i_isPre: BOOL;
+	i_condition: IExpression;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_isPre THEN
+	THIS^.m_ptrPrimitives[i_primitiveId]^.Precondition := i_condition;
+ELSE
+	THIS^.m_ptrPrimitives[i_primitiveId]^.Postcondition := i_condition;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ProcessManager">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProcessManager.AbortActive.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="ProcessManager.AddPrimitive">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+    <LineIds Name="ProcessManager.AddSequence">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+    <LineIds Name="ProcessManager.Compensate">
+      <LineId Id="1" Count="41" />
+    </LineIds>
+    <LineIds Name="ProcessManager.CustomStrategyReady.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProcessManager.CyclicManageBehavior">
+      <LineId Id="1" Count="81" />
+      <LineId Id="173" Count="0" />
+      <LineId Id="175" Count="4" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="84" Count="3" />
+      <LineId Id="89" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="90" Count="36" />
+      <LineId Id="151" Count="8" />
+      <LineId Id="127" Count="1" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="163" Count="1" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="165" Count="2" />
+      <LineId Id="162" Count="0" />
+      <LineId Id="140" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="144" Count="1" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="149" Count="1" />
+      <LineId Id="148" Count="0" />
+      <LineId Id="146" Count="0" />
+      <LineId Id="141" Count="0" />
+    </LineIds>
+    <LineIds Name="ProcessManager.Execute">
+      <LineId Id="1" Count="80" />
+    </LineIds>
+    <LineIds Name="ProcessManager.ExecuteCustomStrategy">
+      <LineId Id="1122" Count="3" />
+      <LineId Id="1339" Count="0" />
+      <LineId Id="1126" Count="9" />
+      <LineId Id="1327" Count="3" />
+      <LineId Id="1136" Count="9" />
+      <LineId Id="1332" Count="0" />
+      <LineId Id="1334" Count="1" />
+      <LineId Id="1333" Count="0" />
+      <LineId Id="1146" Count="8" />
+      <LineId Id="1331" Count="0" />
+      <LineId Id="1336" Count="1" />
+      <LineId Id="1155" Count="0" />
+      <LineId Id="1338" Count="0" />
+      <LineId Id="1156" Count="19" />
+      <LineId Id="1324" Count="0" />
+      <LineId Id="1176" Count="4" />
+      <LineId Id="1326" Count="0" />
+      <LineId Id="1182" Count="10" />
+      <LineId Id="1325" Count="0" />
+      <LineId Id="1193" Count="65" />
+      <LineId Id="1340" Count="0" />
+      <LineId Id="1259" Count="64" />
+      <LineId Id="104" Count="0" />
+    </LineIds>
+    <LineIds Name="ProcessManager.FaultHandlingActive.Get">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+    <LineIds Name="ProcessManager.FaultHandlingFailed.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="ProcessManager.FB_init">
+      <LineId Id="1" Count="7" />
+    </LineIds>
+    <LineIds Name="ProcessManager.FinishPrimitives">
+      <LineId Id="1" Count="19" />
+    </LineIds>
+    <LineIds Name="ProcessManager.GetBehaviorPtr">
+      <LineId Id="1" Count="7" />
+    </LineIds>
+    <LineIds Name="ProcessManager.GetExpression">
+      <LineId Id="1" Count="18" />
+    </LineIds>
+    <LineIds Name="ProcessManager.ProvideServices">
+      <LineId Id="1" Count="4" />
+    </LineIds>
+    <LineIds Name="ProcessManager.RequestAbort">
+      <LineId Id="1" Count="3" />
+    </LineIds>
+    <LineIds Name="ProcessManager.RequestRecovery">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+    <LineIds Name="ProcessManager.ResetConfiguration">
+      <LineId Id="13" Count="1" />
+      <LineId Id="34" Count="3" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="42" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="23" Count="2" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="27" Count="0" />
+      <LineId Id="26" Count="0" />
+      <LineId Id="28" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="29" Count="0" />
+      <LineId Id="32" Count="0" />
+      <LineId Id="43" Count="1" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="46" Count="1" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="ProcessManager.SetAllConditionsTrue">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="ProcessManager.SetPrimitiveCondition">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

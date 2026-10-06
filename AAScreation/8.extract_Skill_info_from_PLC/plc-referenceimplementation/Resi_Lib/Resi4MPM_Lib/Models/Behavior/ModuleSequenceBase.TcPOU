@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ModuleSequenceBase" Id="{d9e2fd9d-c089-4bdc-9e23-2df4eba13108}" SpecialFunc="None">
+    <Declaration><![CDATA[(* Base of Module Sequences. Inheriting FBs must provide the main implementation. *)
+FUNCTION_BLOCK ABSTRACT ModuleSequenceBase EXTENDS BehaviorBase
+VAR
+	m_ptrProcessManager: POINTER TO ProcessManager;
+	m_ptrStateTracker: POINTER TO StateTracker;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="ProvideServices" Id="{c6a37104-0206-492a-8d30-fb08e3ab0d97}">
+      <Declaration><![CDATA[METHOD ProvideServices : BOOL
+VAR_INPUT
+	i_ptrProcessManager: POINTER TO ProcessManager;
+	i_ptrStateTracker: POINTER TO StateTracker;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.m_ptrProcessManager := i_ptrProcessManager;
+THIS^.m_ptrStateTracker := i_ptrStateTracker;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="RequestRecovery" Id="{a831c301-ba78-45b4-b05a-093ad147011c}">
+      <Declaration><![CDATA[METHOD RequestRecovery : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[THIS^.m_ptrProcessManager^.RequestRecovery(THIS^.Postcondition, TO_STRING(m_id));
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ModuleSequenceBase">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ModuleSequenceBase.ProvideServices">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="ModuleSequenceBase.RequestRecovery">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Crane_MoveToLSC" Id="{8fc43104-cc0d-47ba-965c-bd608cbc45c3}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Crane_MoveToLSC EXTENDS Crane_MoveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// (EProcessVariables.Crane_CylinderRetracted = TRUE) AND ((EProcessVariables.Crane_HoldingWorkpiece = FALSE) OR ((EProcessVariables.LSC_ProductType = 0) AND ((EProcessVariables.RFC_ProductType_1 = 0) AND (EProcessVariables.RFC_ProductType_2 = 0))))
+	m_compExpr1: ComparisonExpression(EProcessVariables.Crane_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr3: ComparisonExpression(EProcessVariables.Crane_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr5: ComparisonExpression(EProcessVariables.LSC_ProductType, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+// 	m_compExpr7: ComparisonExpression(EProcessVariables.RFC_ProductType_1, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+// 	m_compExpr9: ComparisonExpression(EProcessVariables.RFC_ProductType_2, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+// 	m_boolExpr10: BoolExpression(m_compExpr7, EBoolOperation.and_op, m_compExpr9);
+// 	m_boolExpr11: BoolExpression(m_compExpr5, EBoolOperation.and_op, m_boolExpr10);
+// 	m_boolExpr12: BoolExpression(m_compExpr3, EBoolOperation.or_op, m_boolExpr11);
+	m_boolExpr12: BoolExpression(m_compExpr3, EBoolOperation.or_op, m_compExpr5);
+	m_precondition: BoolExpression(m_compExpr1, EBoolOperation.and_op, m_boolExpr12);
+	
+	// EProcessVariables.Crane_AtLSC = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.Crane_AtLSC, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{784b53c9-deb1-447d-835a-6766dae7aa8b}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+		
+	i_ptrCrane: POINTER TO Crane;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrCrane := i_ptrCrane;
+
+m_id := EPrimitives.Crane_MoveToLSC;
+m_timeout := T#30S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetAngle" Id="{acccc3f5-27af-4829-ad82-d652c70edda0}">
+      <Declaration><![CDATA[PROPERTY TargetAngle : UINT]]></Declaration>
+      <Get Name="Get" Id="{226d4c80-c5b4-43b7-bc8a-64c468e4c1dd}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[TargetAngle := 90;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="Crane_MoveToLSC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Crane_MoveToLSC.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="Crane_MoveToLSC.TargetAngle.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

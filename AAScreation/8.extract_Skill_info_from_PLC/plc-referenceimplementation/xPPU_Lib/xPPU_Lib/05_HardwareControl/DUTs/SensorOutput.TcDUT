@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SensorOutput" Id="{fe4f6c8f-82f6-4c5f-9b4c-0111606a76b7}">
+    <Declaration><![CDATA[TYPE SensorOutput :
+STRUCT
+	SensorName : STRING;
+	SensorActive : BOOL;
+	
+	OutputType : STRING;
+	OutputDescription : STRING;
+	//OutputINT : INT;
+	OutputBOOL : BOOL;
+	//OutputREAL : REAL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

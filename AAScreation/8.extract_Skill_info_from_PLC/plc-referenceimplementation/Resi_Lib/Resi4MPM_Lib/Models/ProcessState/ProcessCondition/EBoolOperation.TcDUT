@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EBoolOperation" Id="{f92c3e36-c287-4047-a72b-567e7873439e}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EBoolOperation :
+(
+	none := 0,
+	and_op := 1,
+	nand_op := 2,
+	or_op := 3,
+	nor_op := 4
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

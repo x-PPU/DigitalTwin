@@ -1,0 +1,218 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ProcessState" Id="{18b84e4c-30fc-4015-afce-bd2064ea8257}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ProcessState
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrProcMgr: POINTER TO ProcessManager;
+	m_values: ARRAY [ResiConst.ARR_MIN..ResiConst.STATE_ARR_MAX] OF SValue;
+	m_varExp: ValueExpression(EDataType.numeric, FALSE, 0, '', TRUE);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// manages all the system variables]]></ST>
+    </Implementation>
+    <Method Name="ProvideServices" Id="{7447d0f8-6ac3-4e67-9c33-4c1caeaec642}">
+      <Declaration><![CDATA[METHOD ProvideServices : BOOL
+VAR_INPUT
+	i_ptrProcMgr: POINTER TO ProcessManager;
+END_VAR
+	]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrProcMgr := i_ptrProcMgr;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="Retrieve" Id="{f9f2c29e-7bfd-4fd7-86aa-afa031f1d431}">
+      <Declaration><![CDATA[METHOD Retrieve : SValue
+VAR_INPUT
+	i_id: UINT;
+	i_checkDef: BOOL;
+END_VAR
+VAR
+	m_val: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_val := m_values[i_id];
+
+IF i_checkDef THEN
+	IF m_val.Defined THEN
+		Retrieve:= m_val;
+	ELSE
+		m_varExp.FB_init(FALSE, FALSE, EDataType.numeric, FALSE, i_id, '', TRUE);
+		THIS^.m_ptrProcMgr^.RequestRecovery(m_varExp, 'ProcessState.Retrieve');
+	END_IF	
+ELSE
+	Retrieve := m_val;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetValue" Id="{623c3cf4-770e-484f-bf97-867f0a3c7f4c}">
+      <Declaration><![CDATA[METHOD SetValue : BOOL
+VAR_INPUT
+	i_id: UINT;
+	i_val: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[SetValue := FALSE;
+m_values[i_id].DataType := i_val.DataType;
+m_values[i_id].Defined := i_val.Defined;
+
+CASE i_val.DataType OF
+	EDataType.binary:
+		m_values[i_id].Value.Binary := i_val.Value.Binary;
+		SetValue := TRUE;
+		
+	EDataType.numeric:
+		m_values[i_id].Value.Numeric := i_val.Value.Numeric;
+		SetValue := TRUE;
+		
+	EDataType.string_t:
+		m_values[i_id].Value.String_t := i_val.Value.String_t;
+		SetValue := TRUE;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateState_Binary" Id="{bc55f999-ba12-4426-a61f-9f78aa3f220f}">
+      <Declaration><![CDATA[METHOD UpdateState_Binary : BOOL
+VAR_INPUT
+	i_id: UINT;
+	i_value: BOOL;
+	
+	// writes even if the existing data type does not match
+	i_force: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_force THEN
+	m_values[i_id].DataType := EDataType.binary;
+	m_values[i_id].Value.Binary := FALSE;
+END_IF
+
+IF m_values[i_id].DataType = EDataType.binary THEN
+	m_values[i_id].Value.Binary := i_value;
+	UpdateState_Binary := TRUE;
+ELSE
+	UpdateState_Binary := FALSE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateState_Defined" Id="{839cb376-8aa8-4daa-a859-3c1ac9e4a4e8}">
+      <Declaration><![CDATA[METHOD UpdateState_Defined : BOOL
+VAR_INPUT
+	i_id: UINT;
+	i_defined: BOOL;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_values[i_id].Defined := i_defined;
+UpdateState_Defined := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateState_Numeric" Id="{d3055601-8759-472a-9700-1df2c793a518}">
+      <Declaration><![CDATA[METHOD UpdateState_Numeric : BOOL
+VAR_INPUT
+	i_id: UINT;
+	i_value: LREAL;
+	
+	// writes even if the existing data type does not match
+	i_force: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_force THEN
+	m_values[i_id].DataType := EDataType.numeric;
+	m_values[i_id].Value.Numeric := 0;
+END_IF
+
+IF m_values[i_id].DataType = EDataType.numeric THEN
+	m_values[i_id].Value.Numeric := i_value;
+	UpdateState_Numeric := TRUE;
+ELSE
+	UpdateState_Numeric := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateState_NumericIncrement" Id="{11b571cd-f002-48d6-87a4-0da8d78d126c}">
+      <Declaration><![CDATA[METHOD UpdateState_NumericIncrement : BOOL
+VAR_INPUT
+	i_id: UINT;
+	
+	// writes even if the existing data type does not match
+	i_force: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_force THEN
+	m_values[i_id].DataType := EDataType.numeric;
+END_IF
+
+IF m_values[i_id].DataType = EDataType.numeric THEN
+	m_values[i_id].Value.Numeric := m_values[i_id].Value.Numeric + 1;
+	UpdateState_NumericIncrement := TRUE;
+ELSE
+	UpdateState_NumericIncrement := FALSE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateState_String" Id="{080b5897-f35c-4aa9-ab3d-e92f0a84e5b8}">
+      <Declaration><![CDATA[METHOD UpdateState_String : BOOL
+VAR_INPUT
+	i_id: UINT;
+	i_value: STRING;
+	
+	// writes even if the existing data type does not match
+	i_force: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_force THEN
+	m_values[i_id].DataType := EDataType.string_t;
+	m_values[i_id].Value.String_t := '';
+END_IF
+
+IF m_values[i_id].DataType = EDataType.string_t THEN
+	m_values[i_id].Value.String_t := i_value;
+	UpdateState_String := TRUE;
+ELSE
+	UpdateState_String := FALSE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ProcessState">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProcessState.ProvideServices">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ProcessState.Retrieve">
+      <LineId Id="1" Count="12" />
+    </LineIds>
+    <LineIds Name="ProcessState.SetValue">
+      <LineId Id="1" Count="17" />
+    </LineIds>
+    <LineIds Name="ProcessState.UpdateState_Binary">
+      <LineId Id="1" Count="11" />
+    </LineIds>
+    <LineIds Name="ProcessState.UpdateState_Defined">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="ProcessState.UpdateState_Numeric">
+      <LineId Id="1" Count="10" />
+    </LineIds>
+    <LineIds Name="ProcessState.UpdateState_NumericIncrement">
+      <LineId Id="1" Count="10" />
+    </LineIds>
+    <LineIds Name="ProcessState.UpdateState_String">
+      <LineId Id="1" Count="10" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PicAlpha_MoveToPos4" Id="{90d67347-b1fb-42df-bfb6-fd4fe80cf5a7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PicAlpha_MoveToPos4 EXTENDS PicAlpha_MoveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// EProcessVariables.PicAlpha_CylinderRetracted = TRUE
+	m_precondition: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	// (EProcessVariables.PicAlpha_AtPos4 = TRUE) AND ((EProcessVariables.PicAlpha_CylinderRetracted = TRUE) AND ((EProcessVariables.SSC_ProductType_1 = 0) AND (EProcessVariables.SSC_ProductType_2 = 0)))
+	m_compExpr178: ComparisonExpression(EProcessVariables.PicAlpha_AtPos4, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr180: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr182: ComparisonExpression(EProcessVariables.SSC_ProductType_1, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+	m_compExpr184: ComparisonExpression(EProcessVariables.SSC_ProductType_2, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+	m_boolExpr185: BoolExpression(m_compExpr182, EBoolOperation.and_op, m_compExpr184);
+	m_boolExpr186: BoolExpression(m_compExpr180, EBoolOperation.and_op, m_boolExpr185);
+	m_postcondition: BoolExpression(m_compExpr178, EBoolOperation.and_op, m_boolExpr186);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{eeac8863-08e2-4a3b-80ff-432f0f12b26a}">
+      <Declaration><![CDATA[METHOD AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := m_ptrPicAlpha^.PresenceSensorPosition4Value AND NOT (m_ptrPicAlpha^.PresenceSensorPosition1Value OR m_ptrPicAlpha^.PresenceSensorPosition2Value OR m_ptrPicAlpha^.PresenceSensorPosition3Value);]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{04addfc3-fca3-43b9-8954-42b11664be57}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPicAlpha : POINTER TO PicAlpha;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha := i_ptrPicAlpha;
+
+m_id := EPrimitives.PicAlpha_MoveToPos4;
+m_timeout := T#20S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+m_initDirection := TRUE;	//TRUE: towards Pos4
+m_targetTimeout := T#10S;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PicAlpha_MoveToPos4">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_MoveToPos4.AtTarget">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_MoveToPos4.FB_init">
+      <LineId Id="1" Count="9" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

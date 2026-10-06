@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LSC_MoveWorkpiece_Base" Id="{f50eac15-8bd0-4dc5-b9b1-5aa2590d80a7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT LSC_MoveWorkpiece_Base EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrLSC: POINTER TO LargeSortingConveyor;
+	
+	m_step: INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{d7408343-9957-4715-8173-6116c421ac5c}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC^.METH_ConveyorStop();
+m_ptrLSC^.METH_Ramp1Pusher_Retract();
+m_ptrLSC^.METH_Ramp2Pusher_Retract();
+m_ptrLSC^.METH_Switch_Retract();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AtTarget" Id="{7e89109e-29ac-475f-ad44-d90014d30dff}">
+      <Declaration><![CDATA[METHOD PROTECTED ABSTRACT AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{59b22ada-679f-49c1-914a-50f0ab520ee7}">
+      <Declaration><![CDATA[METHOD PROTECTED ABSTRACT EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{fefa765f-9855-4e6c-883d-5883582d6064}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+	0: // to target	
+	IF NOT AtTarget() THEN
+		m_ptrLSC^.METH_ConveyorForward();
+		m_step := 1;
+	END_IF
+	
+	1:
+	IF AtTarget() THEN
+		m_ptrLSC^.METH_ConveyorStop();
+		m_ptrLSC^.METH_Switch_Retract();
+		m_step := 2;
+	END_IF
+	
+	2:
+	IF EjectOperation() THEN
+		m_step := 0;
+		ExecuteInternal := TRUE;
+	END_IF
+		
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LSC_MoveWorkpiece_Base">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_MoveWorkpiece_Base.Abort">
+      <LineId Id="1" Count="4" />
+    </LineIds>
+    <LineIds Name="LSC_MoveWorkpiece_Base.AtTarget">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_MoveWorkpiece_Base.EjectOperation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_MoveWorkpiece_Base.ExecuteInternal">
+      <LineId Id="1" Count="20" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

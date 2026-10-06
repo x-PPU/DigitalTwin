@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <GVL Name="HMI_Texts" Id="{df75cf03-87bc-4abf-bcb4-a88c4ad2ee73}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	AlarmTexts: ARRAY [0..999] OF STRING;
+END_VAR
+]]></Declaration>
+  </GVL>
+</TcPlcObject>

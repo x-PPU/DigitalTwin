@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="InductiveSensor" Id="{4736a843-aa8d-4180-a544-b4f7627b75c7}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK InductiveSensor IMPLEMENTS ITF_BinarySensor
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Hardware
+	DI_WPMetallic AT %I* : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Value" Id="{e845cd24-491d-4a7b-a604-a16b20849302}">
+      <Declaration><![CDATA[PROPERTY Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{58c9b07c-205a-494d-b0a6-609f4e2d84e3}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Value := DI_WPMetallic;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="InductiveSensor">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="InductiveSensor.Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

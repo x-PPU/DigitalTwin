@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EWPMaterial" Id="{cfe01a5d-b723-43a5-be57-dab1b7b77498}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EWPMaterial :
+(
+	black := 1,
+	white := 2,
+	metallic :=3,
+	undetermined :=4,
+	enum_member := 0
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

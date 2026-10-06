@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ObserveSSC" Id="{9d68664e-bdb4-490d-afd1-9b371bbb1b48}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ObserveSSC EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrSSC: POINTER TO SmallSortingConveyor;
+	m_ptrSSCWP1: POINTER TO xPPUProduct;
+	m_ptrSSCWP2: POINTER TO xPPUProduct;
+	m_ptrSSCWP3: POINTER TO xPPUProduct;
+	m_rtWpAtRamp: R_TRIG;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{71b3bb7f-1fec-4411-a532-e012203afef4}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrSSC: POINTER TO SmallSortingConveyor;
+	i_ptrWP1: POINTER TO xPPUProduct;
+	i_ptrWP2: POINTER TO xPPUProduct;
+	i_ptrWP3: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrSSC := i_ptrSSC;
+m_ptrSSCWP1 := i_ptrWP1;
+m_ptrSSCWP2 := i_ptrWP2;
+m_ptrSSCWP3 := i_ptrWP3;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{0fe94fe0-3425-4b55-9df9-e849eab0793c}">
+      <Declaration><![CDATA[METHOD  ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{79c1a796-384c-4318-9b52-d691355f31bb}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_rtWpAtRamp(CLK := m_ptrSSC^.WPAtRampEnd);
+
+io_processState.UpdateState_Binary(EProcessVariables.SSC_WPAtStart, m_ptrSSC^.WPAtStart, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.SSC_WPAtEnd, m_ptrSSC^.WPAtEnd, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.SSC_WPLightAtMiddle, m_ptrSSC^.LightWPAtMid, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.SSC_WPMetalAtMiddle, m_ptrSSC^.MetalWPAtMid, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.SSC_WPAtRampEnd, m_ptrSSC^.WPAtRampEnd, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.SSC_SwitchExtended, m_ptrSSC^.m_Switch.Extended, TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.SSC_SwitchRetracted, m_ptrSSC^.m_Switch.Retracted, TRUE);
+
+IF m_rtWpAtRamp.Q THEN
+	io_processState.UpdateState_NumericIncrement(EProcessVariables.SSC_RampWPCount, TRUE);
+END_IF
+
+
+io_processState.UpdateState_Defined(EProcessVariables.SSC_WPAtStart, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.SSC_WPAtEnd, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.SSC_WPLightAtMiddle, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.SSC_WPMetalAtMiddle, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.SSC_WPAtRampEnd, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.SSC_SwitchExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.SSC_SwitchRetracted, TRUE);
+// TODO - the following is technically not defined but how can we avoid that?
+io_processState.UpdateState_Defined(EProcessVariables.SSC_RampWPCount, TRUE);
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ObserveSSC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveSSC.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="7" Count="1" />
+    </LineIds>
+    <LineIds Name="ObserveSSC.ResetDefinition">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveSSC.UpdateProcessObservation">
+      <LineId Id="1" Count="22" />
+      <LineId Id="33" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

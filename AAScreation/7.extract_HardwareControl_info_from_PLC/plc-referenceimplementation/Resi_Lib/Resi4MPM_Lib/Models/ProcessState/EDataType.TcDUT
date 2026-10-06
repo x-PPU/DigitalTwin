@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EDataType" Id="{c7181a47-a5ea-4063-9a72-ca9ae11cbe72}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+TYPE EDataType :
+(
+	none := 0,
+	dont_care := 1,
+	binary := 2,
+	numeric := 3,
+	string_t := 4
+) USINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

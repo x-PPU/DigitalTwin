@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ConveyorConfiguration" Id="{c45f872a-c89f-4045-be49-aabd68bcc7a6}">
+    <Declaration><![CDATA[TYPE ConveyorConfiguration :
+STRUCT
+	iNumSensor : DINT;
+	iNumRamp : DINT;
+	iNumPusher : DINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

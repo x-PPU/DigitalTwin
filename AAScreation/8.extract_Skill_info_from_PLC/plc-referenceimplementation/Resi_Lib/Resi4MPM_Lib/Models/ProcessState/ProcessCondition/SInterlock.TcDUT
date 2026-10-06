@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SInterlock" Id="{852a024d-dccc-4375-8ddb-c2d32b86a0de}">
+    <Declaration><![CDATA[TYPE SInterlock EXTENDS SConditionSpec :
+STRUCT
+	DefaultValue: BOOL;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

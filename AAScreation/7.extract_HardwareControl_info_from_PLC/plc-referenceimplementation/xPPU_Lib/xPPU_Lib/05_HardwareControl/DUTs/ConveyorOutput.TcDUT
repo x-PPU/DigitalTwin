@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ConveyorOutput" Id="{cfade488-78f4-49a6-8a42-5629f32f8a73}">
+    <Declaration><![CDATA[TYPE ConveyorOutput :
+STRUCT
+	SensorDataOutput : ARRAY[0..10] OF SensorOutput;
+	SensorNum : DINT;
+	//Ramps
+	RampDataOutput : ARRAY[0..5] OF SensorOutput;
+	RampNum : DINT;
+	//Pushers
+	PusherOut : ARRAY[0..10] OF SensorOutput;
+	PusherNum : DINT;
+	//Motor Output
+	MotorOutput : MotorOutput;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

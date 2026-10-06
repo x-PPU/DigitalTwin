@@ -1,0 +1,221 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="xPPU_Container" Id="{0e2c14b1-a9c6-49dd-87bd-97082a44a600}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK xPPU_Container
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// hardware control POUs
+	m_crane: Crane;
+	m_stack: Stack;
+	m_stamp: Stamp;
+	m_LSC: LargeSortingConveyor;
+	m_PAC: PicAlphaConveyor;
+	m_PicAlpha: PicAlpha;
+	m_SSC: SmallSortingConveyor;
+	m_RFC: RefeedingConveyor;
+	
+	// products
+	(*m_craneWP: xPPUProduct;
+	m_stackWP: xPPUProduct;
+	m_stampWP: xPPUProduct;
+	m_LSCWP: xPPUProduct;
+	m_PACWP1: xPPUProduct;
+	m_PACWP2: xPPUProduct;
+	m_PACWP3: xPPUProduct;
+	m_PicAlphaWP: xPPUProduct;
+	m_SSCWP1: xPPUProduct;
+	m_SSCWP2: xPPUProduct;
+	m_RFCWP1: xPPUProduct;
+	m_RFCWP2: xPPUProduct;*)
+	
+	m_iCraneWP: xPPUProduct(EProcessVariables.Crane_ProductType);
+	m_iStackWP: xPPUProduct(EProcessVariables.Stack_ProductType) ;
+	m_iStampWP: xPPUProduct(EProcessVariables.Stamp_ProductType);
+	m_iLSCWP: xPPUProduct(EProcessVariables.LSC_ProductType);
+	m_iPACWP1: xPPUProduct(EProcessVariables.PAC_ProductType_1);
+	m_iPACWP2: xPPUProduct(EProcessVariables.PAC_ProductType_2);
+	m_iPACWP3: xPPUProduct(EProcessVariables.PAC_ProductType_3);	
+	m_iPicAlphaWP: xPPUProduct(EProcessVariables.PicAlpha_ProductType);
+	m_iSSCWP1: xPPUProduct(EProcessVariables.SSC_ProductType_1);
+	m_iSSCWP2: xPPUProduct(EProcessVariables.SSC_ProductType_2);
+	m_iSSCWP3: xPPUProduct(EProcessVariables.SSC_ProductType_3);
+	m_iRFCWP1: xPPUProduct(EProcessVariables.RFC_ProductType_1);
+	m_iRFCWP2: xPPUProduct(EProcessVariables.RFC_ProductType_2);
+	
+	// hardware observation (if not included in hardware control)
+	m_observeCrane: ObserveCrane(ADR(m_crane), ADR(m_iCraneWP));
+	m_observeStack: ObserveStack(ADR(m_stack), ADR(m_iStackWP));
+	m_observeStamp: ObserveStamp(ADR(m_stamp), ADR(m_iStampWP));
+	m_observeLSC: ObserveLSC(ADR(m_LSC), ADR(m_iLSCWP));
+	m_observePAC: ObservePAC(ADR(m_PAC), ADR(m_iPACWP1), ADR(m_iPACWP2), ADR(m_iPACWP3));
+	m_observePicAlpha: ObservePicAlpha(ADR(m_PicAlpha), ADR(m_iPicAlphaWP));
+	m_observeSSC: ObserveSSC(ADR(m_SSC), ADR(m_iSSCWP1), ADR(m_iSSCWP2),ADR(m_iSSCWP3));
+	m_observeRFC: ObserveRFC(ADR(m_RFC), ADR(m_iRFCWP1), ADR(m_iRFCWP2));
+	
+	// control primitives
+	m_craneMoveToStack: Crane_MoveToStack(ADR(m_crane));
+	m_craneMoveToStamp: Crane_MoveToStamp(ADR(m_crane));
+	m_craneMoveToLSC: Crane_MoveToLSC(ADR(m_crane));
+	m_cranePickUpWP: Crane_PickUpWP(ADR(m_crane));
+	m_cranePutDownWP: Crane_PutDownWP(ADR(m_crane));
+	
+	m_stackProvide: Stack_ProvideWorkpiece(ADR(m_stack));
+	
+	m_stampStamp: Stamp_StampWorkpiece(ADR(m_stamp));
+	
+	m_LSCTransferWPToRampStart: LSC_TransferWorkpieceTo_RampStart(ADR(m_LSC));
+	m_LSCTransferWPToRampMid: LSC_TransferWorkpieceTo_RampMid(ADR(m_LSC));
+	m_LSCTransferWPToRampEnd: LSC_TransferWorkpieceTo_RampEnd(ADR(m_LSC));
+	m_LSCTransferWPToPAC: LSC_TransferWorkpieceTo_PAC(ADR(m_LSC));
+	m_LSCSearchWorkpiece: LSC_SearchWorkpiece(ADR(m_LSC));
+	m_LSCTransferWPAtStart : LSC_TransferWPAtStart(ADR(m_LSC));
+	
+	m_PACTransferWPToSSC: PAC_TransferWorkpieceTo_SSC(ADR(m_PAC));
+	m_PACTransferWPToPSStart: PAC_TransferWorkpieceTo_PSStart(ADR(m_PAC));
+	m_PACTransferFirstWPToSSCStart: PAC_TransferFirstWorkpieceTo_SSCStart(ADR(m_PAC), ADR(m_SSC));
+	
+	m_picAlphaMoveToPos1: PicAlpha_MoveToPos1(ADR(m_picAlpha));
+	m_picAlphaMoveToPos2: PicAlpha_MoveToPos2(ADR(m_picAlpha));
+	m_picAlphaMoveToPos3: PicAlpha_MoveToPos3(ADR(m_picAlpha));
+	m_picAlphaMoveToPos4: PicAlpha_MoveToPos4(ADR(m_picAlpha));
+	m_picAlphaPickUpWP: PicAlpha_PickUpWP(ADR(m_picAlpha));
+	m_picAlphaPutDownWP: PicAlpha_PutDownWP(ADR(m_picAlpha), ADR(m_PAC));
+	
+	m_SSCTransferWPToPSStart: SSC_TransferWorkpieceTo_PSStart(ADR(m_SSC));
+	m_SSCTransferWPToRampEnd: SSC_TransferWorkpieceTo_RampEnd(ADR(m_SSC));
+	m_SSCTransferWPToPSEnd: SSC_MoveWorkpieceTo_PSEnd(ADR(m_SSC));
+	m_SSCTransferWPToRFC: SSC_TransferWorkpieceTo_RFC(ADR(m_SSC), ADR(m_RFC));
+	
+	m_RFCTransferWPToLSC: RFC_TransferWorkpieceTo_LSC(ADR(m_RFC),ADR(m_LSC));
+	m_RFCTransferWPToPSEnd: RFC_TransferWorkpieceTo_PSEnd(ADR(m_RFC));
+	
+	// module sequences
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{a1eee991-525e-4f9a-857d-097b6cabcd45}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+
+	i_ptrStateTracker: POINTER TO StateTracker;
+	i_ptrProcessManager: POINTER TO ProcessManager;
+	
+	i_ptrErrorManager: POINTER TO ErrorManager;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// provide Services to Behaviors
+m_craneMoveToStack.ProvideServices(i_ptrProcessManager,i_ptrStateTracker);
+m_craneMoveToStamp.ProvideServices(i_ptrProcessManager,i_ptrStateTracker);
+m_craneMoveToLSC.ProvideServices(i_ptrProcessManager,i_ptrStateTracker);
+m_cranePickUpWP.ProvideServices(i_ptrProcessManager,i_ptrStateTracker);
+m_cranePutDownWP.ProvideServices(i_ptrProcessManager,i_ptrStateTracker);
+
+m_stackProvide.ProvideServices(i_ptrProcessManager,i_ptrStateTracker);
+
+m_stampStamp.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+
+m_LSCTransferWPToRampStart.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_LSCTransferWPToRampMid.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_LSCTransferWPToRampEnd.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_LSCTransferWPToPAC.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_LSCSearchWorkpiece.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+
+m_PACTransferWPToSSC.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_PACTransferWPToPSStart.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_PACTransferFirstWPToSSCStart.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+
+m_picAlphaMoveToPos1.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_picAlphaMoveToPos2.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_picAlphaMoveToPos3.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_picAlphaMoveToPos4.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_picAlphaPickUpWP.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_picAlphaPutDownWP.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+
+m_SSCTransferWPToPSStart.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_SSCTransferWPToRampEnd.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_SSCTransferWPToRFC.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+
+m_RFCTransferWPToPSEnd.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+m_RFCTransferWPToLSC.ProvideServices(i_ptrProcessManager, i_ptrStateTracker);
+
+// provide Behaviors to the Process Manager
+i_ptrProcessManager^.AddPrimitive(ADR(m_craneMoveToStack));
+i_ptrProcessManager^.AddPrimitive(ADR(m_craneMoveToStamp));
+i_ptrProcessManager^.AddPrimitive(ADR(m_craneMoveToLSC));
+i_ptrProcessManager^.AddPrimitive(ADR(m_cranePickUpWP));
+i_ptrProcessManager^.AddPrimitive(ADR(m_cranePutDownWP));
+
+i_ptrProcessManager^.AddPrimitive(ADR(m_stackProvide));
+
+i_ptrProcessManager^.AddPrimitive(ADR(m_stampStamp));
+
+i_ptrProcessManager^.AddPrimitive(ADR(m_LSCTransferWPToRampStart));
+i_ptrProcessManager^.AddPrimitive(ADR(m_LSCTransferWPToRampMid));
+i_ptrProcessManager^.AddPrimitive(ADR(m_LSCTransferWPToRampEnd));
+i_ptrProcessManager^.AddPrimitive(ADR(m_LSCTransferWPToPAC));
+i_ptrProcessManager^.AddPrimitive(ADR(m_LSCSearchWorkpiece));
+
+i_ptrProcessManager^.AddPrimitive(ADR(m_PACTransferWPToPSStart));
+i_ptrProcessManager^.AddPrimitive(ADR(m_PACTransferFirstWPToSSCStart));
+i_ptrProcessManager^.AddPrimitive(ADR(m_PACTransferWPToSSC));
+
+i_ptrProcessManager^.AddPrimitive(ADR(m_picAlphaMoveToPos1));
+i_ptrProcessManager^.AddPrimitive(ADR(m_picAlphaMoveToPos2));
+i_ptrProcessManager^.AddPrimitive(ADR(m_picAlphaMoveToPos3));
+i_ptrProcessManager^.AddPrimitive(ADR(m_picAlphaMoveToPos4));
+i_ptrProcessManager^.AddPrimitive(ADR(m_picAlphaPickUpWP));
+i_ptrProcessManager^.AddPrimitive(ADR(m_picAlphaPutDownWP));
+
+i_ptrProcessManager^.AddPrimitive(ADR(m_SSCTransferWPToPSStart));
+i_ptrProcessManager^.AddPrimitive(ADR(m_SSCTransferWPToRampEnd));
+i_ptrProcessManager^.AddPrimitive(ADR(m_SSCTransferWPToRFC));
+
+i_ptrProcessManager^.AddPrimitive(ADR(m_RFCTransferWPToPSEnd));
+i_ptrProcessManager^.AddPrimitive(ADR(m_RFCTransferWPToLSC));
+
+// provide observations to the Process Manager
+i_ptrStateTracker^.AddObservation(ADR(m_observeCrane));
+i_ptrStateTracker^.AddObservation(ADR(m_observeStack));
+i_ptrStateTracker^.AddObservation(ADR(m_observeStamp));
+i_ptrStateTracker^.AddObservation(ADR(m_observeLSC));
+i_ptrStateTracker^.AddObservation(ADR(m_observePAC));
+i_ptrStateTracker^.AddObservation(ADR(m_observePicAlpha));
+i_ptrStateTracker^.AddObservation(ADR(m_observeSSC));
+i_ptrStateTracker^.AddObservation(ADR(m_observeRFC));
+
+// provide workpieces to the Process Manager
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.crane_product, ADR(m_iCraneWP));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.stack_product, ADR(m_iStackWP));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.stamp_product, ADR(m_iStampWP));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.LSC_product, ADR(m_iLSCWP));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.PAC_product1, ADR(m_iPACWP1));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.PAC_product2, ADR(m_iPACWP2));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.PAC_product3, ADR(m_iPACWP3));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.PicAlpha_product, ADR(m_iPicAlphaWP));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.RFC_product1, ADR(m_iRFCWP1));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.RFC_product2, ADR(m_iRFCWP2));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.SSC_product1, ADR(m_iSSCWP1));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.SSC_product2, ADR(m_iSSCWP2));
+i_ptrStateTracker^.RegisterLocalProduct(EProducts.SSC_product3, ADR(m_iSSCWP3));
+
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="xPPU_Container">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPU_Container.FB_init">
+      <LineId Id="1" Count="92" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="94" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

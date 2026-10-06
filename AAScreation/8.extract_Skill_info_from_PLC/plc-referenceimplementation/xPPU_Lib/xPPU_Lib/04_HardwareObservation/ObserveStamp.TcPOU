@@ -1,0 +1,119 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ObserveStamp" Id="{d55b2e03-acae-47de-8cb3-e6e12e8387bd}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ObserveStamp EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrStamp: POINTER TO Stamp;
+	m_ptrStampWP: POINTER TO xPPUProduct;
+	m_detectionStep: INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{8e934f01-af51-4fdb-96db-49498013b4dc}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+
+	i_ptrStamp: POINTER TO Stamp;
+	i_ptrWP: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrStamp := i_ptrStamp;
+m_ptrStampWP := i_ptrWP;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{eeab708f-eb2a-4648-a235-8af1711a625e}">
+      <Declaration><![CDATA[METHOD  ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{8e60c9d8-4390-43a1-b4cd-bb578fb7e32c}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// NOTE: this only works if this method is executed every cycle (or at least very frequently...)
+io_processState.UpdateState_Binary(EProcessVariables.Stamp_WPAtStamp, m_ptrStamp^.WPAtStart, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.Stamp_SlidingCylinderExtended, m_ptrStamp^.m_slidingCylinder.Extended, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.Stamp_SlidingCylinderRetracted, m_ptrStamp^.m_slidingCylinder.Retracted, i_force := TRUE);
+
+m_ptrStampWP^.IsPresent := m_ptrStamp^.WPAtStart;
+
+CASE m_detectionStep OF
+	0: // initial, empty state
+	io_processState.UpdateState_Numeric(EProcessVariables.Stamp_WorkpieceState, EStampStates.none, i_force := TRUE);
+	IF m_ptrStamp^.WPAtStart THEN
+		m_detectionStep := 1;
+	END_IF
+	
+	1: // WP received
+	io_processState.UpdateState_Numeric(EProcessVariables.Stamp_WorkpieceState, EStampStates.unpressed, i_force := TRUE);
+	IF m_ptrStamp^.m_slidingCylinder.Retracted THEN
+		m_detectionStep := 2;
+	ELSIF NOT m_ptrStamp^.WPAtStart THEN
+		// WP removed without stamping
+		m_detectionStep := 0;
+	END_IF
+	
+	2: // still received ...
+	io_processState.UpdateState_Numeric(EProcessVariables.Stamp_WorkpieceState, EStampStates.unpressed, i_force := TRUE);
+	IF m_ptrStamp^.m_slidingCylinder.Extended THEN
+		m_detectionStep := 3;
+	END_IF
+	
+	3: // finished processing
+	io_processState.UpdateState_Numeric(EProcessVariables.Stamp_WorkpieceState, EStampStates.pressed, i_force := TRUE);
+	IF NOT m_ptrStamp^.WPAtStart THEN
+		m_detectionStep := 0;
+	END_IF
+	
+END_CASE
+
+io_processState.UpdateState_Defined(EProcessVariables.Stamp_WPAtStamp, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.Stamp_WorkpieceState, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.Stamp_SlidingCylinderExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.Stamp_SlidingCylinderRetracted, TRUE);]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ObserveStamp">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveStamp.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="4" Count="1" />
+    </LineIds>
+    <LineIds Name="ObserveStamp.ResetDefinition">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObserveStamp.UpdateProcessObservation">
+      <LineId Id="1" Count="0" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="52" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="50" Count="0" />
+      <LineId Id="44" Count="0" />
+      <LineId Id="3" Count="3" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="9" Count="8" />
+      <LineId Id="19" Count="17" />
+      <LineId Id="40" Count="1" />
+      <LineId Id="53" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

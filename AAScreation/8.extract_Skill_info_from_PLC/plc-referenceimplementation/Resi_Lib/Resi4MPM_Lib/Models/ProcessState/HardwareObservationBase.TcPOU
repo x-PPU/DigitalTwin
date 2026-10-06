@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="HardwareObservationBase" Id="{768e2e37-4ba2-4b45-b2c3-e0c0363bd126}" SpecialFunc="None">
+    <Declaration><![CDATA[(* Base of Hardware Observations. Ideally, this is the base of every Hardware Control FB. *)
+FUNCTION_BLOCK ABSTRACT HardwareObservationBase
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="ResetDefinition" Id="{cef5a0f0-8596-475c-971d-c9603d19bea3}">
+      <Declaration><![CDATA[METHOD ABSTRACT ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{73c65246-2047-4d34-8f0e-9d9950b2e26a}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD ABSTRACT UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="HardwareObservationBase">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="HardwareObservationBase.ResetDefinition">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="HardwareObservationBase.UpdateProcessObservation">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

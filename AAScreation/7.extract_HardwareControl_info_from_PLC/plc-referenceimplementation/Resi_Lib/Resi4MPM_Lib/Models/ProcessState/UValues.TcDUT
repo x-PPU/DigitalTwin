@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="UValues" Id="{dac0e663-626c-40ef-a7b3-03281dab3016}">
+    <Declaration><![CDATA[TYPE UValues :
+UNION
+	Binary: BOOL;
+	Numeric: LREAL;
+	String_t: STRING;
+END_UNION
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

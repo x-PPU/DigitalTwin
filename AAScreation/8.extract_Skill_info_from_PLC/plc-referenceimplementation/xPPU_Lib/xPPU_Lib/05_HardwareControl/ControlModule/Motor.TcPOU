@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Motor" Id="{55621e01-5c77-4d61-8dba-c3deb7c56a91}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Motor
+VAR_INPUT
+	//Software
+	Stopped : BOOL;
+	TurningClockwise : BOOL;
+	TurningCounterclockwise : BOOL;
+END_VAR
+VAR_OUTPUT	
+	AI_Position AT %I*: UINT;
+	AI_Speed AT %I*: UDINT;
+END_VAR
+VAR	
+	//Hardware
+	DO_TurnClockwise AT %Q* : BOOL;
+	DO_TurnCounterclockwise AT %Q* : BOOL;	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Action Name="ACT_Stop" Id="{b2d47d70-1375-4b6a-869a-bd337a0d4ce1}">
+      <Implementation>
+        <ST><![CDATA[DO_TurnClockwise := FALSE;
+DO_TurnCounterclockwise := FALSE;
+
+Stopped := TRUE;
+TurningClockwise := FALSE;
+TurningCounterclockwise := FALSE;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ACT_TurnClockwise" Id="{3e368d60-c229-49b8-82cd-74c2317d6232}">
+      <Implementation>
+        <ST><![CDATA[DO_TurnClockwise := TRUE;
+DO_TurnCounterclockwise := FALSE;
+
+Stopped := FALSE;
+TurningClockwise := TRUE;
+TurningCounterclockwise := FALSE;]]></ST>
+      </Implementation>
+    </Action>
+    <Action Name="ACT_TurnCounterclockwise" Id="{b71b975d-7c90-43fc-80f5-f1fe34053cbc}">
+      <Implementation>
+        <ST><![CDATA[DO_TurnClockwise := FALSE;
+DO_TurnCounterclockwise := TRUE;
+
+Stopped := FALSE;
+TurningClockwise := FALSE;
+TurningCounterclockwise := TRUE;]]></ST>
+      </Implementation>
+    </Action>
+    <LineIds Name="Motor">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Motor.ACT_Stop">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+    <LineIds Name="Motor.ACT_TurnClockwise">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+    <LineIds Name="Motor.ACT_TurnCounterclockwise">
+      <LineId Id="1" Count="5" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

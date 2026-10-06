@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="RFC_MoveWorkpiece_Base" Id="{e5d5e346-e1b8-41a8-b595-fbdd0a35e3db}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ABSTRACT RFC_MoveWorkpiece_Base EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrRFC: POINTER TO RefeedingConveyor;
+	
+	m_step: INT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{2f29c146-5e26-43a3-9487-b10b9cbea838}">
+      <Declaration><![CDATA[METHOD  Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrRFC^.METH_ConveyorStop();
+m_ptrRFC^.METH_Switch_Retract();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AtTarget" Id="{f0bbd90a-dbe3-4759-9f7d-359f5d9b7d48}">
+      <Declaration><![CDATA[METHOD PROTECTED ABSTRACT AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{e3519d3b-4387-4208-9252-a3240bee6252}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+	0: // to target	
+	IF NOT AtTarget() THEN
+		m_ptrRFC^.METH_ConveyorForward();
+		m_step := 1;
+	END_IF
+		
+	1:
+	IF AtTarget() THEN
+		m_ptrRFC^.METH_ConveyorStop();
+		//m_ptrPAC^.METH_Switch_Extend();
+		m_step := 0;
+		ExecuteInternal := TRUE;
+	END_IF
+		
+END_CASE
+	]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="RFC_MoveWorkpiece_Base">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="RFC_MoveWorkpiece_Base.Abort">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+    <LineIds Name="RFC_MoveWorkpiece_Base.AtTarget">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="RFC_MoveWorkpiece_Base.ExecuteInternal">
+      <LineId Id="1" Count="16" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

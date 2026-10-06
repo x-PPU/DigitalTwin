@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BistableCylinder" Id="{1b0a2d23-6a30-4858-9d0b-91c9b4437b43}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK BistableCylinder EXTENDS BaseCylinder
+VAR_INPUT	
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR	
+	//Hardware
+	DO_Retract AT %Q* : BOOL;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="METH_Extend" Id="{082aed2c-388d-46f9-9e5e-63ba4724abab}">
+      <Declaration><![CDATA[METHOD METH_Extend : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_Extend := TRUE;
+DO_Retract := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Retract" Id="{673313ca-267e-409b-8754-ad44b648399c}">
+      <Declaration><![CDATA[METHOD METH_Retract : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_Extend := FALSE;
+DO_Retract := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="BistableCylinder">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BistableCylinder.METH_Extend">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="BistableCylinder.METH_Retract">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

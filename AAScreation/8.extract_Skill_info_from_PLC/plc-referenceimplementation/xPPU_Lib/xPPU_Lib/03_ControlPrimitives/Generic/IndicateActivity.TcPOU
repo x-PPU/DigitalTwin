@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="IndicateActivity" Id="{5d1b302c-9c89-463d-8adf-0c8800c6d488}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK IndicateActivity EXTENDS ControlPrimitiveBase
+VAR
+	m_precondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+// 	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	m_postcondition: ComparisonExpression(EProcessVariables.LSC_RampEndWPCount, EComparisonType.greater, EDataType.numeric, FALSE, 0, '', TRUE);
+	m_ptrIndic: POINTER TO ActivityIndicator;
+	
+	m_execTon: TON;
+	m_blinkTon: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{455eccc8-753f-4453-8457-a24b9976f13d}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{da7c07e4-7a02-41b2-8b16-3a55e97a34b5}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED ExecuteInternal : BOOL
+VAR_INPUT
+	i_params	: Resi4MPM.ParameterSet;
+END_VAR
+VAR
+	m_val: SNamedValue;
+	m_dur: TIME;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_val := i_params.Retrieve('duration_ms');
+m_dur := LREAL_TO_TIME(m_val.Value.Numeric);
+
+m_ptrIndic^.ResetDoneSignal();
+ExecuteInternal := FALSE;
+m_execTon(IN := TRUE, PT := m_dur);
+
+IF m_execTon.Q THEN
+	ExecuteInternal := TRUE;
+	m_ptrIndic^.SetDoneSignal();
+	m_execTon(IN := FALSE);
+ELSE
+	// "blink" the activity indicator
+	m_blinkTon(IN := TRUE, PT := T#200MS);
+	IF m_blinkTon.Q THEN
+		m_ptrIndic^.FlipIndicator();
+		m_blinkTon(IN := FALSE);
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{21b1838c-cf3c-4a78-8fbb-bb36424196b1}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)
+	
+	i_id: UINT;
+	i_ptrIndicator: POINTER TO ActivityIndicator;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_id := i_id;
+m_timeout := T#5S;
+m_paramDefinition := 'duration_ms:UINT;';
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+m_ptrIndic := i_ptrIndicator;
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="IndicateActivity">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IndicateActivity.Abort">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="IndicateActivity.ExecuteInternal">
+      <LineId Id="1" Count="1" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="3" Count="2" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="6" Count="1" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="9" Count="2" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="12" Count="1" />
+    </LineIds>
+    <LineIds Name="IndicateActivity.FB_init">
+      <LineId Id="1" Count="8" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

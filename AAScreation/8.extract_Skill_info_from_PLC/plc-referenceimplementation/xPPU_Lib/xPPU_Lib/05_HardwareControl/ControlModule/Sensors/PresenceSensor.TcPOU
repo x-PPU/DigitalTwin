@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PresenceSensor" Id="{039d7bd4-c895-40bd-ba33-10799c5c0e0b}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PresenceSensor IMPLEMENTS ITF_BinarySensor
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	DI_WPDetected AT %I* : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Value" Id="{aa68a283-aca6-41bc-9f2a-8889c368dbcd}">
+      <Declaration><![CDATA[PROPERTY Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{b5182475-fa72-45c9-97ac-ccb0e379c68b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Value := DI_WPDetected;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="PresenceSensor">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PresenceSensor.Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

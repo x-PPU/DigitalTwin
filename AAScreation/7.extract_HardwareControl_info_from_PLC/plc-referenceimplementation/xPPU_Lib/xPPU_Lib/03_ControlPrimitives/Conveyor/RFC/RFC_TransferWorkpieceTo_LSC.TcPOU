@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="RFC_TransferWorkpieceTo_LSC" Id="{493b710d-78d9-4a22-a962-84d030ce2fb5}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK RFC_TransferWorkpieceTo_LSC EXTENDS RFC_MoveWorkpiece_Base
+VAR_INPUT
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+	i_ptrRFC : POINTER TO RefeedingConveyor;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrLSC : POINTER TO LargeSortingConveyor;
+	// (EProcessVariables.LSC_ProductType = 0) AND ((EProcessVariables.RFC_WPAtEnd = TRUE) AND ((EProcessVariables.Crane_AtLSC = FALSE) OR ((EProcessVariables.Crane_AtLSC = TRUE) AND ((EProcessVariables.Crane_CylinderRetracted = TRUE) AND (EProcessVariables.Crane_HoldingWorkpiece = FALSE)))))
+	m_compExpr203: ComparisonExpression(EProcessVariables.LSC_ProductType, EComparisonType.equals, EDataType.numeric, FALSE, 0, '', TRUE);
+	m_compExpr205: ComparisonExpression(EProcessVariables.RFC_WPAtEnd, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr207: ComparisonExpression(EProcessVariables.Stack_WorkpieceAvailable, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr209: ComparisonExpression(EProcessVariables.Stamp_WPAtStamp, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr210: ComparisonExpression(EProcessVariables.Crane_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	//m_compExpr207: ComparisonExpression(EProcessVariables.Crane_AtLSC, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	//m_compExpr209: ComparisonExpression(EProcessVariables.Crane_AtLSC, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr211: ComparisonExpression(EProcessVariables.Crane_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_boolExpr213: BoolExpression(m_compExpr210, EBoolOperation.and_op, m_compExpr211);
+	m_boolExpr214: BoolExpression(m_compExpr209, EBoolOperation.and_op, m_boolExpr213);
+	m_boolExpr215: BoolExpression(m_compExpr207, EBoolOperation.and_op, m_boolExpr214);
+	m_boolExpr216: BoolExpression(m_compExpr205, EBoolOperation.and_op, m_boolExpr215);
+	m_precondition: BoolExpression(m_compExpr203, EBoolOperation.and_op, m_boolExpr216);
+	// EProcessVariables.RFC_SwitchRetracted = TRUE
+	m_postcondition: ValueExpression(EDataType.binary, TRUE, 0, '', TRUE);
+	m_passby : BOOL;
+	m_case: UINT := 0;
+	m_timer: TON;
+	m_timer_a : TON; 
+	m_timerEject : TON;
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{1fc8613d-3613-47db-87b3-d935f3ab01dc}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+
+CASE m_case OF
+	0:
+		m_ptrRFC^.METH_Switch_Extend();
+		m_timer(IN := TRUE, PT := T#200MS);
+		IF m_timer.Q THEN
+			m_case := 1;
+			m_timer(IN := FALSE);
+		END_IF
+	
+	1:
+		m_ptrRFC^.METH_Switch_Retract();
+		m_timer(IN := TRUE, PT := T#1000MS);
+		IF m_timer.Q  THEN
+			m_case := 0;
+			m_timer(IN := FALSE, PT := T#0MS);
+			AtTarget := TRUE;
+		END_IF
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{c461af5f-0efe-430e-a935-d30cc3cc80ad}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := FALSE;
+
+m_ptrRFC^.METH_ConveyorForward();
+m_timerEject(IN := TRUE, PT := T#2000MS);
+
+IF m_timerEject.Q THEN
+  m_timerEject(IN := FALSE, PT := T#0MS);
+  m_ptrLSC^.METH_ConveyorStop();
+  EjectOperation := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{7e760f20-491f-41f6-a3b2-8c41e2a352d6}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrRFC: POINTER TO RefeedingConveyor;
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrRFC := i_ptrRFC;
+m_ptrLSC := i_ptrLSC;
+
+m_id := EPrimitives.RFC_TransferWorkpieceTo_LSC;
+m_timeout := T#10S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+FB_init := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="RFC_TransferWorkpieceTo_LSC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="RFC_TransferWorkpieceTo_LSC.AtTarget">
+      <LineId Id="1" Count="18" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="75" Count="0" />
+    </LineIds>
+    <LineIds Name="RFC_TransferWorkpieceTo_LSC.EjectOperation">
+      <LineId Id="1" Count="9" />
+    </LineIds>
+    <LineIds Name="RFC_TransferWorkpieceTo_LSC.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="2" Count="5" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

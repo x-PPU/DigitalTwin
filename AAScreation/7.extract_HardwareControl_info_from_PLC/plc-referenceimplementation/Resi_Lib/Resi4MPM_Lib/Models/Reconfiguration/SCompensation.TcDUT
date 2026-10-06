@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SCompensation" Id="{4ba58a4a-e0dc-4cf7-bd0a-a14b38d2a43b}">
+    <Declaration><![CDATA[{attribute 'OPC.UA.DA.StructuredType' := '1'}
+TYPE SCompensation :
+STRUCT
+	IsActive: BOOL;	
+
+	(* ID of the Control Primitive that cannot operate anymore. *)
+	SickPrimitiveId: UINT;
+	
+	(* Specifies whether the sick primitive is replaced by another primitive or a sequence. *)
+	NewType: EBehaviorType;
+	
+	(* If NewType is primitive or user-sequence: ID of the sick primitive's replacement. *)
+	NewId: UINT;
+	
+	(* If needed, parameters that are set (or overwritten) before executing the replacement.
+	   For replacement types primtive or user-generated sequence, only the first element is used. *)
+	ParameterSets: ARRAY [ResiConst.ARR_MIN..ResiConst.MODULE_SEQ_ARR_MAX] OF ParameterSet;
+	
+	(* If NewType is generated sequence: The (linear) sequence of copmensation primitives. *)
+	PrimitiveIds: ARRAY [ResiConst.ARR_MIN..ResiConst.MODULE_SEQ_ARR_MAX] OF UINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

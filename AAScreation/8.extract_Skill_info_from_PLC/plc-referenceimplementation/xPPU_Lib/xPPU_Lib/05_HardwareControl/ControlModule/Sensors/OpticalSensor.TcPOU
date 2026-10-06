@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="OpticalSensor" Id="{ea8f7113-9a03-4926-8603-058b2d122585}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK OpticalSensor IMPLEMENTS ITF_BinarySensor
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Hardware
+	DI_WPLight AT %I* : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Value" Id="{5b23ff69-c222-46bf-a742-79a419134b98}">
+      <Declaration><![CDATA[PROPERTY Value : BOOL]]></Declaration>
+      <Get Name="Get" Id="{370d13e6-f0fd-44aa-8fdb-6ce4fe4e67ea}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Value := DI_WPLight;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="OpticalSensor">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="OpticalSensor.Value.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

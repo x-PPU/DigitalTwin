@@ -1,0 +1,234 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="xPPUProduct" Id="{48853134-d03f-4613-8877-fb16b1d22bfa}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK xPPUProduct EXTENDS ProductBase
+VAR CONSTANT
+	LIGHT_IDX: USINT := 1;
+	METAL_IDX: USINT := 2;
+	PRESENT_IDX: USINT := 3;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{eaee4cce-caeb-41cb-aac8-85b2b4409821}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)
+	
+	i_productTypeVarId: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[// set the variable indices (on remote, the RA does this)
+raIn_processStateIdx := i_productTypeVarId;
+
+// set the variables' data types
+m_vals[RES_IDX].DataType := EDataType.numeric;
+m_vals[LIGHT_IDX].DataType := EDataType.binary;
+m_vals[METAL_IDX].DataType := EDataType.binary;
+m_vals[PRESENT_IDX].DataType := EDataType.binary;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="IsLight" Id="{bbcba884-147b-4dd0-818e-be55e8c9d588}">
+      <Declaration><![CDATA[PROPERTY IsLight : BOOL]]></Declaration>
+      <Get Name="Get" Id="{8add2ac4-6d82-4024-a79f-4ec97ae0b1a9}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsLight := m_vals[LIGHT_IDX].Defined AND m_vals[LIGHT_IDX].Value.Binary;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{fe4e9c7a-7592-49d3-9b45-42ff72c83351}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[m_vals[LIGHT_IDX].DataType := EDataType.binary;
+m_vals[LIGHT_IDX].Defined := TRUE;
+m_vals[LIGHT_IDX].Value.Binary := IsLight;
+
+UpdateMaterial();
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="IsMetal" Id="{202047b3-fffe-4168-8ff9-8d3d4c8eb2bb}">
+      <Declaration><![CDATA[PROPERTY IsMetal : BOOL]]></Declaration>
+      <Get Name="Get" Id="{da76efe6-d312-4668-8c1c-3e31c8c8b88b}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsMetal := m_vals[METAL_IDX].Defined AND m_vals[METAL_IDX].Value.Binary;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{9f5c17c4-3f63-43df-88cb-4820c96ce7e3}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[m_vals[METAL_IDX].DataType := EDataType.binary;
+m_vals[METAL_IDX].Defined := TRUE;
+m_vals[METAL_IDX].Value.Binary := IsMetal;
+
+UpdateMaterial();
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Property Name="IsPresent" Id="{9be061a7-364f-44bc-b4e6-21dee1a7c56d}">
+      <Declaration><![CDATA[PROPERTY IsPresent : BOOL]]></Declaration>
+      <Get Name="Get" Id="{2ef11c17-9258-4f44-af2e-d5002799f4c5}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[IsPresent := m_vals[PRESENT_IDX].Defined AND m_vals[PRESENT_IDX].Value.Binary;
+]]></ST>
+        </Implementation>
+      </Get>
+      <Set Name="Set" Id="{9eeef111-54f2-4156-bb29-f2f756e93b83}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[m_vals[PRESENT_IDX].DataType := EDataType.binary;
+m_vals[PRESENT_IDX].Defined := TRUE;
+m_vals[PRESENT_IDX].Value.Binary := IsPresent;
+
+UpdateMaterial();
+]]></ST>
+        </Implementation>
+      </Set>
+    </Property>
+    <Method Name="ReverseSetInputs" Id="{130f39d1-691e-477b-83fb-5d865e0242b0}">
+      <Declaration><![CDATA[(* Based on the aggregated product type value, set the separete input values for a consistent shift register. *)
+METHOD ReverseSetInputs : BOOL
+VAR
+	prodType: EProductTypes;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[prodType := LREAL_TO_UINT(m_vals[RES_IDX].Value.Numeric);
+
+m_vals[LIGHT_IDX].Defined := TRUE;
+m_vals[METAL_IDX].Defined := TRUE;
+m_vals[PRESENT_IDX].Defined := TRUE;
+
+CASE prodType OF
+	EProductTypes.none:
+		m_vals[LIGHT_IDX].Value.Binary := FALSE;
+		m_vals[METAL_IDX].Value.Binary := FALSE;
+		m_vals[PRESENT_IDX].Value.Binary := FALSE;
+
+// TODO - this needs a better solution...
+// 	EProductTypes.unknown:
+// 		m_vals[m_isLightIdx].Value.Binary := FALSE;
+// 		m_vals[m_isMetalIdx].Value.Binary := FALSE;
+// 		m_vals[m_isPresentIdx].Value.Binary := TRUE;
+	
+	EProductTypes.white:
+		m_vals[LIGHT_IDX].Value.Binary := TRUE;
+		m_vals[METAL_IDX].Value.Binary := FALSE;
+		m_vals[PRESENT_IDX].Value.Binary := TRUE;
+	EProductTypes.black:
+		m_vals[LIGHT_IDX].Value.Binary := FALSE;
+		m_vals[METAL_IDX].Value.Binary := FALSE;
+		m_vals[PRESENT_IDX].Value.Binary := TRUE;
+	EProductTypes.metal:
+		m_vals[LIGHT_IDX].Value.Binary := TRUE;
+		m_vals[METAL_IDX].Value.Binary := TRUE;
+		m_vals[PRESENT_IDX].Value.Binary := TRUE;
+	EProductTypes.unknown:
+		m_vals[LIGHT_IDX].Value.Binary := FALSE;
+		m_vals[METAL_IDX].Value.Binary := TRUE;
+		m_vals[PRESENT_IDX].Value.Binary := TRUE;
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateMaterial" Id="{563eb13b-2a05-4413-9e40-e81d1a6a42b4}">
+      <Declaration><![CDATA[METHOD PRIVATE UpdateMaterial : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_vals[RES_IDX].DataType := EDataType.numeric;
+m_vals[RES_IDX].Defined := TRUE;
+
+IF IsPresent AND IsLight AND NOT IsMetal THEN
+	m_vals[RES_IDX].Value.Numeric := EProductTypes.white;
+ELSIF IsPresent AND NOT IsLight AND NOT IsMetal THEN
+	m_vals[RES_IDX].Value.Numeric := EProductTypes.black;
+ELSIF IsPresent AND IsLight AND IsMetal THEN
+	m_vals[RES_IDX].Value.Numeric := EProductTypes.metal;
+ELSIF IsPresent THEN
+	m_vals[RES_IDX].Value.Numeric := EProductTypes.unknown;
+ELSE
+	m_vals[RES_IDX].Value.Numeric := EProductTypes.none;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="xPPUProduct">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.FB_init">
+      <LineId Id="15" Count="0" />
+      <LineId Id="20" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="27" Count="2" />
+      <LineId Id="14" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.IsLight.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.IsLight.Set">
+      <LineId Id="2" Count="2" />
+      <LineId Id="6" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.IsMetal.Get">
+      <LineId Id="2" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.IsMetal.Set">
+      <LineId Id="2" Count="1" />
+      <LineId Id="5" Count="1" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.IsPresent.Get">
+      <LineId Id="2" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.IsPresent.Set">
+      <LineId Id="2" Count="1" />
+      <LineId Id="5" Count="1" />
+      <LineId Id="4" Count="0" />
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.ReverseSetInputs">
+      <LineId Id="1" Count="29" />
+      <LineId Id="34" Count="2" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="31" Count="1" />
+    </LineIds>
+    <LineIds Name="xPPUProduct.UpdateMaterial">
+      <LineId Id="1" Count="14" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

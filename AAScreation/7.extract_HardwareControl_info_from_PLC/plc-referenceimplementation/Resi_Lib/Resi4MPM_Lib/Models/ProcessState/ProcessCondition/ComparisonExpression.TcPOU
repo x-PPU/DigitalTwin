@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ComparisonExpression" Id="{e7ff3b23-9c38-4613-9534-628cc9efaa16}" SpecialFunc="None">
+    <Declaration><![CDATA[{attribute 'OPC.UA.DA.StructuredType' := '1'}
+FUNCTION_BLOCK ComparisonExpression IMPLEMENTS IExpression
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_leftId: UINT;				// the ID of the process variable to compare to
+	m_sign: EComparisonType;
+	m_right: ValueExpression(EDataType.none, FALSE, 0, '', TRUE);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{26eca6a9-cdf0-478f-9fc7-ea520a87e239}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_leftId: UINT;				// the ID of the process variable to compare to
+	i_sign: EComparisonType;
+	
+	i_dataType: EDataType;
+	i_binaryValue: BOOL;
+	i_numericValue: LREAL;
+	i_stringValue: STRING;
+	i_defined: BOOL;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_leftId := i_leftId;
+m_sign := i_sign;
+m_right.FB_init(bInitRetains, bInCopyCode,
+	i_dataType, i_binaryValue, i_numericValue, i_stringValue, i_defined);
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="IsTrue" Id="{e027ef21-782e-4685-ba4b-bc5f19a823a5}">
+      <Declaration><![CDATA[METHOD IsTrue : BOOL
+VAR_INPUT
+	i_ptrProcessState: POINTER TO ProcessState;
+END_VAR
+VAR
+	m_val: SValue;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_val := i_ptrProcessState^.Retrieve(m_leftId, TRUE);
+
+// for each comparison: return FALSE, if the comparison's opposite is TRUE
+CASE m_right.o_value.DataType OF
+	EDataType.binary:
+		CASE m_sign OF
+			EComparisonType.equals:
+				IF m_val.Value.Binary <> m_right.o_value.Value.Binary THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			EComparisonType.not_equal:
+				IF m_val.Value.Binary = m_right.o_value.Value.Binary THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			ELSE // other comparisons not permitted for Bools
+				IsTrue := FALSE;
+				RETURN;
+		END_CASE
+		
+	EDataType.numeric:
+		CASE m_sign OF
+			EComparisonType.equals:
+				IF m_val.Value.Numeric <> m_right.o_value.Value.Numeric THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			EComparisonType.greater:
+				IF m_val.Value.Numeric <= m_right.o_value.Value.Numeric THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			EComparisonType.greater_eq:
+				IF m_val.Value.Numeric < m_right.o_value.Value.Numeric THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			EComparisonType.less:
+				IF m_val.Value.Numeric >= m_right.o_value.Value.Numeric THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			EComparisonType.less_eq:
+				IF m_val.Value.Numeric > m_right.o_value.Value.Numeric THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			EComparisonType.not_equal:
+				IF m_val.Value.Numeric = m_right.o_value.Value.Numeric THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			ELSE // unknown comparison
+				IsTrue := FALSE;
+				RETURN;
+		END_CASE
+		
+	EDataType.string_t:
+		CASE m_sign OF
+			EComparisonType.equals:
+				IF m_val.Value.String_t <> m_right.o_value.Value.String_t THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			EComparisonType.not_equal:
+				IF m_val.Value.String_t = m_right.o_value.Value.String_t THEN
+					IsTrue := FALSE;
+					RETURN;
+				END_IF
+			
+			ELSE // other comparisons not permitted for Strings
+				IsTrue := FALSE;
+				RETURN;
+		END_CASE
+	EDataType.dont_care:
+		IsTrue := FALSE;
+		RETURN;
+	EDataType.none:
+		IsTrue := FALSE;
+		RETURN;
+END_CASE
+
+IsTrue := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ToString" Id="{8bba780c-845c-4908-a9b7-8f9f16d9c324}">
+      <Declaration><![CDATA[METHOD ToString : STRING(256)
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_sign OF
+	EComparisonType.equals:
+		ToString := CONCAT(TO_STRING(m_leftId), CONCAT('#=', m_right.ToString()));
+		
+	EComparisonType.greater:
+		ToString := CONCAT(TO_STRING(m_leftId), CONCAT('#>', m_right.ToString()));
+		
+	EComparisonType.greater_eq:
+		ToString := CONCAT(TO_STRING(m_leftId), CONCAT('#>=', m_right.ToString()));
+		
+	EComparisonType.less:
+		ToString := CONCAT(TO_STRING(m_leftId), CONCAT('#<', m_right.ToString()));
+		
+	EComparisonType.less_eq:
+		ToString := CONCAT(TO_STRING(m_leftId), CONCAT('#<=', m_right.ToString()));
+		
+	EComparisonType.not_equal:
+		ToString := CONCAT(TO_STRING(m_leftId), CONCAT('#<>', m_right.ToString()));
+END_CASE]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ComparisonExpression">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ComparisonExpression.FB_init">
+      <LineId Id="1" Count="4" />
+    </LineIds>
+    <LineIds Name="ComparisonExpression.IsTrue">
+      <LineId Id="1" Count="93" />
+    </LineIds>
+    <LineIds Name="ComparisonExpression.ToString">
+      <LineId Id="1" Count="18" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

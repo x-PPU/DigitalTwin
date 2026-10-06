@@ -1,0 +1,81 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EAlarms" Id="{fea5d48d-9881-4bb0-8ed2-eb9acf003e92}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE EAlarms :
+(
+	none := 0,
+	initialized := 1,
+	not_initialized := 2,
+	did_execute := 3,
+	sequence_failed := 4,
+	did_shutdown := 5,
+	sensor_defect := 6,
+	stopped := 7,
+	
+	stack_no_WP := 8,
+	stack_WP_stuck := 9,
+	crane_gripper_failed_stack := 10,
+	crane_dropped_WP_stack := 11,
+	crane_dropped_WP_WayToStamp := 12,
+	crane_putdown_failed_stamp := 13,
+	
+	stamp_WP_wrong_position := 14,
+	stamp_SlidingCylinder_stuck := 47,
+	
+	crane_gripper_failed_stamp := 15,
+	crane_dropped_WP_stamp := 16,
+	crane_dropped_WP_WayToLSC := 17,
+	
+	LSC_WP_abnormal_Entry := 18,
+	LSC_RampStart_almost_full :=19,
+	LSC_RampStart_full := 20,
+	LSC_RampMid_almost_full := 21,
+	LSC_RampMid_full := 22,
+	LSC_RampEnd_almost_full := 23,
+	LSC_RampEnd_full := 24,
+	LSC_Entry_accumulated := 25,
+	LSC_FirstPairOfSensors_accumulated := 26,
+	LSC_SecondPairOfSensors_accumulated := 27,
+	LSC_End_accumulated := 28,
+	LSC_WPType_ToPAC_changed := 29,
+	LSC_WPType_ToRampStart_changed := 30,
+	LSC_WPType_ToRampMid_changed := 31,
+	LSC_WPType_ToRampEnd_changed := 32,
+	
+	LSC_RampStart_wrong_eject := 33,
+	LSC_RampMid_wrong_eject := 34,
+	LSC_Cylinder1_abnormal := 35,
+	LSC_Cylinder2_abnormal := 36,
+	
+	LSC_WP_ToPAC_abnormal := 37,
+	PicAlpha_abnormal := 38,
+	PAC_Count_abnormal := 39,
+	PicAlpha_pickup_failed_Pos1 := 40,
+	PicAlpha_pickup_failed_Pos2 := 41,
+	PicAlpha_dropped_SecondWP_ToPos4 := 42,
+	PicAlpha_dropped_ThirdWP_ToPos3 := 43,
+	PAC_FirstWP_abnormal := 44,
+	PAC_ThirdWP_abnormal := 45,
+	PAC_DNGP4 := 59,
+	PAC_Pos4NotFree := 48,	
+	PAC_End_accumulated := 46,
+	
+	SSC_End_accumulated := 57,
+	SSC_Entry_accumulated := 58,
+	SSC_WP_METAL := 49,
+	SSC_RampEnd_almost_full := 50,
+	SSC_Ramp_full := 51,
+	SSC_WPNotGetRamp :=52,
+	SSC_WPNotGetRFC := 53,
+	
+	RFC_Entry_accumulated := 54,
+	RFC_End_accumulated := 55,
+	RFC_NotGetEnd := 56
+	
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

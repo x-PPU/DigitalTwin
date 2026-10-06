@@ -1,0 +1,100 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PicAlpha_MoveBase" Id="{0ba919b4-47b0-4f8c-8304-027d056bdf6d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PicAlpha_MoveBase EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrPicAlpha: POINTER TO PicAlpha;
+	
+	m_initDirection: BOOL; //TRUE: towards Pos4, FALSE: towards Pos1
+	m_step: INT := 0;
+	
+	m_targettimer: TON;
+	m_targetTimeout: TIME;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{32d31a81-0784-4ae7-b4f2-ed61c06bd77d}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha^.METH_CarrierStop();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="AtTarget" Id="{61369881-111e-4994-b429-4eaa01a99ef1}">
+      <Declaration><![CDATA[METHOD AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{06240491-3ea5-4e89-a51e-fd979598ec41}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED  ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF 
+	0: 
+		m_targettimer(IN := TRUE, PT := m_targetTimeout);
+		IF AtTarget() THEN
+			m_step := 2;
+			m_targettimer(IN:= FALSE);
+		ELSIF m_targettimer.Q THEN
+			m_step := 1;
+			m_targettimer(IN:= FALSE);
+			m_initDirection := NOT m_initDirection;
+		END_IF
+		
+		IF m_initDirection THEN
+			m_ptrPicAlpha^.METH_CarrierForward();
+		ELSIF NOT m_initDirection THEN
+			m_ptrPicAlpha^.METH_CarrierBackward();
+		END_IF
+		
+	1:
+		IF AtTarget() THEN
+			m_step := 2;
+			m_initDirection := NOT m_initDirection;
+		END_IF
+		IF m_initDirection THEN
+			m_ptrPicAlpha^.METH_CarrierForward();
+		ELSIF NOT m_initDirection THEN
+			m_ptrPicAlpha^.METH_CarrierBackward();
+		END_IF
+		
+	2:
+		m_ptrPicAlpha^.METH_CarrierStop();
+		ExecuteInternal := TRUE;
+		m_step := 0;
+	
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PicAlpha_MoveBase">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_MoveBase.Abort">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="PicAlpha_MoveBase.AtTarget">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PicAlpha_MoveBase.ExecuteInternal">
+      <LineId Id="1" Count="35" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

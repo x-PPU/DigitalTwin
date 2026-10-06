@@ -1,0 +1,130 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="EProcessVariables" Id="{cac45637-56b8-4634-a752-6fffc5183538}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'to_string'}
+TYPE EProcessVariables :
+(
+	none := 0,
+	
+	operating_mode := 1,
+
+	
+	Stack_WorkpieceAvailable := 10,
+	Stack_ProductType := 11,
+	
+	Stack_CylinderExtended := 12,
+	Stack_CylinderRetracted := 13,
+	Stack_WPWeight := 14,
+	
+	Crane_AtStack := 20,
+	Crane_AtStamp := 21,
+	Crane_AtLSC := 22,
+	Crane_HoldingWorkpiece := 23,
+	Crane_CylinderExtended := 24,
+	Crane_CylinderRetracted := 25,
+	// the angle with limited knowledge, e.g., -1 before stack, +1 after stack, +89 before LSC, +91 after LSC etc.
+	Crane_Angle := 26,
+	Crane_ProductType := 27,
+	
+	// the state of a workpiece at the stamp: 0=no workpiece, 1=workpiece received, 2=workpiece processed
+	Stamp_WorkpieceState := 30,
+	Stamp_WPAtStamp := 31,
+	Stamp_ProductType := 32,
+	Stamp_SlidingCylinderExtended := 33,
+	Stamp_SlidingCylinderRetracted := 34,
+	
+	LSC_WorkpieceAtEntry := 40,
+	LSC_SwitchExtended := 41,
+	LSC_SwitchRetracted := 42,
+	LSC_WPAtRampStart := 43,
+	LSC_WPAtRampMiddle := 44,
+	LSC_WPAtRampEnd := 45,
+	LSC_WPAtInductiveSensorEnd := 48,
+	LSC_ProductType := 49,
+	LSC_RampStartWPCount := 50,
+	LSC_RampMiddleWPCount := 51,
+	LSC_RampEndWPCount := 52,
+	
+	LSC_LightWPAtEnd := 53,
+	LSC_LightWPAtMid := 54,
+	LSC_LightWPAtStart := 55,
+	LSC_MetalWPAtMid := 56,
+	LSC_MetalWPAtStart := 57,
+	LSC_CylinderRampStartExtended := 58,
+	LSC_CylinderRampMidExtended := 59,
+	LSC_CylinderRampStartRetracted := 158,
+	LSC_CylinderRampMidRetracted := 159,
+	
+	PAC_WPAtStart := 60,
+	PAC_WPAtEnd := 61,
+	PAC_SwitchExtended := 62,
+	PAC_SwitchRetracted := 63,
+	PAC_WPNumber := 64,
+	PAC_ProductType_1 := 65,
+	PAC_ProductType_2 := 66,
+	PAC_ProductType_3 := 67,
+	
+	PicAlpha_AtPos1 := 70,
+	PicAlpha_AtPos2 := 71,
+	PicAlpha_AtPos3 := 72,
+	PicAlpha_AtPos4 := 73,
+	PicAlpha_HoldingWorkpiece := 74,
+	PicAlpha_CylinderExtended := 75,
+	PicAlpha_CylinderRetracted := 76,
+	PicAlpha_Distance := 77,
+	PicAlpha_ProductType := 78,
+	
+	SSC_SwitchExtended := 80,
+	SSC_SwitchRetracted := 81,
+	SSC_WPAtStart := 82,
+	SSC_WPLightAtMiddle := 83,
+	SSC_WPMetalAtMiddle := 84,
+	SSC_WPAtEnd := 85,
+	SSC_WPAtRampEnd := 86,
+	SSC_ProductType_1 := 87,
+	SSC_ProductType_2 := 88,
+	SSC_ProductType_3 := 99,
+	SSC_RampWPCount := 89,
+	
+	RFC_SwitchExtended := 90,
+	RFC_SwitchRetracted := 91,
+	RFC_WPAtStart := 92,
+	RFC_WPAtEnd := 93,
+	RFC_ProductType_1 := 94,
+	RFC_ProductType_2 := 95,
+	
+	// Stack panel
+	Pnl_Stack_Start := 100,
+	Pnl_Stack_Mode := 101,
+	Pnl_Stack_EStop := 102,
+	// LSC panel
+	Pnl_LSC_Start := 103,
+	Pnl_LSC_Mode := 104,
+	Pnl_LSC_EStop := 105,
+	// Stamp panel
+	Pnl_Stamp_Start := 106,
+	Pnl_Stamp_Mode := 107,
+	Pnl_Stamp_EStop := 108,
+	// Light barrier safety panel
+	Pnl_LightBarrier_Start := 109,
+	Pnl_LightBarrier_Stop := 110,
+	Pnl_LightBarrier_Mode := 111,
+	Pnl_LightBarrier_EStop := 112,
+	Pnl_LightBarrier_Reset := 113,
+	// Door safety panel
+	Pnl_Door_Start := 114,
+	Pnl_Door_Stop := 115,
+	Pnl_Door_Mode := 116,
+	Pnl_Door_EStop := 117,	// currently not connected to PLC
+	Pnl_Door_Reset := 118,
+	
+	Test_CraneFree := 120,
+	Test_StampFree := 121,
+	Test_StackFree := 122,
+	Test_LSCFree := 123
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

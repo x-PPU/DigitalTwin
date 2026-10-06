@@ -54,7 +54,7 @@ def create_submodels(obj_store: model.DictObjectStore) -> Tuple[model.DictObject
     submodel_id_shorts = [
         "Mechanical_breakdown", "Behavior",
         "Simulation", "Capability", "ECAD", 
-        "Operational_Data", "Process", "Skill", "PLC"
+        "Operational_Data", "Skill", "HardwareControl", "PLC"
     ]
     
     submodels = []

@@ -1,0 +1,354 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="PanelManager" Id="{b388c4fa-1a14-451c-9a21-15239dd2b69f}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PanelManager EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	DI_StartBtn AT%I*: BOOL;
+	DI_ModeSwitch AT%I*: BOOL;
+	DI_EStopBtn AT%I*: BOOL;
+	
+	// only on safety panels
+	DI_StopBtn AT%I*: BOOL;
+	DI_ResetBtn AT%I*: BOOL;
+	
+	DO_GreenLight AT%Q*: BOOL;
+	DO_WhiteLight AT%Q*: BOOL;	// on safety panels, this is the reset light
+	
+	// only on old panels
+	DO_RedLight AT%Q*: BOOL;
+	
+	m_ptrSt: POINTER TO StateTracker;
+	m_resetDefinitions: BOOL;
+	
+	m_startBtnIdx: UINT;
+	m_stopBtnIdx: UINT;
+	m_modeIdx: UINT;
+	m_eStopBtnIdx: UINT;
+	m_resetBtnIdx: UINT;
+	
+	// blink timers
+	m_greenTmr: TON;
+	m_redTmr: TON;
+	m_whiteTmr: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="EStop" Id="{e0b61137-f573-4229-89cb-0d5f47f97cff}">
+      <Declaration><![CDATA[PROPERTY EStop : BOOL]]></Declaration>
+      <Get Name="Get" Id="{93ff5092-fa74-4e22-a7d5-e9b62579c0b1}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[EStop := m_ptrSt^.GetBinary(EProcessVariables.Pnl_Stack_EStop)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_LSC_EStop)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_Stamp_EStop)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_LightBarrier_EStop)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_Door_EStop);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="FB_init" Id="{77669dd1-f0a7-4532-8c15-eda136a869c0}">
+      <Declaration><![CDATA[//FB_Init is always available implicitly and it is used primarily for initialization.
+//The return value is not evaluated. For a specific influence, you can also declare the
+//methods explicitly and provide additional code there with the standard initialization
+//code. You can evaluate the return value.
+METHOD FB_Init: BOOL
+VAR_INPUT
+    bInitRetains: BOOL; // TRUE: the retain variables are initialized (reset warm / reset cold)
+    bInCopyCode: BOOL;  // TRUE: the instance will be copied to the copy code afterward (online change)
+	
+	i_ptrStateTracker: POINTER TO StateTracker;
+	
+	i_startBtnIdx: UINT;
+	i_stopBtnIdx: UINT;
+	i_modeIdx: UINT;
+	i_eStopBtnIdx: UINT;
+	i_resetBtnIdx: UINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrSt := i_ptrStateTracker;
+
+m_startBtnIdx := i_startBtnIdx;
+m_stopBtnIdx := i_stopBtnIdx;
+m_modeIdx := i_modeIdx;
+m_eStopBtnIdx := i_eStopBtnIdx;
+m_resetBtnIdx := i_resetBtnIdx;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Mode" Id="{233ee957-40f6-4ea5-9446-a58d999b88a8}">
+      <Declaration><![CDATA[PROPERTY Mode : EOperatingModes]]></Declaration>
+      <Get Name="Get" Id="{421547ec-d693-443c-8fb9-1137f0c49764}">
+        <Declaration><![CDATA[VAR
+	m_isAuto: BOOL;
+	m_isManu: BOOL;
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[m_isAuto :=
+	(m_ptrSt^.GetNumeric(EProcessVariables.Pnl_Stack_Mode) = EOperatingModes.automatic OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_Stack_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_LSC_Mode) = EOperatingModes.automatic OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_LSC_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_Stamp_Mode) = EOperatingModes.automatic OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_Stamp_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_LightBarrier_Mode) = EOperatingModes.automatic OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_LightBarrier_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_Door_Mode) = EOperatingModes.automatic OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_Door_Mode));
+
+m_isManu :=
+	(m_ptrSt^.GetNumeric(EProcessVariables.Pnl_Stack_Mode) = EOperatingModes.manual OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_Stack_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_LSC_Mode) = EOperatingModes.manual OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_LSC_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_Stamp_Mode) = EOperatingModes.manual OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_Stamp_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_LightBarrier_Mode) = EOperatingModes.manual OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_LightBarrier_Mode))
+	AND (m_ptrSt^.GetNumeric(EProcessVariables.Pnl_Door_Mode) = EOperatingModes.manual OR NOT m_ptrSt^.GetDefined(EProcessVariables.Pnl_Door_Mode));
+
+IF m_isAuto THEN
+	Mode := EOperatingModes.automatic;
+ELSIF m_isManu THEN
+	Mode := EOperatingModes.manual;
+ELSE
+	Mode := EOperatingModes.none;
+END_IF
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Reset" Id="{22067ef0-3d99-4456-bded-00c6ed58420d}">
+      <Declaration><![CDATA[PROPERTY Reset : BOOL]]></Declaration>
+      <Get Name="Get" Id="{5e86696a-39d0-408a-9517-a24f3ea3a6be}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Reset := m_ptrSt^.GetBinary(EProcessVariables.Pnl_Door_Reset) OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_LightBarrier_Reset);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="ResetDefinition" Id="{8c724ec8-ebc8-4a85-9d6a-4aeccfa5ad23}">
+      <Declaration><![CDATA[METHOD ResetDefinition : BOOL
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_resetDefinitions := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetGreen" Id="{5eddc6ed-72e3-4f96-a2fe-a01909198e9c}">
+      <Declaration><![CDATA[METHOD SetGreen : BOOL
+VAR_INPUT
+	i_lightVal: BOOL;
+	i_blinkTime: TIME := T#0S;	// blink state change time; 0 means constant on/off
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_blinkTime = T#0S THEN
+	DO_GreenLight  := i_lightVal;
+ELSE
+	m_greenTmr(IN := TRUE, PT := i_blinkTime);
+	IF m_greenTmr.Q THEN
+		m_greenTmr(IN := FALSE);
+		DO_GreenLight := NOT DO_GreenLight;
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetRed" Id="{8c28fce5-d6f3-46c4-8972-bde6f3bca101}">
+      <Declaration><![CDATA[METHOD SetRed : BOOL
+VAR_INPUT
+	i_lightVal: BOOL;
+	i_blinkTime: TIME := T#0S;	// blink state change time; 0 means constant on/off
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_blinkTime = T#0S THEN
+	DO_RedLight  := i_lightVal;
+ELSE
+	m_redTmr(IN := TRUE, PT := i_blinkTime);
+	IF m_redTmr.Q THEN
+		m_redTmr(IN := FALSE);
+		DO_RedLight := NOT DO_RedLight;
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="SetWhite" Id="{555f0db8-c8d4-40a1-891c-2cc525e00c05}">
+      <Declaration><![CDATA[METHOD SetWhite : BOOL
+VAR_INPUT
+	i_lightVal: BOOL;
+	i_blinkTime: TIME := T#0S;	// blink state change time; 0 means constant on/off
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF i_blinkTime = T#0S THEN
+	DO_WhiteLight  := i_lightVal;
+ELSE
+	m_whiteTmr(IN := TRUE, PT := i_blinkTime);
+	IF m_whiteTmr.Q THEN
+		m_whiteTmr(IN := FALSE);
+		DO_WhiteLight := NOT DO_WhiteLight;
+	END_IF
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="Start" Id="{0ce63478-eaf1-40bc-936b-3d582fac96a7}">
+      <Declaration><![CDATA[PROPERTY Start : BOOL]]></Declaration>
+      <Get Name="Get" Id="{4c64fd89-86a9-489e-a79c-1fa5c282a241}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Start := 
+	m_ptrSt^.GetBinary(EProcessVariables.Pnl_Stack_Start)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_LSC_Start)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_Stamp_Start)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_LightBarrier_Start)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_Door_Start);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Stop" Id="{49432b95-b531-4bf7-9206-6a7a8ed2f4b2}">
+      <Declaration><![CDATA[PROPERTY Stop : BOOL]]></Declaration>
+      <Get Name="Get" Id="{debf4af6-708a-437f-b1c1-56f7b70d85fb}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Stop := m_ptrSt^.GetBinary(EProcessVariables.Pnl_LightBarrier_Stop)
+	OR m_ptrSt^.GetBinary(EProcessVariables.Pnl_Door_Stop);
+]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Method Name="UpdateProcessObservation" Id="{367d8d1c-9b8d-4fd3-8990-096bb2ba7168}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[IF m_startBtnIdx <> 0 THEN
+	io_processState.UpdateState_Binary(m_startBtnIdx, DI_StartBtn, TRUE);
+	io_processState.UpdateState_Defined(m_startBtnIdx, NOT m_resetDefinitions);
+END_IF
+IF m_stopBtnIdx <> 0 THEN
+	// invert the EStop signal
+	io_processState.UpdateState_Binary(m_stopBtnIdx, NOT DI_StopBtn, TRUE);
+	io_processState.UpdateState_Defined(m_stopBtnIdx, NOT m_resetDefinitions);
+END_IF
+IF m_modeIdx <> 0 THEN
+	IF DI_ModeSwitch THEN
+		io_processState.UpdateState_Numeric(m_modeIdx, EOperatingModes.automatic, TRUE);
+	ELSE
+		io_processState.UpdateState_Numeric(m_modeIdx, EOperatingModes.manual, TRUE);
+	END_IF
+	io_processState.UpdateState_Defined(m_modeIdx, NOT m_resetDefinitions);
+END_IF
+IF m_eStopBtnIdx <> 0 THEN
+	// invert the EStop signal
+	io_processState.UpdateState_Binary(m_eStopBtnIdx, NOT DI_EStopBtn, TRUE);
+	io_processState.UpdateState_Defined(m_eStopBtnIdx, NOT m_resetDefinitions);
+END_IF
+IF m_resetBtnIdx <> 0 THEN
+	io_processState.UpdateState_Binary(m_resetBtnIdx, DI_ResetBtn, TRUE);
+	io_processState.UpdateState_Defined(m_resetBtnIdx, NOT m_resetDefinitions);
+END_IF
+
+IF m_resetDefinitions THEN
+	m_resetDefinitions := FALSE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="PanelManager">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.EStop.Get">
+      <LineId Id="3" Count="0" />
+      <LineId Id="8" Count="2" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="4" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.FB_init">
+      <LineId Id="1" Count="5" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.Mode.Get">
+      <LineId Id="13" Count="0" />
+      <LineId Id="23" Count="4" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="28" Count="4" />
+      <LineId Id="20" Count="1" />
+      <LineId Id="33" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="39" Count="3" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="8" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.Reset.Get">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="PanelManager.ResetDefinition">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="PanelManager.SetGreen">
+      <LineId Id="3" Count="1" />
+      <LineId Id="6" Count="3" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.SetRed">
+      <LineId Id="3" Count="7" />
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="PanelManager.SetWhite">
+      <LineId Id="3" Count="8" />
+      <LineId Id="2" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.Start.Get">
+      <LineId Id="1" Count="1" />
+      <LineId Id="4" Count="3" />
+      <LineId Id="3" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.Stop.Get">
+      <LineId Id="8" Count="0" />
+      <LineId Id="3" Count="0" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+    <LineIds Name="PanelManager.UpdateProcessObservation">
+      <LineId Id="57" Count="1" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="60" Count="1" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="62" Count="0" />
+      <LineId Id="78" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="72" Count="4" />
+      <LineId Id="64" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="66" Count="1" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="68" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="69" Count="2" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="59" Count="0" />
+      <LineId Id="39" Count="1" />
+      <LineId Id="50" Count="1" />
+      <LineId Id="21" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

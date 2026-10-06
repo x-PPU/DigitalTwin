@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Crane_MoveToStack" Id="{695e069d-1259-46e4-8622-a00bc39a4090}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Crane_MoveToStack EXTENDS Crane_MoveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_precondition: ComparisonExpression(EProcessVariables.Crane_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	// EProcessVariables.Crane_AtStack = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.Crane_AtStack, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{4bee316d-c943-4419-919f-e1ed72d8e24c}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+		
+	i_ptrCrane: POINTER TO Crane;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrCrane := i_ptrCrane;
+
+m_id := EPrimitives.Crane_MoveToStack;
+m_timeout := T#30S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="TargetAngle" Id="{04e90976-00ce-41ef-9fd6-e908437e1290}">
+      <Declaration><![CDATA[PROPERTY TargetAngle : UINT]]></Declaration>
+      <Get Name="Get" Id="{3b0eaaa1-57ad-4b97-bd8f-e37c919b51b8}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[TargetAngle := 0;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="Crane_MoveToStack">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Crane_MoveToStack.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+    <LineIds Name="Crane_MoveToStack.TargetAngle.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

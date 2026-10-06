@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BaseCarrier" Id="{e9ecffdb-cd9d-4d21-8229-51ae00899c07}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK BaseCarrier EXTENDS BaseComponent
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	Motor : Motor;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <LineIds Name="BaseCarrier">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

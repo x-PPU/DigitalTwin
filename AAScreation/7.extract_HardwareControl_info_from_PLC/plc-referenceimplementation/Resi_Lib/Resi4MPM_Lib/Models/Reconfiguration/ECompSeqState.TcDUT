@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ECompSeqState" Id="{5c060fe9-659a-4638-9a6e-8984b7529877}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE ECompSeqState :
+(
+	none := 0,
+	preparing := 1,
+	running := 2,
+	finished := 3
+);
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Stack_ProvideWorkpiece" Id="{e19c37d8-9721-4308-bb3f-9250f75d3036}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Stack_ProvideWorkpiece EXTENDS ControlPrimitiveBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// (EProcessVariables.Stack_WorkpieceAvailable = FALSE) AND ((EProcessVariables.Crane_AtStack = FALSE) OR ((EProcessVariables.Crane_AtStack = TRUE) AND (EProcessVariables.Crane_HoldingWorkpiece = FALSE)))
+	m_compExpr260: ComparisonExpression(EProcessVariables.Stack_WorkpieceAvailable, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr262: ComparisonExpression(EProcessVariables.Crane_AtStack, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr264: ComparisonExpression(EProcessVariables.Crane_AtStack, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_compExpr266: ComparisonExpression(EProcessVariables.Crane_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_boolExpr267: BoolExpression(m_compExpr264, EBoolOperation.and_op, m_compExpr266);
+	m_boolExpr268: BoolExpression(m_compExpr262, EBoolOperation.or_op, m_boolExpr267);
+	m_precondition: BoolExpression(m_compExpr260, EBoolOperation.and_op, m_boolExpr268);
+	
+	// EProcessVariables.Stack_WorkpieceAvailable = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.Stack_WorkpieceAvailable, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_ptrStack: POINTER TO Stack;
+
+	m_step: INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="Abort" Id="{403d5302-cc38-4764-964c-d9f88bb9f0bd}">
+      <Declaration><![CDATA[METHOD Abort : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrStack^.o_slidingCylinder.METH_Retract();
+Abort := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ExecuteInternal" Id="{5c2f5b06-74f9-4193-ac37-32c836fd6bcf}">
+      <Declaration><![CDATA[(* Execution logic of this Control Primitive. *)
+METHOD PROTECTED  ExecuteInternal : BOOL
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[CASE m_step OF
+	0: // extend
+	m_ptrStack^.o_slidingCylinder.METH_Extend();
+	IF m_ptrStack^.o_slidingCylinder.Extended THEN
+		m_step := 1;
+	END_IF
+	
+	1: // retract
+	m_ptrStack^.o_slidingCylinder.METH_Retract();
+	IF m_ptrStack^.o_slidingCylinder.Retracted THEN
+		ExecuteInternal := TRUE;
+		m_step := 0;
+	END_IF
+END_CASE
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{518b6e99-bbc0-4965-8b11-0921d37db607}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrStack: POINTER TO Stack;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrStack := i_ptrStack;
+
+m_id := EPrimitives.Stack_ProvideWorkpiece;
+m_timeout := T#5S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Stack_ProvideWorkpiece">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Stack_ProvideWorkpiece.Abort">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="Stack_ProvideWorkpiece.ExecuteInternal">
+      <LineId Id="1" Count="14" />
+    </LineIds>
+    <LineIds Name="Stack_ProvideWorkpiece.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="SAlarm" Id="{c303aa0a-3d5e-42b9-8f00-4c245981ed2f}">
+    <Declaration><![CDATA[(*
+ * see: https://www.plcnext.help/te/Service_Components/Alarms/Alarms_via_OPC_UA.htm
+ *)
+{attribute 'OPC.UA.DA.StructuredType' := '1'}
+TYPE SAlarm :
+STRUCT
+	// Time in number of 100 ns intervals since 01.01.1601.
+	TimeTicks: ULINT;
+	AlarmId: UINT;
+	// TODO - AlarmType
+	Active: BOOL;
+	//Acknowledged: BOOL;
+	//Confirmed: BOOL;
+	Severity: ESeverity;
+	//RetainAlarm: BOOL;
+	Message: STRING;
+	InstanceName: STRING;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

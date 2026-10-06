@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="LSC_TransferWorkpieceTo_PAC" Id="{2f62e3c3-923a-45af-81a7-0b6a25f8cc97}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK LSC_TransferWorkpieceTo_PAC EXTENDS LSC_MoveWorkpiece_Base
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	// (EProcessVariables.PAC_WPNumber < 3) AND (((EProcessVariables.PicAlpha_AtPos1 = FALSE) AND (EProcessVariables.PicAlpha_AtPos2 = FALSE)) OR (EProcessVariables.PicAlpha_CylinderRetracted = TRUE))
+	m_compExpr91: ComparisonExpression(EProcessVariables.PAC_WPNumber, EComparisonType.less, EDataType.numeric, FALSE, 3, '', TRUE);
+	m_compExpr93: ComparisonExpression(EProcessVariables.PicAlpha_AtPos1, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr95: ComparisonExpression(EProcessVariables.PicAlpha_AtPos2, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_boolExpr96: BoolExpression(m_compExpr93, EBoolOperation.and_op, m_compExpr95);
+	m_compExpr98: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_boolExpr99: BoolExpression(m_boolExpr96, EBoolOperation.or_op, m_compExpr98);
+	m_precondition: BoolExpression(m_compExpr91, EBoolOperation.and_op, m_boolExpr99);
+	
+	// EProcessVariables.PAC_WPAtStart = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.PAC_WPAtStart, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	
+	m_timer: TON;
+	//m_timerPassby : TON;
+    m_timerEject  : TON;
+	m_passby: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{1ea5d03f-5e42-416e-b237-da48ff21dd36}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+m_ptrLSC^.METH_Switch_Extend();
+
+IF m_ptrLSC^.WPAtStart THEN
+	m_passby := TRUE;
+END_IF
+
+IF m_passby THEN
+	m_timer(IN := TRUE, PT := T#2000MS);
+	IF m_timer.Q THEN
+		m_timer(IN := FALSE, PT := T#0MS);
+		m_passby := FALSE;
+		AtTarget := TRUE;
+	END_IF
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{b309121f-923b-4f2d-a6be-3310cd623cca}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := FALSE;
+
+m_ptrLSC^.METH_Switch_Extend();
+m_ptrLSC^.METH_ConveyorForward();
+m_timerEject(IN := TRUE, PT := T#2000MS);
+
+IF m_timerEject.Q THEN
+  m_timerEject(IN := FALSE, PT := T#0MS);
+  m_ptrLSC^.METH_Switch_Retract();
+  m_ptrLSC^.METH_ConveyorStop();
+  EjectOperation := TRUE;
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{47528a88-f011-4b57-a83e-02d870bf8b69}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrLSC: POINTER TO LargeSortingConveyor;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrLSC := i_ptrLSC;
+
+m_id := EPrimitives.LSC_TransferWorkpieceTo_PAC;
+m_timeout := T#5S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="LSC_TransferWorkpieceTo_PAC">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_PAC.AtTarget">
+      <LineId Id="1" Count="1" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="23" Count="0" />
+      <LineId Id="21" Count="1" />
+      <LineId Id="7" Count="8" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_PAC.EjectOperation">
+      <LineId Id="13" Count="3" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="31" Count="0" />
+      <LineId Id="26" Count="4" />
+      <LineId Id="11" Count="0" />
+    </LineIds>
+    <LineIds Name="LSC_TransferWorkpieceTo_PAC.FB_init">
+      <LineId Id="1" Count="6" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

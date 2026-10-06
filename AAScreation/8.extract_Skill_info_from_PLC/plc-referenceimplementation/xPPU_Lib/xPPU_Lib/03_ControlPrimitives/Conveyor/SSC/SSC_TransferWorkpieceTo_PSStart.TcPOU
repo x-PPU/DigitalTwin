@@ -1,0 +1,107 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="SSC_TransferWorkpieceTo_PSStart" Id="{828f8b64-2591-43b2-8c9f-9de33114a030}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK SSC_TransferWorkpieceTo_PSStart EXTENDS SSC_MoveWorkpiece_Base
+VAR_INPUT
+	i_ptrPAC : POINTER TO PicAlphaConveyor;
+	i_ptrSSC : POINTER TO SmallSortingConveyor;
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrPAC : POINTER TO PicAlphaConveyor;
+	// (EProcessVariables.PicAlpha_HoldingWorkpiece = FALSE) AND ((EProcessVariables.PicAlpha_CylinderRetracted = TRUE) AND (EProcessVariables.PicAlpha_AtPos4 = TRUE))
+	m_compExpr226: ComparisonExpression(EProcessVariables.PicAlpha_HoldingWorkpiece, EComparisonType.equals, EDataType.binary, FALSE, 0, '', TRUE);
+	m_compExpr228: ComparisonExpression(EProcessVariables.PicAlpha_CylinderRetracted, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	//m_compExpr230: ComparisonExpression(EProcessVariables.PicAlpha_AtPos4, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	//m_boolExpr231: BoolExpression(m_compExpr228, EBoolOperation.and_op, m_compExpr230);
+	m_precondition: BoolExpression(m_compExpr226, EBoolOperation.and_op, m_compExpr228);
+	
+	// EProcessVariables.SSC_WPAtStart = TRUE
+	m_postcondition: ComparisonExpression(EProcessVariables.SSC_WPAtStart, EComparisonType.equals, EDataType.binary, TRUE, 0, '', TRUE);
+	m_passby: BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[SUPER^();]]></ST>
+    </Implementation>
+    <Method Name="AtTarget" Id="{7a6dfcb4-b6ff-497e-83d7-91e875b5f6b4}">
+      <Declaration><![CDATA[METHOD PROTECTED  AtTarget : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[AtTarget := FALSE;
+
+IF m_ptrSSC^.WPAtStart THEN
+	m_passby := TRUE;
+END_IF
+
+IF m_ptrSSC^.WPAtStart THEN
+	m_passby := FALSE;
+	AtTarget := TRUE;
+END_IF
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="EjectOperation" Id="{01af7f4a-74db-4d40-84ac-49a7cd313de8}">
+      <Declaration><![CDATA[METHOD PROTECTED EjectOperation : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[EjectOperation := TRUE;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="FB_init" Id="{fc25a999-881b-4674-b79d-05405bd4db72}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrSSC: POINTER TO SmallSortingConveyor;
+	
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrSSC := i_ptrSSC;
+m_ptrPAC := i_ptrPAC;
+m_passby := FALSE;
+
+m_id := EPrimitives.SSC_TransferWorkpieceTo_PSStart;
+m_timeout := T#200S;
+
+Precondition := m_precondition;
+Postcondition := m_postcondition;
+
+FB_init := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="SSC_TransferWorkpieceTo_PSStart">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_TransferWorkpieceTo_PSStart.AtTarget">
+      <LineId Id="1" Count="0" />
+      <LineId Id="10" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="2" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="3" Count="1" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+    <LineIds Name="SSC_TransferWorkpieceTo_PSStart.EjectOperation">
+      <LineId Id="1" Count="1" />
+    </LineIds>
+    <LineIds Name="SSC_TransferWorkpieceTo_PSStart.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="8" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="2" Count="5" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="10" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

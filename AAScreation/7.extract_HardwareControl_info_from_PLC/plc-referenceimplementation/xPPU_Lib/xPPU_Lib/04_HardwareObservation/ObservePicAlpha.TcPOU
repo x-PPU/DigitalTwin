@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="ObservePicAlpha" Id="{75856ee2-052b-4c2d-aab9-832ae8f8a25d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK ObservePicAlpha EXTENDS HardwareObservationBase
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	m_ptrPicAlpha: POINTER TO PicAlpha;
+	m_ptrPicAlphaWP: POINTER TO xPPUProduct;
+
+	m_PicAlphaPosDefinedState: BOOL := FALSE;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="FB_init" Id="{8a3dbd59-cf3b-43f8-9637-d86aa5d9af76}">
+      <Declaration><![CDATA[METHOD FB_init : BOOL
+VAR_INPUT
+	bInitRetains : BOOL; // if TRUE, the retain variables are initialized (warm start / cold start)
+	bInCopyCode : BOOL;  // if TRUE, the instance afterwards gets moved into the copy code (online change)
+	
+	i_ptrPicAlpha: POINTER TO PicAlpha;
+	i_ptrWP: POINTER TO xPPUProduct;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_ptrPicAlpha := i_ptrPicAlpha;
+m_ptrPicAlphaWP := i_ptrWP;
+]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="ResetDefinition" Id="{ef4f5e87-99b6-49c3-9df4-41d5bc3f7506}">
+      <Declaration><![CDATA[METHOD  ResetDefinition : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[m_PicAlphaPosDefinedState := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="UpdateProcessObservation" Id="{87efdf91-6bf5-4767-a1a5-5d8edeebb191}">
+      <Declaration><![CDATA[(* Update an instance of ProcessState with the part of the process that can be observed by this Hardware Interface. *)
+METHOD UpdateProcessObservation : BOOL
+VAR_IN_OUT
+	io_processState: ProcessState;
+END_VAR
+VAR
+	m_sensorCount : UINT;
+END_VAR]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[io_processState.UpdateState_Binary(EProcessVariables.PicAlpha_AtPos1, m_ptrPicAlpha^.PresenceSensorPosition1Value, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PicAlpha_AtPos2, m_ptrPicAlpha^.PresenceSensorPosition2Value, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PicAlpha_AtPos3, m_ptrPicAlpha^.PresenceSensorPosition3Value, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PicAlpha_AtPos4, m_ptrPicAlpha^.PresenceSensorPosition4Value, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PicAlpha_HoldingWorkpiece, m_ptrPicAlpha^.o_VacuumGripper.WPTaken, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PicAlpha_CylinderExtended, m_ptrPicAlpha^.o_MonostableCylinder.Extended, i_force := TRUE);
+io_processState.UpdateState_Binary(EProcessVariables.PicAlpha_CylinderRetracted, m_ptrPicAlpha^.o_MonostableCylinder.Retracted, i_force := TRUE);
+io_processState.UpdateState_Numeric(EProcessVariables.PicAlpha_Distance, INT_TO_LREAL(m_ptrPicAlpha^.o_Distance), i_force := TRUE);
+
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_HoldingWorkpiece, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_CylinderExtended, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_CylinderRetracted, TRUE);
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_Distance, TRUE);
+
+// update WP info (if there are sensors available), then update the process variables list
+
+IF m_ptrPicAlpha^.PresenceSensorPosition3Value AND NOT (m_ptrPicAlpha^.PresenceSensorPosition1Value OR m_ptrPicAlpha^.PresenceSensorPosition2Value OR m_ptrPicAlpha^.PresenceSensorPosition4Value) THEN
+	m_PicAlphaPosDefinedState :=  TRUE;
+END_IF
+IF m_PicAlphaPosDefinedState THEN
+	m_sensorCount := 0;	
+END_IF
+IF m_ptrPicAlpha^.PresenceSensorPosition1Value OR m_ptrPicAlpha^.PresenceSensorPosition2Value THEN
+ 	m_sensorCount := m_sensorCount + 1;
+END_IF
+IF m_ptrPicAlpha^.PresenceSensorPosition3Value THEN
+ 	m_sensorCount := m_sensorCount + 1;
+END_IF
+IF m_ptrPicAlpha^.PresenceSensorPosition4Value THEN
+ 	m_sensorCount := m_sensorCount + 1;
+END_IF
+
+IF m_sensorCount > 1 THEN // if more than one sensor is pressed at the same time, the position is undefined
+	m_PicAlphaPosDefinedState := FALSE;	
+END_IF
+
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_AtPos1, m_PicAlphaPosDefinedState);
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_AtPos2, m_PicAlphaPosDefinedState);
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_AtPos3, m_PicAlphaPosDefinedState);
+io_processState.UpdateState_Defined(EProcessVariables.PicAlpha_AtPos4, m_PicAlphaPosDefinedState);
+]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="ObservePicAlpha">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObservePicAlpha.FB_init">
+      <LineId Id="1" Count="0" />
+      <LineId Id="4" Count="1" />
+    </LineIds>
+    <LineIds Name="ObservePicAlpha.ResetDefinition">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="ObservePicAlpha.UpdateProcessObservation">
+      <LineId Id="1" Count="38" />
+      <LineId Id="43" Count="0" />
+      <LineId Id="47" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

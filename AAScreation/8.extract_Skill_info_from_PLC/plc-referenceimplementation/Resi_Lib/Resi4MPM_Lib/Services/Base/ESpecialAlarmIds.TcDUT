@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ESpecialAlarmIds" Id="{bf96e84c-f5d3-46b4-a3cc-774916bac3c5}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE ESpecialAlarmIds :
+(
+	none := 0,
+	recovery_request := 990,
+	definition_request := 991,
+	strategy_received := 992
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="VacuumGripper" Id="{e1824f14-fb2d-4a85-a223-2c1f3c1c8044}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK VacuumGripper EXTENDS BaseGripper
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	//Hardware
+	DI_TakenIn AT %I* : BOOL;
+	DO_VacuumOn AT %Q* : BOOL;
+	// Only used by PickAlpha
+	VacuumHit AT %Q* : BOOL;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="METH_Intake" Id="{255dd761-f5f3-40e3-8c76-b89b1d5566dc}">
+      <Declaration><![CDATA[METHOD METH_Intake : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_VacuumOn := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_Release" Id="{a48a7a99-38a4-42e2-b9f6-a996e9a43e8b}">
+      <Declaration><![CDATA[METHOD METH_Release : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[DO_VacuumOn := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_VacuumHitOff" Id="{665a2718-ac88-480e-8ee8-59f7fc60adf8}">
+      <Declaration><![CDATA[METHOD METH_VacuumHitOff : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[VacuumHit := FALSE;]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_VacuumHitOn" Id="{fe78d978-41a9-4799-b6f1-096dec99e00d}">
+      <Declaration><![CDATA[METHOD METH_VacuumHitOn : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[VacuumHit := TRUE;]]></ST>
+      </Implementation>
+    </Method>
+    <Property Name="WPTaken" Id="{fdd6c02e-7f16-4d18-ab22-23bdb71366c2}">
+      <Declaration><![CDATA[PROPERTY WPTaken : BOOL]]></Declaration>
+      <Get Name="Get" Id="{4b75cd3c-7815-4c17-8aec-949da059a48d}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[// TODO - connect input correctly (probably hardware issue)
+WPTaken := DI_TakenIn;
+//WPTaken := DO_VacuumOn;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="VacuumGripper">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="VacuumGripper.METH_Intake">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="VacuumGripper.METH_Release">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="VacuumGripper.METH_VacuumHitOff">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="VacuumGripper.METH_VacuumHitOn">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="VacuumGripper.WPTaken.Get">
+      <LineId Id="1" Count="2" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

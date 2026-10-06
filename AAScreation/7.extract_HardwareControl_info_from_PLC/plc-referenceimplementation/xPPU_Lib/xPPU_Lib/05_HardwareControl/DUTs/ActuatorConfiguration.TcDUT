@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ActuatorConfiguration" Id="{1df0ba73-301f-48a2-a571-27e7b4736ffc}">
+    <Declaration><![CDATA[TYPE ActuatorConfiguration EXTENDS BaseConfiguration:
+STRUCT
+	//Output
+	sPusherType : STRING;
+	iPusherPosition : DINT;
+END_STRUCT
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>

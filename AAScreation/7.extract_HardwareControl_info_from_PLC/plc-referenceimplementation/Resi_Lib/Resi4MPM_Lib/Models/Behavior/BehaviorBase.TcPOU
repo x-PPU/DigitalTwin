@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="BehaviorBase" Id="{9d4d1066-c534-403d-9661-100da8d2681e}" SpecialFunc="None">
+    <Declaration><![CDATA[(* Common base of all reusable behavior types. *)
+FUNCTION_BLOCK ABSTRACT BehaviorBase
+VAR_INPUT
+	i_params: ParameterSet;
+END_VAR
+VAR_OUTPUT
+	{attribute 'OPC.UA.DA' := '1'}
+	{attribute 'OPC.UA.DA.Access' := '1'}
+	o_status: EOperationResult;
+END_VAR
+VAR
+	(* Because all Control Primitives and Module Sequences instances are 
+       singletons, they can set their IDs themselves *)
+	{attribute 'OPC.UA.DA' := '1'}
+	{attribute 'OPC.UA.DA.Access' := '1'}
+	m_id: UINT;
+	
+	(* define's the behavior's parameters (if any)
+	   format: <Name1>:<Type1>;<Name2>:<Type2>;... *)
+	{attribute 'OPC.UA.DA' := '1'}
+	{attribute 'OPC.UA.DA.Access' := '1'}
+	m_paramDefinition: STRING;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Property Name="Id" Id="{ba153d7e-7756-45e1-b8e0-5f9e442e030a}">
+      <Declaration><![CDATA[PROPERTY Id : UINT]]></Declaration>
+      <Get Name="Get" Id="{981a86db-813a-4131-b3fb-fb631a3fc35e}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[Id := m_id;]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Postcondition" Id="{90225cfd-13e1-444c-bc8a-323cf6976b8b}">
+      <Declaration><![CDATA[PROPERTY ABSTRACT Postcondition : IExpression]]></Declaration>
+      <Get Name="Get" Id="{b041eb4c-ce04-48b4-94bd-b361fefbcea0}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <Property Name="Precondition" Id="{628feb89-8bb5-47be-9aa3-63217f9f17f7}">
+      <Declaration><![CDATA[PROPERTY ABSTRACT Precondition : IExpression]]></Declaration>
+      <Get Name="Get" Id="{b908d781-8451-454e-b15f-ef2782e48345}">
+        <Declaration><![CDATA[VAR
+END_VAR
+]]></Declaration>
+        <Implementation>
+          <ST><![CDATA[]]></ST>
+        </Implementation>
+      </Get>
+    </Property>
+    <LineIds Name="BehaviorBase">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BehaviorBase.Id.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BehaviorBase.Postcondition.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="BehaviorBase.Precondition.Get">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

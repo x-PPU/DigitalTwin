@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <POU Name="Conveyor" Id="{ec7bb8df-4121-4927-8bcd-202c4b16387c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK Conveyor EXTENDS BaseComponent
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	Motor : Motor;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[]]></ST>
+    </Implementation>
+    <Method Name="METH_ConveyorBackward" Id="{39684807-ecc3-45bb-919f-174939b78c07}">
+      <Declaration><![CDATA[METHOD METH_ConveyorBackward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Motor.ACT_TurnCounterclockwise();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_ConveyorForward" Id="{cba2b1c1-0e88-4be7-90e1-04ceb0d1198e}">
+      <Declaration><![CDATA[METHOD METH_ConveyorForward : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Motor.ACT_TurnClockwise();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="METH_ConveyorStop" Id="{4443a639-c5bb-4dff-9f71-d719fc932092}">
+      <Declaration><![CDATA[METHOD METH_ConveyorStop : BOOL
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[Motor.ACT_Stop();]]></ST>
+      </Implementation>
+    </Method>
+    <LineIds Name="Conveyor">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.METH_ConveyorBackward">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.METH_ConveyorForward">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+    <LineIds Name="Conveyor.METH_ConveyorStop">
+      <LineId Id="1" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1">
+  <DUT Name="ESeverity" Id="{2bb4d6a4-30d9-46cc-b3da-0e793d13b294}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+{attribute 'strict'}
+TYPE ESeverity :
+(
+	none := 0,
+	info := 1,
+	warning := 2,
+	error := 3
+) UINT;
+END_TYPE
+]]></Declaration>
+  </DUT>
+</TcPlcObject>
