@@ -25,6 +25,9 @@ import xml.etree.ElementTree as ET
 
 # Naming (Wilch): PLC methods/actions of Hardware Control FBs
 HWC_TAG = "HardwareControl"   # was "Skill"
+# SMC with the output values assigned by a Hardware Control method/action.
+# These are results of executing the function (effect), not preconditions. (was "Precondition")
+HWC_EFFECT_SMC = "Effect"
 
 
 
@@ -519,9 +522,9 @@ class SkillsExtractionPipeline:
                 for call_target in skill_calls:
                     skill_rows.append(["ReferenceElement", "Call", call_target, "", "", "", "", ""])
 
-                # Add condition block if there are properties or boolean references
+                # Add effect block (values assigned by this method/action) if there are properties or boolean references
                 if properties or boolean_refs:
-                    skill_rows.append(["SubmodelElementCollection", "Precondition", "", "", "", "", "", ""])
+                    skill_rows.append(["SubmodelElementCollection", HWC_EFFECT_SMC, "", "", "", "", "", ""])
                     
                     # Add properties
                     for lhs, rhs in properties:
